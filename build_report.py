@@ -469,6 +469,12 @@ need a small pilot with consenting users from a church or campus ministry, measu
 <li><b>Safety evaluation is small and written.</b> {len(safety.get('part_a', []))} fixtures, all using explicit language.
 Indirect or coded language is not tested. Next: a larger set reviewed by someone with crisis-line training.</li>
 <li><b>Crisis resources are US-only.</b></li>
+<li><b>ESV and NASB.</b> Heard uses public-domain translations (KJV, Berean Standard Bible, Douay-Rheims) so the full text
+can ship with the app and be searched and verified locally. The ESV and NASB are copyrighted, so they cannot be bundled.
+The ESV is available through Crossway's official API, free for non-commercial use with a key, attribution, a link to
+esv.org, and no more than 500 verses stored at a time. The NASB appears to be available through API.Bible, whose free
+plan includes up to three licensed Bibles for non-commercial use; its exact terms still need confirming. Next step: keep
+searching the public-domain text and fetch only the verses shown in the user's chosen version.</li>
 <li><b>Check-ins are in-app only.</b> There are no push notifications, texts or emails yet, so Heard can only ask when the
 user opens it. A real accountability loop needs reminders that reach the user.</li>
 <li><b>Voice needs Chrome or Edge</b>, and in Chrome the audio is sent to Google to be transcribed. A server-side fallback
@@ -563,6 +569,7 @@ Alexandria Rosenzweig · MGT 409 · github.com/arrosenzweig/heard</p></section>"
 <li>Semantic retrieval: lexical search can match words but miss meaning.</li>
 <li>Real moderation for person-to-person contact.</li>
 <li>Reminders that reach people (check-ins are in-app only today).</li>
+<li>ESV and NASB through their publishers' APIs.</li>
 <li>Crisis resources beyond the US.</li></ul>
 </section>""",
 ]

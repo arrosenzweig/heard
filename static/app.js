@@ -706,7 +706,6 @@ async function loadStats() {
     <div class="stat"><b>${s.avg_tokens_per_run.toLocaleString()}</b><span>avg tokens / run</span></div>
     <div class="stat"><b>${s.total_tokens.toLocaleString()}</b><span>total tokens</span></div>
     <div class="stat"><b>$${s.usd_per_run.toFixed(5)}</b><span>est. cost / run</span></div></div>
-    <p class="sub" style="margin-top:12px">Provider: ${esc(s.provider)} · model: ${esc(s.model)}</p>
     ${s.price_verified ? "" : `<p class="warn">Token counts are measured. The dollar rate is a placeholder until the real price is configured.</p>`}`;
 }
 async function lookupVerse() {
