@@ -272,11 +272,16 @@ have no power in."</i></p>
 <h3>Why "Heard"</h3>
 <p><i>"At the end of the day, people need to be heard for their true strifes and get real advice from a biblical rather
 than worldly perspective."</i></p>
+<p>The motto, <i>"I don't understand, but I want to understand. That's why I need you God,"</i> comes from one of her
+favorite gospel songs, "Why God" by Austin French (from his 2018 album <i>Wide Open</i>).</p>
 
 <h3>What is missing today</h3>
 <p>From her own search for this kind of help: <i>"There is no AI that tailors the content based on niche beliefs and
 values. The only apps out there offer general evangelical or highly specialized content. There isn't an adaptable app
-for each person's own journey and values."</i> Section 2 tests this against two well-known apps and a plain chatbot.</p>
+for each person's own journey and values."</i></p>
+<p>She draws the line at advice, not search: <i>"The market might have AI scripture search, but it doesn't have the
+tailored and customizable advice. That advice comes inlaid with occasional scripture sharing and what that piece of
+scripture means."</i> Section 2 tests this against two well-known apps and a plain chatbot.</p>
 
 <p>From the start she asked for Bible verses, plain-language advice, perspectives from different denominations, and a
 way to connect with other Christians for community or to talk when needed.</p>
@@ -504,6 +509,7 @@ _fab_removed = sum(1 for r in _fab if r["verdict"] == "removed")
 SLIDES = [
     f"""<section class="title"><h1>Heard</h1>
 <p class="motto">"I don't understand, but I want to understand.<br>That's why I need you God."</p>
+<p class="small">Motto from "Why God" by Austin French</p>
 <p class="small">Help to stand strong in what you believe<br>
 Alexandria Rosenzweig · MGT 409 · github.com/arrosenzweig/heard</p></section>""",
 
