@@ -4,6 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Heard</title>
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#8a5a2b">
+<link rel="icon" href="/static/icons/heard-192.png">
+<link rel="apple-touch-icon" href="/static/icons/heard-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Heard">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/static/style.css">
@@ -147,6 +153,10 @@
 <main>
 <!-- ================================================================ TALK -->
 <section id="talk" class="tab on">
+  <button class="soshome" onclick="openSOS()">
+    <span class="sosdot"></span>
+    <span><b>I'm being tempted right now</b><span class="sub">Verses now, then tell Heard what's going on</span></span>
+  </button>
   <div id="thread" class="thread"></div>
   <div id="typing" class="bubble them typing hidden"><span></span><span></span><span></span></div>
   <div class="composer">
@@ -326,6 +336,44 @@
   </details>
 </section>
 </main>
+
+<!-- ================================================================== SOS -->
+<button id="sosBtn" class="sosbtn hidden" onclick="openSOS()" aria-label="I'm being tempted right now">
+  <span class="sosdot"></span>I'm being tempted
+</button>
+<div id="sos" class="sos hidden" role="dialog" aria-modal="true">
+  <div class="sos-card">
+    <button class="sos-close" onclick="closeSOS()" aria-label="Close">×</button>
+
+    <div class="sos-step on" data-s="pause">
+      <h2>You reached out, and that matters.</h2>
+      <p class="sub">This moment will pass. Stay here with me.</p>
+      <div id="sosVerses"></div>
+      <div class="row" style="margin-top:4px"><button class="ghost small" onclick="readSOSVerses(this)">🔊 Read it to me</button></div>
+      <h3 style="margin-top:18px">What's going on right now?</h3>
+      <div class="field"><textarea id="sosText" rows="3" placeholder="Type, or tap the mic and say it. Heard will answer fast, with one thing to do in the next ten minutes."></textarea></div>
+      <div class="row"><button class="ghost small" onclick="sosStep('breathe')">Need a moment first? Breathe</button>
+        <button class="ghost small" onclick="sosStep('reach')">Reach a person</button><span class="spacer"></span>
+        <button class="primary" onclick="sendSOS()">Tell Heard</button></div>
+    </div>
+
+    <div class="sos-step" data-s="breathe">
+      <h2>Breathe with me</h2>
+      <div class="breath"><div class="circle" id="breathCircle"></div><div id="breathWord">Breathe in…</div></div>
+      <p class="sub" id="breathCount"></p>
+      <div class="row"><span class="spacer"></span><button class="ghost" onclick="sosStep('pause')">I'm ready</button></div>
+    </div>
+
+    <div class="sos-step" data-s="reach">
+      <h2>Reach someone now</h2>
+      <div id="sosContacts"></div>
+      <div class="row"><button class="ghost" onclick="sosStep('pause')">Back</button><span class="spacer"></span>
+        <button class="primary" onclick="closeSOS()">I'm okay for now</button></div>
+    </div>
+
+    <p class="sos-help" id="sosHelp"></p>
+  </div>
+</div>
 
 <footer>Heard is a companion, not a therapist, pastor, or crisis service. If you are in danger, call or text <b>988</b> or call <b>911</b>.</footer>
 <script src="/static/app.js"></script>

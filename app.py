@@ -61,6 +61,42 @@ def session_reset():
     session.pop("pid", None)
     return jsonify({"ok": True})
 
+# ------------------------------------------------------- installable app
+# "Add to Home Screen" puts Heard on a phone or desktop. The SOS shortcut
+# (long-press the icon on Android, or right-click it on desktop) opens straight
+# into "I'm being tempted". On iPhone, the /?sos=1 link itself can be added to
+# the home screen as its own one-tap SOS icon.
+@app.route("/manifest.webmanifest")
+def manifest():
+    m = {
+        "name": "Heard", "short_name": "Heard",
+        "description": "A Christian companion for standing strong in what you believe.",
+        "start_url": "/", "scope": "/", "display": "standalone",
+        "background_color": "#f7f3ec", "theme_color": "#8a5a2b",
+        "icons": [
+            {"src": "/static/icons/heard-192.png", "sizes": "192x192", "type": "image/png"},
+            {"src": "/static/icons/heard-512.png", "sizes": "512x512", "type": "image/png"},
+            {"src": "/static/icons/heard-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"},
+        ],
+        "shortcuts": [{
+            "name": "I'm being tempted right now", "short_name": "I'm tempted",
+            "description": "Verses now, then tell Heard what's going on",
+            "url": "/?sos=1",
+            "icons": [{"src": "/static/icons/sos-192.png", "sizes": "192x192", "type": "image/png"}],
+        }],
+    }
+    return app.response_class(json.dumps(m), mimetype="application/manifest+json")
+
+
+@app.route("/sw.js")
+def service_worker():
+    # Minimal on purpose: it makes Heard installable but caches nothing, so no
+    # one's private conversations are ever stored by the browser cache.
+    js = "self.addEventListener('install',e=>self.skipWaiting());"          "self.addEventListener('activate',e=>self.clients.claim());"          "self.addEventListener('fetch',()=>{});"
+    return app.response_class(js, mimetype="application/javascript",
+                              headers={"Service-Worker-Allowed": "/", "Cache-Control": "no-cache"})
+
+
 # ----------------------------------------------------------------- bootstrap
 @app.route("/api/bootstrap")
 def bootstrap():
@@ -364,7 +400,8 @@ def chat_send():
     store.add_chat(p["id"], "user", text)
 
     result, trace = pipeline.run(text, profile=prof, history=store.entries_for(p["id"], limit=6),
-                                 conversation=convo, label="chat")
+                                 conversation=convo, label="sos" if d.get("sos") else "chat",
+                                 sos=bool(d.get("sos")))
     eid = store.add_entry(p["id"], text, result["triage"]["theme"],
                           result["triage"]["severity"], result["triage"]["intensity"])
     rid = store.save_run(p["id"], eid, "chat", trace)
@@ -382,6 +419,52 @@ def chat_send():
     })
     result["entry_id"], result["run_id"], result["trace"] = eid, rid, trace
     return jsonify(result)
+
+
+# ---------------------------------------------------------------------- SOS
+SOS_VERSE = "I Corinthians 10:13"   # "God is faithful... he will also provide a way of escape"
+
+
+@app.route("/api/sos")
+def sos():
+    """Everything the SOS screen needs, instantly and with no model call:
+    real verse text, the people this user can actually reach, and real help
+    lines. The model is only involved if they choose to say what's happening."""
+    p, err = require_profile()
+    if err:
+        return err
+    trads = _as_list(p.get("tradition"))
+    code = retrieval.translation_for(trads)
+    verses = []
+    v = retrieval.by_ref(SOS_VERSE, code)
+    if v:
+        verses.append(v)
+    # One verse for what they're fighting, from the curated anchors.
+    with open(config.DATA_DIR / "verses.json", encoding="utf-8") as f:
+        anchors = json.load(f)["verses"]
+    for theme in matcher.themes_of(p, "fighting"):
+        for a in anchors:
+            if theme in a["themes"]:
+                w = retrieval.by_ref(a["ref"], code)
+                if w and w["ref"] != (v or {}).get("ref"):
+                    verses.append(dict(w, for_theme=theme))
+                    break
+        if len(verses) > 1:
+            break
+    # People they can reach right now: accepted connections who share contact.
+    contacts = []
+    for c in store.connections_for(p["id"]):
+        if c["status"] != "accepted":
+            continue
+        other = store.get_profile(c["to_id"] if c["from_id"] == p["id"] else c["from_id"])
+        if other and other.get("open_to_contact") and other.get("contact_value")                 and matcher.fellowship_eligible(other) and matcher.fellowship_eligible(p):
+            contacts.append({"handle": other["handle"], "method": other.get("contact_method") or "text",
+                             "value": other["contact_value"], "theme": c.get("theme"),
+                             "synthetic": bool(other.get("synthetic"))})
+    return jsonify({"verses": verses, "contacts": contacts,
+                    "fellowship_ok": matcher.fellowship_eligible(p),
+                    "resources": [{"name": "988 Suicide & Crisis Lifeline", "contact": "Call or text 988"},
+                                  {"name": "Emergency services", "contact": "Call 911"}]})
 
 
 # ------------------------------------------------------------ check-ins

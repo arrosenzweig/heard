@@ -219,3 +219,31 @@ details.card summary{cursor:pointer}
 .ratebox{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .ratebox input[type=range]{flex:1;min-width:160px;padding:0;border:0;box-shadow:none}
 .ratebox b{min-width:150px;font-size:.9rem}
+
+/* ----------------------------------------------------------------- SOS */
+.sosbtn{position:fixed;right:20px;bottom:22px;z-index:40;display:flex;align-items:center;gap:8px;background:var(--rose);color:#fff;
+  border:0;border-radius:999px;padding:12px 18px;font:600 .95rem Inter;box-shadow:0 8px 24px rgba(168,70,63,.35)}
+.sosbtn:hover{filter:brightness(1.08)}
+.sosdot{width:10px;height:10px;border-radius:50%;background:#fff;animation:pulse 1.6s infinite}
+.sos{position:fixed;inset:0;z-index:60;background:rgba(43,38,34,.6);backdrop-filter:blur(6px);display:grid;place-items:center;padding:16px}
+.sos-card{position:relative;background:var(--paper);border-radius:22px;max-width:560px;width:100%;max-height:92vh;overflow:auto;padding:30px 30px 18px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.sos-close{position:absolute;right:14px;top:10px;border:0;background:none;font-size:1.6rem;color:var(--muted);padding:4px 10px}
+.sos-step{display:none}.sos-step.on{display:block;animation:fade .25s}
+.sos-step h2{font-size:1.5rem;padding-right:30px}
+.breath{display:flex;flex-direction:column;align-items:center;gap:14px;margin:26px 0 8px}
+.breath .circle{width:90px;height:90px;border-radius:50%;background:radial-gradient(circle,var(--sage-soft),var(--sage));transition:transform 4s ease-in-out}
+.breath .circle.in{transform:scale(1.7)}
+#breathWord{font:600 1.15rem Fraunces,serif}
+.sos-help{font-size:.82rem;color:var(--muted);border-top:1px solid var(--line);padding-top:10px;margin:16px 0 0}
+.contactrow{display:flex;align-items:center;gap:10px;padding:10px 14px;border:1px solid var(--line);border-radius:12px;margin:8px 0;background:#fff}
+.contactrow .who{flex:1}
+.contactrow a{text-decoration:none}
+
+a.btnlink{display:inline-block;border-radius:999px;padding:6px 14px;font:500 .85rem Inter}
+a.btnlink.primary{background:var(--accent);color:#fff}a.btnlink.ghost{border:1px solid var(--line);color:var(--ink)}
+
+.soshome{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:var(--rose);color:#fff;border:0;border-radius:18px;
+  padding:16px 20px;margin-bottom:16px;box-shadow:0 8px 22px rgba(168,70,63,.25)}
+.soshome b{display:block;font:600 1.15rem Fraunces,serif}.soshome .sub{color:rgba(255,255,255,.85);margin:0;font-size:.85rem}
+.soshome .sosdot{width:14px;height:14px;flex:none}
+.sosbtn.onhome{display:none}

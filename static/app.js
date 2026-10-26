@@ -87,6 +87,7 @@ function speak(btn, text) {
 
 // =================================================================== TABS
 function go(tab) {
+  $("#sosBtn")?.classList.toggle("onhome", tab === "talk");
   $$("nav button").forEach((b) => b.classList.toggle("on", b.dataset.tab === tab));
   $$(".tab").forEach((s) => s.classList.toggle("on", s.id === tab));
   if (tab === "checkins") loadCheckins();
@@ -105,6 +106,7 @@ function applyMode() {
   $$("nav button[data-for]").forEach((b) => b.classList.toggle("hidden", b.dataset.for !== (church ? "church" : "person")));
   $("#personSettings").classList.toggle("hidden", church);
   $$(".personOnly").forEach((x) => x.classList.toggle("hidden", church));
+  $("#sosBtn").classList.toggle("hidden", church || !PROFILE?.onboarded);
   go(church ? "listing" : "talk");
 }
 
@@ -159,7 +161,14 @@ async function boot() {
   $("#vTrans").innerHTML = BOOT.translations.map((t) => `<option value="${t.code}">${t.code} - ${esc(t.label)}</option>`).join("");
   attachMics();
   if (!PROFILE || !PROFILE.onboarded) startOnboarding();
-  else { applyMode(); if (isPerson()) { await loadChat(); refreshDue(); } }
+  else {
+    applyMode();
+    if (isPerson()) {
+      await loadChat(); refreshDue();
+      // Opened from the home-screen SOS shortcut: go straight in.
+      if (new URLSearchParams(location.search).get("sos")) { history.replaceState(null, "", "/"); openSOS(); }
+    }
+  }
 }
 
 const DETAIL_FIELDS = [["Age", "age"], ["Gender", "gender"], ["Marital", "marital"], ["Years", "faith_years"]];
@@ -516,7 +525,7 @@ function bubble(m) {
     ${v.n_claimed ? `<div class="audit">${v.n_kept} of ${v.n_claimed} citations verified${v.n_removed ? ` · ${v.n_removed} removed` : ""}</div>` : ""}
   </div>`;
 }
-async function sendChat() {
+async function sendChat(opts = {}) {
   const ta = $("#chatText");
   const text = ta.value.trim();
   if (!text) return;
@@ -527,7 +536,7 @@ async function sendChat() {
   t.insertAdjacentHTML("beforeend", `<div class="bubble me">${paras(text)}</div>`);
   $("#typing").classList.remove("hidden"); $("#typing").scrollIntoView({ block: "end" });
   try {
-    LAST = await api("/api/chat", { text });
+    LAST = await api("/api/chat", { text, sos: !!opts.sos });
     $("#traceBox").textContent = JSON.stringify(LAST.trace, null, 2);
     await loadChat();
     refreshDue();
@@ -1102,4 +1111,78 @@ function toggleCheckinVoice(box, opener) {
   (async () => { if (box._msgs.length === 1) { st.textContent = "Speaking…"; await sayAloud(opener); } if (VOICE) voiceLoop(); })();
 }
 
+
+// =================================================================== SOS
+// "I'm being tempted right now." Instant: the verse, breathing, and the
+// people to call need no model call. Heard is only asked if they choose to
+// say what's happening, and then it answers briefly and urgently.
+let SOS_DATA = null, BREATH_TIMER = null;
+async function openSOS() {
+  $("#sos").classList.remove("hidden"); document.body.classList.add("locked");
+  sosStep("pause");
+  $("#sosVerses").innerHTML = `<p class="sub">…</p>`;
+  SOS_DATA = await api("/api/sos");
+  $("#sosVerses").innerHTML = SOS_DATA.verses.map((v) => `<div class="verse"><q>${esc(v.text)}</q>
+    <div class="ref">${esc(v.ref)} · ${esc(v.translation)}</div></div>`).join("");
+  $("#sosHelp").innerHTML = "If this is more than temptation, or you might hurt yourself or someone else: " +
+    SOS_DATA.resources.map((r) => `<b>${esc(r.name)}</b> ${esc(r.contact)}`).join(" · ");
+  renderSOSContacts();
+}
+function closeSOS() {
+  clearTimeout(BREATH_TIMER); BREATH_TIMER = null; stopSpeaking();
+  $("#sos").classList.add("hidden"); document.body.classList.remove("locked");
+}
+document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("#sos").classList.contains("hidden")) closeSOS(); });
+function sosStep(name) {
+  clearTimeout(BREATH_TIMER); BREATH_TIMER = null;
+  $$(".sos-step").forEach((s) => s.classList.toggle("on", s.dataset.s === name));
+  if (name === "breathe") breathe(0);
+  // Keep "You reached out, and that matters" in view; ready to type without scrolling past it.
+  if (name === "pause") setTimeout(() => { $("#sosText").focus({ preventScroll: true }); $(".sos-card").scrollTop = 0; }, 50);
+}
+function readSOSVerses(btn) {
+  if (!SOS_DATA) return;
+  const parts = ["You reached out, and that matters. Listen to this."];
+  SOS_DATA.verses.forEach((v) => { parts.push(`From ${spokenRef(v.ref)}.`); parts.push(v.text.replace(/[“”]/g, '"')); });
+  sayAloud(parts.join("\n\n"));
+}
+// Three slow breaths: in for four seconds, out for six.
+function breathe(i) {
+  const c = $("#breathCircle"), w = $("#breathWord"), n = 3;
+  if (i >= n) { w.textContent = "Good."; BREATH_TIMER = setTimeout(() => sosStep("pause"), 900); return; }
+  $("#breathCount").textContent = `Breath ${i + 1} of ${n}`;
+  c.classList.add("in"); w.textContent = "Breathe in…";
+  BREATH_TIMER = setTimeout(() => {
+    c.classList.remove("in"); w.textContent = "Breathe out…";
+    BREATH_TIMER = setTimeout(() => breathe(i + 1), 6000);
+  }, 4000);
+}
+function renderSOSContacts() {
+  const d = SOS_DATA, box = $("#sosContacts");
+  if (!d.fellowship_ok) {
+    box.innerHTML = `<p class="sub">Fellowship connects adults only${PROFILE?.age ? "" : ", and needs your age in Settings"}. Reach out to someone you trust in person: a parent, pastor, priest, or friend.</p>`;
+    return;
+  }
+  if (!d.contacts.length) {
+    box.innerHTML = `<p class="sub">You don't have an accepted connection yet. Someone who came through this could be one tap away next time.</p>
+      <button class="primary small" onclick="closeSOS();go('fellowship')">Find someone who came through it</button>`;
+    return;
+  }
+  const tel = (v) => String(v).replace(/[^\d+]/g, "");
+  box.innerHTML = `<p class="sub">People who said they'd be there:</p>` + d.contacts.map((c) => `<div class="contactrow">
+      <div class="who"><b>${esc(c.handle)}</b>${c.synthetic ? `<span class="demo">demo</span>` : ""}
+        <div class="sub tiny">${c.theme ? "connected over " + esc(pretty(c.theme)) : ""}${c.synthetic ? " · demo number, won't connect" : ""}</div></div>
+      <a class="primary small btnlink" href="tel:${esc(tel(c.value))}">Call</a>
+      <a class="ghost small btnlink" href="sms:${esc(tel(c.value))}">Text</a></div>`).join("");
+}
+async function sendSOS() {
+  const text = $("#sosText").value.trim();
+  if (!text) { $("#sosText").focus(); return; }
+  $("#sosText").value = "";
+  closeSOS(); go("talk");
+  $("#chatText").value = text;
+  await sendChat({ sos: true });
+}
+
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").catch(() => {});
 boot();

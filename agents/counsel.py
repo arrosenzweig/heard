@@ -226,6 +226,18 @@ def _history_block(history):
             "shame them for it:\n" + "\n".join(rows))
 
 
+SOS_NOTE = """
+THEY PRESSED THE SOS BUTTON. They are being tempted RIGHT NOW, in this moment.
+- Be brief: 2-4 short sentences in "reflection". They are not reading an essay.
+- Lovingly call them out of the situation, plainly.
+- "steps": exactly ONE concrete thing to do in the next ten minutes that puts
+  distance between them and the temptation (leave the room, put the phone in
+  another room, call someone, go outside).
+- "commitment": one short sentence for tonight, or null.
+- Quote at most one verse. "prayer": one sentence, or null.
+"""
+
+
 def _conversation_block(conversation):
     """Recent chat turns, so a reply follows the thread instead of starting over."""
     if not conversation:
@@ -249,7 +261,7 @@ def _conversation_block(conversation):
 
 
 def run(text, triage_result, verses, profile=None, history=None, trace=None,
-        conversation=None):
+        conversation=None, sos=False):
     allowed = [v["ref"] for v in verses]
     verse_block = "\n".join(
         f'{v["ref"]} ({v.get("translation","")}): "{v["text"]}"' for v in verses)
@@ -263,6 +275,7 @@ ABOUT THEM:
 {_profile_block(profile)}
 {_history_block(history)}
 {_conversation_block(conversation)}
+{SOS_NOTE if sos else ""}
 
 VERSES RETRIEVED FROM THE BIBLICAL TEXT. These are the only verses you may
 cite. Copy any wording exactly:

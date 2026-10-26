@@ -69,7 +69,7 @@ def out_of_scope_response(tri):
 
 
 def run(text, profile=None, history=None, k_verses=6, translation=None,
-        with_matches=True, label="entry", conversation=None):
+        with_matches=True, label="entry", conversation=None, sos=False):
     """Process one entry. Returns (result, trace_summary)."""
     trace = llm.Trace(label=label)
 
@@ -96,7 +96,7 @@ def run(text, profile=None, history=None, k_verses=6, translation=None,
 
     # ---------------------------------------------------------------- [3]
     adv = counsel.run(text, tri, verses, profile=profile, history=history, trace=trace,
-                      conversation=conversation)
+                      conversation=conversation, sos=sos)
 
     # ---------------------------------------------------------------- [4]
     kept, report = verifier.verify_citations(
