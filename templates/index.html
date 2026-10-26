@@ -246,6 +246,12 @@
   <div class="card">
     <h2>Voice</h2>
     <p class="sub">The 🎙 button uses your browser's built-in speech recognition (Chrome or Edge). In Chrome, your audio is sent to Google to be transcribed. If you'd rather not, just type. The 🔊 button reads replies aloud on your device.</p>
+    <h3>Heard's voice</h3>
+    <p class="sub">Voices marked ★ natural sound the most human. Edge has the best ones (try Ava, Andrew, Emma, or Brian).</p>
+    <div class="row">
+      <select id="voicePick" onchange="pickVoice(this.value)"></select>
+      <button class="ghost" onclick="previewVoice()">▶ Preview</button>
+    </div>
     <button class="ghost small personOnly" onclick="clearChat()">Clear my Talk history</button>
     <button class="ghost small" onclick="startOver()">Start over as a new user</button>
   </div>

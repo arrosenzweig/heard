@@ -76,14 +76,13 @@ new MutationObserver(() => attachMics()).observe(document.body, { childList: tru
 
 // Text-to-speech: read a reply aloud. On-device in every major browser.
 function speak(btn, text) {
+  // The 🔊 button: same human voice and pacing as voice mode.
   if (!("speechSynthesis" in window)) { alert("Your browser can't read aloud."); return; }
-  if (speechSynthesis.speaking) {
-    speechSynthesis.cancel(); $$(".tts.on").forEach((b) => b.classList.remove("on"));
-    if (btn.classList.contains("on")) return;
-  }
-  const u = new SpeechSynthesisUtterance(text);
-  u.rate = 0.97; u.onend = () => btn.classList.remove("on");
-  btn.classList.add("on"); speechSynthesis.speak(u);
+  const wasOn = btn.classList.contains("on");
+  stopSpeaking(); $$(".tts.on").forEach((b) => b.classList.remove("on"));
+  if (wasOn) return;
+  btn.classList.add("on");
+  sayAloud(text).then(() => btn.classList.remove("on"));
 }
 
 // =================================================================== TABS
@@ -94,7 +93,7 @@ function go(tab) {
   if (tab === "fellowship") { loadSuggestions(); loadConnections(); }
   if (tab === "churches") loadChurches();
   if (tab === "listing") renderListing();
-  if (tab === "settings") { if (isPerson()) renderSettings(); loadStats(); }
+  if (tab === "settings") { if (isPerson()) renderSettings(); loadStats(); fillVoicePicker(); }
   window.scrollTo({ top: 0 });
 }
 $$("nav button").forEach((b) => (b.onclick = () => go(b.dataset.tab)));
@@ -464,7 +463,7 @@ function renderThread(msgs) {
 function bubble(m) {
   if (m.role === "user") return `<div class="bubble me">${paras(m.content)}</div>`;
   const x = m.meta || {};
-  const say = [m.content, ...(x.verses || []).map((v) => `${v.text} ${v.ref}.`)].join(" ");
+  const say = speechFor(m.content, x.verses);
   if (x.mode === "crisis" || x.mode === "out_of_scope") {
     return `<div class="bubble them ${x.mode === "crisis" ? "crisis" : ""}"><h3>${esc(x.headline || "")}</h3>${paras(m.content)}
       ${(x.resources || []).map((r) => `<div class="resource"><b>${esc(r.name)}</b><span>${esc(r.contact)}</span></div>`).join("")}
@@ -725,23 +724,99 @@ async function lookupVerse() {
 // cost). Listening needs Chrome or Edge; Edge has the most natural voices.
 let VOICE = null;   // {kind:'talk'|'checkin', ...} while voice mode is on
 
-function bestVoice() {
-  const vs = speechSynthesis.getVoices().filter((v) => /^en(-|_)/i.test(v.lang));
-  const rank = (v) => (/natural/i.test(v.name) ? 0 : /google us english/i.test(v.name) ? 1
-    : /aria|jenny|guy|samantha|ava|allison/i.test(v.name) ? 2 : /en-us/i.test(v.lang) ? 3 : 4);
-  return vs.sort((a, b) => rank(a) - rank(b))[0] || null;
+// Voice choice. Edge ships Microsoft's neural "Natural" voices; the
+// Multilingual ones (Ava, Andrew, Emma, Brian) sound the most human. A voice
+// the user picks in Settings always wins.
+const VOICE_KEY = "heardVoice";
+function englishVoices() {
+  return ("speechSynthesis" in window ? speechSynthesis.getVoices() : []).filter((v) => /^en(-|_)/i.test(v.lang));
 }
-if ("speechSynthesis" in window) speechSynthesis.onvoiceschanged = () => bestVoice();
+function voiceRank(v) {
+  const n = v.name;
+  if (/multilingual/i.test(n) && /natural/i.test(n)) return 1;
+  if (/natural/i.test(n) && /en-us/i.test(v.lang)) return 2;
+  if (/natural/i.test(n)) return 3;
+  if (/google us english/i.test(n)) return 4;
+  if (/samantha|aria|jenny|guy|allison|ava/i.test(n)) return 5;
+  if (/en-us/i.test(v.lang)) return 6;
+  return 7;
+}
+function bestVoice() {
+  const vs = englishVoices();
+  const saved = localStorage.getItem(VOICE_KEY);
+  return vs.find((v) => v.name === saved) || vs.sort((a, b) => voiceRank(a) - voiceRank(b))[0] || null;
+}
+if ("speechSynthesis" in window) speechSynthesis.onvoiceschanged = () => { bestVoice(); fillVoicePicker(); };
 
-function sayAloud(text) {
-  return new Promise((resolve) => {
-    if (!("speechSynthesis" in window) || !text) return resolve();
-    speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text);
-    const v = bestVoice(); if (v) u.voice = v;
-    u.rate = 1.0; u.onend = resolve; u.onerror = resolve;
-    speechSynthesis.speak(u);
+// Speaking like a person: sentence by sentence, with short pauses between
+// sentences and longer ones between paragraphs, at a slightly unhurried pace.
+// (Chunking also avoids Chrome cutting off long utterances.)
+let SPEAK_TOKEN = 0;
+function stopSpeaking() { SPEAK_TOKEN++; if ("speechSynthesis" in window) speechSynthesis.cancel(); }
+function chunks(text) {
+  const out = [];
+  String(text || "").split(/\n\s*\n|\n/).map((p) => p.trim()).filter(Boolean).forEach((para, pi) => {
+    const sents = para.match(/[^.!?…]+[.!?…]+["”’)\]]*|[^.!?…]+$/g) || [para];
+    sents.map((x) => x.trim()).filter(Boolean).forEach((x, si) => out.push({ text: x, pause: si === 0 && pi > 0 ? 450 : 170 }));
   });
+  return out;
+}
+function sayAloud(text) {
+  return new Promise(async (resolve) => {
+    if (!("speechSynthesis" in window) || !text) return resolve();
+    stopSpeaking();
+    const token = SPEAK_TOKEN;
+    const v = bestVoice();
+    for (const c of chunks(text)) {
+      if (token !== SPEAK_TOKEN) return resolve();
+      await new Promise((r) => setTimeout(r, c.pause));
+      await new Promise((r) => {
+        const u = new SpeechSynthesisUtterance(c.text);
+        if (v) { u.voice = v; u.lang = v.lang; }
+        u.rate = 0.96; u.pitch = 1.0;
+        u.onend = r; u.onerror = r;
+        speechSynthesis.speak(u);
+      });
+    }
+    resolve();
+  });
+}
+
+// "Psalms 23:4" -> "Psalm 23, verse 4"; "I Corinthians 10:13" -> "First Corinthians, chapter 10, verse 13"
+function spokenRef(ref) {
+  const m = String(ref).match(/^(.*?)\s+(\d+):(\d+)/);
+  if (!m) return ref;
+  let book = m[1].replace(/^III\s/, "Third ").replace(/^II\s/, "Second ").replace(/^I\s/, "First ")
+    .replace(/^3\s/, "Third ").replace(/^2\s/, "Second ").replace(/^1\s/, "First ")
+    .replace(/^Revelation of John$/, "Revelation");
+  if (/^Psalms?$/.test(book)) return `Psalm ${m[2]}, verse ${m[3]}`;
+  return `${book}, chapter ${m[2]}, verse ${m[3]}`;
+}
+// What Heard says aloud for one reply: the reflection, then verses introduced
+// the way a friend would share them.
+function speechFor(content, verses) {
+  const parts = [content];
+  (verses || []).forEach((v, i) => {
+    parts.push(`${i === 0 ? "Here's a verse for you" : "And this one"}, from ${spokenRef(v.ref)}.`);
+    parts.push(v.text.replace(/[“”]/g, '"'));
+  });
+  return parts.filter(Boolean).join("\n\n");
+}
+
+// Settings: choose a voice and hear it.
+function fillVoicePicker() {
+  const sel = document.getElementById("voicePick");
+  if (!sel) return;
+  const vs = englishVoices().sort((a, b) => voiceRank(a) - voiceRank(b));
+  const cur = bestVoice()?.name;
+  sel.innerHTML = vs.map((v) => `<option value="${esc(v.name)}" ${v.name === cur ? "selected" : ""}>${esc(v.name)}${voiceRank(v) <= 3 ? " ★ natural" : ""}</option>`).join("")
+    || `<option>No voices available in this browser</option>`;
+}
+function pickVoice(name) { localStorage.setItem(VOICE_KEY, name); }
+function previewVoice() {
+  const sel = document.getElementById("voicePick");
+  if (sel?.value) pickVoice(sel.value);
+  sayAloud("Hi, I'm Heard. Whatever you're carrying today, you don't have to carry it alone.\n\nTell me what's on your heart.");
 }
 function listenOnce() {
   // Resolves with what was said, ending automatically at a natural pause.
@@ -785,7 +860,7 @@ async function voiceLoop() {
 function stopVoice() {
   if (!VOICE) return;
   try { VOICE.rec?.abort(); } catch { /* already stopped */ }
-  speechSynthesis.cancel();
+  stopSpeaking();
   const v = VOICE; VOICE = null; v.onStop?.();
 }
 
@@ -809,7 +884,7 @@ function toggleTalkVoice() {
       if (x.mode === "crisis") {
         return { stop: true, text: `${x.headline || ""} ${last.content} ${(x.resources || []).map((r) => r.name + ". " + r.contact + ".").join(" ")}` };
       }
-      return { text: [last.content, ...(x.verses || []).map((v) => `${v.text} ${v.ref}.`)].join(" ") };
+      return { text: speechFor(last.content, x.verses) };
     },
     onStop: () => { btn.classList.remove("rec"); btn.textContent = "🎧 Voice mode"; st.textContent = "Enter to send · Shift+Enter for a new line"; },
   };
