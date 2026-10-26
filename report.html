@@ -16,7 +16,7 @@ tr.ok td:last-child{color:var(--ok);font-weight:600}tr.bad td:last-child{color:v
 .warn{background:#f6e1de;border-left:4px solid var(--bad);padding:12px 16px;border-radius:0 10px 10px 0;font-size:14.5px;margin:14px 0}
 figure{display:inline-block;vertical-align:top;width:48.5%;margin:12px 0.5%;text-align:center}figure img{width:100%;border:1px solid var(--line);border-radius:10px}
 figcaption{font:13px sans-serif;color:var(--muted);margin-top:6px}svg{width:100%;height:auto;margin:10px 0}
-code{font-size:.9em;background:var(--soft);padding:1px 5px;border-radius:4px}.missing{color:var(--bad)}
+blockquote{margin:12px 0;padding:10px 18px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 10px 10px 0;font-style:italic}code{font-size:.9em;background:var(--soft);padding:1px 5px;border-radius:4px}.missing{color:var(--bad)}
 @media print{body{font-size:14px;line-height:1.6}main{padding:0 6px}h1{font-size:1.9rem}h2{font-size:1.25rem;margin:1.4em 0 .4em;page-break-after:avoid}h3{margin:1em 0 .3em}table{font-size:12px;margin:10px 0 14px}th,td{padding:5px 7px}.kpi{padding:8px 10px}.kpi b{font-size:1.3rem}figure,table,.kpis,.note,.warn{page-break-inside:avoid}figcaption{font-size:10.5px}svg{max-height:300px}}
 </style></head><body><main>
 <header>
@@ -28,11 +28,29 @@ Slides: <code>slides.html</code> · Run locally: see README (about 3 minutes)</p
 </header>
 
 <h2>1. Motivation</h2>
-<p>In the author's words, from her first description of the idea: <i>"the world is crazy and we are tempted to break
-the morals and values others don't follow. I want to build an app to hear from the Christian perspective on how to
-combat the sins in our lives and stand strong with what we believe in."</i></p>
-<p>She asked for Bible verses, plain-language advice, perspectives from different denominations, and a way to connect
-with other Christians for community or to talk when needed.</p>
+<p>Heard began with the author's own experience. In her words:</p>
+<blockquote>"I am someone who has struggled a lot with keeping to my values and morals, even if they aren't seen as
+important to others. Especially in the MBA there is a lot of temptation to follow the majority opinion or cross
+boundaries that had previously been firm for myself."</blockquote>
+<p>She built it <i>"to help myself and others have a resource to turn to when life is busy, your religious community is
+bleak, and when you need someone to listen without judging."</i></p>
+
+<h3>Who it is for</h3>
+<p><i>"Anyone who is struggling with their bad decisions, or decisions they have yet to make, or decisions that they
+have no power in."</i></p>
+
+<h3>Why "Heard"</h3>
+<p><i>"At the end of the day, people need to be heard for their true strifes and get real advice from a biblical rather
+than worldly perspective."</i></p>
+
+<h3>What is missing today</h3>
+<p>From her own search for this kind of help: <i>"There is no AI that tailors the content based on niche beliefs and
+values. The only apps out there offer general evangelical or highly specialized content. There isn't an adaptable app
+for each person's own journey and values."</i> Section 2 tests this against two well-known apps and a plain chatbot.</p>
+
+<p>From the start she asked for Bible verses, plain-language advice, perspectives from different denominations, and a
+way to connect with other Christians for community or to talk when needed.</p>
+<p class="meta">Quotations are the author's own words, lightly edited for spelling.</p>
 
 <h2>2. What is new</h2>
 <p>The claim here is narrow. We compared Heard with two well-known faith apps and with a plain chatbot prompt;
