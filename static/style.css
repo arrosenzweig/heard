@@ -247,3 +247,43 @@ a.btnlink.primary{background:var(--accent);color:#fff}a.btnlink.ghost{border:1px
 .soshome b{display:block;font:600 1.15rem Fraunces,serif}.soshome .sub{color:rgba(255,255,255,.85);margin:0;font-size:.85rem}
 .soshome .sosdot{width:14px;height:14px;flex:none}
 .sosbtn.onhome{display:none}
+
+/* ------------------------------------------------------------ awareness */
+.aw-hero{position:relative;overflow:hidden;border-radius:24px;padding:34px 30px 24px;margin-bottom:18px;color:#fff;
+  background:radial-gradient(circle at 85% 15%,rgba(255,255,255,.18),transparent 45%),linear-gradient(135deg,#5b3a1c 0%,#8a5a2b 45%,#b8892f 100%);
+  box-shadow:0 14px 40px rgba(91,58,28,.35)}
+.aw-hero::after{content:"";position:absolute;right:-60px;bottom:-60px;width:220px;height:220px;border-radius:50%;border:1px solid rgba(255,255,255,.18)}
+.aw-hero .eyebrow{font:600 .72rem Inter;letter-spacing:.14em;text-transform:uppercase;opacity:.8}
+.aw-hero h1{font:600 2.3rem/1.1 Fraunces,serif;margin:8px 0 10px;color:#fff}
+.aw-hero .essence{font:italic 1.12rem/1.55 Fraunces,serif;max-width:620px;margin:0 0 16px;opacity:.95}
+.aw-meta{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:.82rem;opacity:.85}
+.aw-actions{margin-top:14px}
+.ghost.light{color:#fff;border-color:rgba(255,255,255,.45)}.ghost.light:hover{background:rgba(255,255,255,.12)}
+.disclaimer{font-size:.76rem;opacity:.75;margin:14px 0 0}
+.eyebrow{font:600 .72rem Inter;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+.card.shift{border-left:4px solid var(--gold)}.card.shift p{margin:6px 0 0;font:italic 1.02rem Fraunces,serif}
+.spectrum{padding:12px 0;border-top:1px solid var(--line)}.spectrum:first-of-type{border-top:0}
+.spectrum .ends{display:flex;justify-content:space-between;gap:20px;font:600 .86rem Inter}
+.spectrum .ends span:last-child{text-align:right}
+.spectrum .track{position:relative;height:8px;border-radius:8px;margin:10px 0 8px;background:linear-gradient(90deg,#e3ece3,#f1e4d3,#f6e1de)}
+.spectrum .dot{position:absolute;top:50%;width:18px;height:18px;border-radius:50%;background:var(--accent);border:3px solid #fff;
+  box-shadow:0 1px 4px rgba(0,0,0,.25);transform:translate(-50%,-50%)}
+.spectrum p{margin:0;font-size:.92rem;color:var(--muted)}
+.based{display:inline-block;margin-top:6px;font-size:.72rem;color:var(--muted);background:#f3efe8;border-radius:999px;padding:2px 9px}
+.aw-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-bottom:18px}
+.aw-h{font:600 .78rem Inter;letter-spacing:.12em;text-transform:uppercase;margin:0 0 8px}
+.aw-h.strength{color:var(--sage)}.aw-h.struggle{color:var(--rose)}.aw-h.pitfall{color:#8a6a1f}
+.awcard{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:10px;box-shadow:var(--shadow);border-top:4px solid}
+.awcard.strength{border-top-color:var(--sage)}.awcard.struggle{border-top-color:var(--rose)}.awcard.pitfall{border-top-color:var(--gold)}
+.awcard h4{font:600 1.02rem Fraunces,serif;margin:0 0 6px}.awcard p{margin:0;font-size:.92rem}
+.practice{display:flex;gap:14px;padding:14px 0;border-top:1px solid var(--line)}.practice:first-of-type{border-top:0}
+.practice .pcheck{flex:none;width:36px;height:36px;border-radius:50%;padding:0;border:2px solid var(--accent);background:#fff;color:var(--accent);font:600 .95rem Fraunces,serif}
+.practice.doing .pcheck{background:var(--sage);border-color:var(--sage);color:#fff}
+.practice h4{font:600 1rem Fraunces,serif;margin:2px 0 4px}.practice p{margin:0 0 4px;font-size:.93rem}
+.practice .why{color:var(--muted);font-size:.86rem}
+.practice .doing-label{display:none;font-size:.78rem;font-weight:600;color:var(--sage)}.practice.doing .doing-label{display:inline}
+.aw-trends{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.aw-loading{text-align:center;padding:60px 20px;color:var(--muted)}.aw-loading .mark{margin:0 auto 12px}
+.shimmer{height:14px;border-radius:8px;margin:10px auto;max-width:420px;background:linear-gradient(90deg,#efe8dc 25%,#f8f3ea 50%,#efe8dc 75%);background-size:200% 100%;animation:shim 1.4s infinite}
+.shimmer.short{max-width:260px}
+@keyframes shim{0%{background-position:200% 0}100%{background-position:-200% 0}}

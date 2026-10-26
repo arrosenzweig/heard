@@ -13,7 +13,7 @@ import config
 import llm
 import store
 from agents import beliefs as beliefs_agent
-from agents import accountability, matcher, pipeline, retrieval, triage, verifier
+from agents import accountability, awareness, matcher, pipeline, retrieval, triage, verifier
 
 app = Flask(__name__)
 # Dev-only session secret. A deployed instance must set HEARD_SECRET.
@@ -419,6 +419,44 @@ def chat_send():
     })
     result["entry_id"], result["run_id"], result["trace"] = eid, rid, trace
     return jsonify(result)
+
+
+# ---------------------------------------------------------------- awareness
+AWARENESS_REFRESH_AFTER = 2   # new conversations/check-ins before it rebuilds itself
+
+
+def _activity(basis):
+    try:
+        e, c = basis.split(":")[:2]
+        return int(e) + int(c)
+    except (AttributeError, ValueError):
+        return 0
+
+
+@app.route("/api/awareness", methods=["GET", "POST"])
+def awareness_view():
+    """The user's reflective profile. Rebuilt when enough new history has
+    accumulated (or on request); otherwise served from cache at no cost."""
+    p, err = require_profile()
+    if err:
+        return err
+    prof = dict(p)
+    prof["tradition"] = _as_list(p.get("tradition"))
+    now_basis = awareness.basis(prof)
+    old_basis, cached, created = store.get_awareness(p["id"])
+    force = request.method == "POST"
+    new_items = _activity(now_basis) - _activity(old_basis) if old_basis else None
+    stale = cached is None or (new_items is not None and new_items >= AWARENESS_REFRESH_AFTER)         or (cached.get("starter") and new_items and new_items > 0)
+    rebuilt = False
+    if force or stale:
+        tr = llm.Trace(label="awareness")
+        cached = awareness.build(prof, previous=cached, trace=tr)
+        store.save_awareness(p["id"], now_basis, cached)
+        store.save_run(p["id"], None, "awareness", tr.summary())
+        rebuilt, new_items = True, 0
+    cached = dict(cached, trends=awareness.trends(p["id"]), rebuilt=rebuilt,
+                  new_since=new_items or 0, refresh_after=AWARENESS_REFRESH_AFTER)
+    return jsonify(cached)
 
 
 # ---------------------------------------------------------------------- SOS

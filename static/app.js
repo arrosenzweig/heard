@@ -91,6 +91,7 @@ function go(tab) {
   $$("nav button").forEach((b) => b.classList.toggle("on", b.dataset.tab === tab));
   $$(".tab").forEach((s) => s.classList.toggle("on", s.id === tab));
   if (tab === "checkins") loadCheckins();
+  if (tab === "awareness") loadAwareness();
   if (tab === "fellowship") goSub(SUB);
   if (tab === "churches") loadChurches();
   if (tab === "listing") renderListing();
@@ -1182,6 +1183,79 @@ async function sendSOS() {
   closeSOS(); go("talk");
   $("#chatText").value = text;
   await sendChat({ sos: true });
+}
+
+
+// ============================================================= AWARENESS
+// A reflection built from what the user has shared. Every card is backed by
+// their own history (the server drops anything it can't support), stays free
+// of names and specifics, and refreshes as new conversations come in.
+const PRACTICE_KEY = "heardPractices";
+const practicing = () => JSON.parse(localStorage.getItem(PRACTICE_KEY) || "{}");
+function togglePractice(key, el) {
+  const p = practicing(); p[key] = !p[key]; localStorage.setItem(PRACTICE_KEY, JSON.stringify(p));
+  el.closest(".practice").classList.toggle("doing", p[key]);
+}
+const ago = (t) => {
+  const m = Math.round((Date.now() / 1000 - t) / 60);
+  return m < 1 ? "just now" : m < 60 ? `${m} min ago` : m < 1440 ? `${Math.round(m / 60)} h ago` : `${Math.round(m / 1440)} days ago`;
+};
+async function loadAwareness(force = false) {
+  const box = $("#awBody");
+  box.innerHTML = `<div class="aw-loading"><span class="mark big">H</span><p>Reflecting on what you've shared…</p><div class="shimmer"></div><div class="shimmer short"></div></div>`;
+  let a;
+  try { a = await api("/api/awareness", force ? {} : undefined); }
+  catch (e) { box.innerHTML = `<div class="card"><p class="warn">Couldn't build your reflection right now (${esc(e.message)}). Try again in a moment.</p></div>`; return; }
+  renderAwareness(a);
+}
+function evid(n) { return n ? `<span class="based">based on ${n} ${n === 1 ? "moment" : "moments"} you shared</span>` : ""; }
+function renderAwareness(a) {
+  const c = a.counts || {};
+  const done = practicing();
+  const spectrum = (s) => `<div class="spectrum">
+      <div class="ends"><span>${esc(s.left)}</span><span>${esc(s.right)}</span></div>
+      <div class="track"><div class="dot" style="left:${s.position}%"></div></div>
+      <p>${esc(s.note || "")}</p>${evid(s.based_on)}</div>`;
+  const cards = (list, cls) => list.map((x) => `<div class="awcard ${cls}"><h4>${esc(x.title)}</h4><p>${esc(x.detail)}</p>${evid(x.based_on)}</div>`).join("")
+    || `<p class="sub">Not enough yet. This fills in as you talk with Heard.</p>`;
+  $("#awBody").innerHTML = `
+  <div class="aw-hero">
+    <div class="eyebrow">Your reflection</div>
+    <h1>${esc(a.title)}</h1>
+    ${a.essence ? `<p class="essence">${esc(a.essence)}</p>` : ""}
+    <div class="aw-meta">
+      <span>${c.conversations || 0} conversations · ${c.checkins || 0} check-ins · ${c.commitments || 0} commitments</span>
+      <span>Updated ${ago(a.generated)}</span>
+    </div>
+    <div class="row aw-actions">
+      <button class="ghost small light" onclick="loadAwareness(true)">↻ Refresh my reflection</button>
+      <button class="ghost small light" onclick='sayAloud(${JSON.stringify(`${a.title}. ${a.essence || ""}`).replace(/'/g, "&#39;")})'>🔊 Read it to me</button>
+    </div>
+    <p class="disclaimer">A reflection from your conversations, not a diagnosis or a personality test. It updates as you keep talking with Heard${a.new_since ? ` (${a.new_since} new since this version; it refreshes after ${a.refresh_after})` : ""}.</p>
+  </div>
+
+  ${a.starter ? `<div class="card notice"><p><b>This is a starter reflection</b>, built from your setup answers. Talk with Heard and do a few check-ins, and it will become much more personal.</p></div>` : ""}
+  ${a.changed ? `<div class="card shift"><span class="eyebrow">What's shifted</span><p>${esc(a.changed)}</p></div>` : ""}
+
+  ${a.spectra?.length ? `<div class="card"><h2>How you tend to move</h2><p class="sub">Where you are right now, not where you have to stay.</p>${a.spectra.map(spectrum).join("")}</div>` : ""}
+
+  <div class="aw-grid">
+    <div><h3 class="aw-h strength">Strengths</h3>${cards(a.strengths || [], "strength")}</div>
+    <div><h3 class="aw-h struggle">Struggles</h3>${cards(a.struggles || [], "struggle")}</div>
+    <div><h3 class="aw-h pitfall">Common pitfalls</h3>${cards(a.pitfalls || [], "pitfall")}</div>
+  </div>
+
+  ${a.practices?.length ? `<div class="card"><h2>Practices for this season</h2><p class="sub">Tap one you're committing to. Heard will remember.</p>
+    ${a.practices.map((p, i) => { const key = p.title; return `<div class="practice ${done[key] ? "doing" : ""}">
+      <button class="pcheck" onclick='togglePractice(${JSON.stringify(key).replace(/'/g, "&#39;")}, this)' aria-label="I'm practicing this">${i + 1}</button>
+      <div><h4>${esc(p.title)}</h4><p>${esc(p.detail)}</p>${p.why ? `<p class="why">${esc(p.why)}</p>` : ""}<span class="doing-label">✓ Practicing</span></div></div>`; }).join("")}</div>` : ""}
+
+  ${a.verses?.length ? `<div class="card"><h2>Scripture to carry</h2><p class="sub">For what you're fighting, from the text itself.</p>
+    ${a.verses.map((v) => `<div class="verse"><q>${esc(v.text)}</q><div class="ref">${esc(v.ref)} · ${esc(v.translation)} · for ${esc(pretty(v.for_theme))}</div></div>`).join("")}</div>` : ""}
+
+  ${a.trends?.length ? `<div class="card"><h2>Your progress</h2><p class="sub">From your check-ins.</p>
+    <div class="aw-trends">${a.trends.map((t) => `<div><b>${esc(t.label)}</b>${spark(t.points.map((p) => ({ pull: p.pull, trend: p.trend, t: p.t })))}</div>`).join("")}</div></div>` : ""}
+  `;
 }
 
 if ("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").catch(() => {});

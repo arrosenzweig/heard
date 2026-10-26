@@ -71,6 +71,9 @@ CREATE TABLE IF NOT EXISTS checkin (
   pull INTEGER, acted TEXT, direction TEXT, note TEXT,
   trend TEXT, reply TEXT, used_model INTEGER DEFAULT 0, created REAL
 );
+CREATE TABLE IF NOT EXISTS awareness (
+  profile_id TEXT PRIMARY KEY, basis TEXT, payload TEXT, created REAL
+);
 CREATE TABLE IF NOT EXISTS checkin_prompt (
   profile_id TEXT, theme TEXT, basis TEXT, payload TEXT, created REAL,
   PRIMARY KEY (profile_id, theme, basis)
@@ -402,3 +405,16 @@ def save_checkin_prompt(profile_id, theme, basis, payload):
     with db() as c:
         c.execute("INSERT OR REPLACE INTO checkin_prompt VALUES (?,?,?,?,?)",
                   (profile_id, theme, basis, json.dumps(payload), time.time()))
+
+
+# ------------------------------------------------------------- awareness
+def get_awareness(profile_id):
+    with db() as c:
+        r = c.execute("SELECT basis, payload, created FROM awareness WHERE profile_id=?", (profile_id,)).fetchone()
+    return (r["basis"], json.loads(r["payload"]), r["created"]) if r else (None, None, None)
+
+
+def save_awareness(profile_id, basis, payload):
+    with db() as c:
+        c.execute("INSERT OR REPLACE INTO awareness VALUES (?,?,?,?)",
+                  (profile_id, basis, json.dumps(payload), time.time()))
