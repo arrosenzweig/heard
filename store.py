@@ -71,6 +71,10 @@ CREATE TABLE IF NOT EXISTS checkin (
   pull INTEGER, acted TEXT, direction TEXT, note TEXT,
   trend TEXT, reply TEXT, used_model INTEGER DEFAULT 0, created REAL
 );
+CREATE TABLE IF NOT EXISTS feedback (
+  id TEXT PRIMARY KEY, profile_id TEXT, understood INTEGER, would_use INTEGER,
+  loving INTEGER, comment TEXT, quote_ok INTEGER DEFAULT 0, created REAL
+);
 CREATE TABLE IF NOT EXISTS awareness (
   profile_id TEXT PRIMARY KEY, basis TEXT, payload TEXT, created REAL
 );
@@ -418,3 +422,17 @@ def save_awareness(profile_id, basis, payload):
     with db() as c:
         c.execute("INSERT OR REPLACE INTO awareness VALUES (?,?,?,?)",
                   (profile_id, basis, json.dumps(payload), time.time()))
+
+
+# -------------------------------------------------------------- feedback
+def add_feedback(profile_id, understood, would_use, loving, comment, quote_ok):
+    fid = nid()
+    with db() as c:
+        c.execute("INSERT INTO feedback VALUES (?,?,?,?,?,?,?,?)",
+                  (fid, profile_id, understood, would_use, loving, comment, 1 if quote_ok else 0, time.time()))
+    return fid
+
+
+def has_feedback(profile_id):
+    with db() as c:
+        return c.execute("SELECT 1 FROM feedback WHERE profile_id=? LIMIT 1", (profile_id,)).fetchone() is not None

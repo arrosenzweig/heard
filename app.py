@@ -421,6 +421,31 @@ def chat_send():
     return jsonify(result)
 
 
+# ----------------------------------------------------------------- feedback
+@app.route("/api/feedback", methods=["GET", "POST"])
+def feedback():
+    """Three 1-5 ratings and an optional comment. A comment may appear in the
+    project report only if the person ticked "OK to quote anonymously"."""
+    p, err = require_profile()
+    if err:
+        return err
+    if request.method == "GET":
+        return jsonify({"given": store.has_feedback(p["id"])})
+    d = request.get_json(force=True) or {}
+
+    def rating(k):
+        try:
+            v = int(d.get(k))
+        except (TypeError, ValueError):
+            return None
+        return v if 1 <= v <= 5 else None
+    vals = [rating(k) for k in ("understood", "would_use", "loving")]
+    if None in vals:
+        return jsonify({"error": "ratings_required"}), 400
+    store.add_feedback(p["id"], *vals, (d.get("comment") or "").strip()[:800], bool(d.get("quote_ok")))
+    return jsonify({"ok": True})
+
+
 # ---------------------------------------------------------------- awareness
 AWARENESS_REFRESH_AFTER = 2   # new conversations/check-ins before it rebuilds itself
 

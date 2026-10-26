@@ -90,6 +90,7 @@ function go(tab) {
   $("#sosBtn")?.classList.toggle("onhome", tab === "talk");
   $$("nav button").forEach((b) => b.classList.toggle("on", b.dataset.tab === tab));
   $$(".tab").forEach((s) => s.classList.toggle("on", s.id === tab));
+  if (tab === "talk") maybeAskFeedback();
   if (tab === "checkins") loadCheckins();
   if (tab === "awareness") loadAwareness();
   if (tab === "fellowship") goSub(SUB);
@@ -165,7 +166,7 @@ async function boot() {
   else {
     applyMode();
     if (isPerson()) {
-      await loadChat(); refreshDue();
+      await loadChat(); refreshDue(); maybeAskFeedback();
       // Opened from the home-screen SOS shortcut: go straight in.
       if (new URLSearchParams(location.search).get("sos")) { history.replaceState(null, "", "/"); openSOS(); }
     }
@@ -541,6 +542,7 @@ async function sendChat(opts = {}) {
     $("#traceBox").textContent = showTrace(LAST.trace);
     await loadChat();
     refreshDue();
+    maybeAskFeedback();
   } catch (e) {
     t.insertAdjacentHTML("beforeend", `<div class="bubble them"><p class="warn">Something went wrong reaching Heard (${esc(e.message)}). Your message wasn't lost; try again.</p></div>`);
     ta.value = text;
@@ -1282,6 +1284,47 @@ function renderAwareness(a) {
   ${a.trends?.length ? `<div class="card"><h2>Your progress</h2><p class="sub">From your check-ins.</p>
     <div class="aw-trends">${a.trends.map((t) => `<div><b>${esc(t.label)}</b>${spark(t.points.map((p) => ({ pull: p.pull, trend: p.trend, t: p.t })))}</div>`).join("")}</div></div>` : ""}
   `;
+}
+
+
+// ============================================================= FEEDBACK
+// Real-user evidence for the project report: three 1-5 ratings and an optional
+// comment that is quoted only if the person ticks "OK to quote anonymously".
+const FB_Q = [["understood", "Heard understood me and my faith"],
+              ["would_use", "I'd open Heard in a hard moment"],
+              ["loving", "The advice felt honest and loving"]];
+async function maybeAskFeedback() {
+  if (!isPerson() || !PROFILE?.onboarded) return;
+  if (localStorage.getItem("heardFbHide_" + PROFILE.id)) return;
+  if (!$$("#thread .bubble.them").length) return;
+  try { if ((await api("/api/feedback")).given) return; } catch { return; }
+  showFeedback(false);
+}
+function showFeedback(fromSettings) {
+  if (fromSettings) go("talk");
+  const c = $("#fbCard");
+  c.innerHTML = `<div class="row" style="margin:0"><b>How is Heard so far? (30 seconds)</b><span class="spacer"></span>
+      <button class="ghost small" onclick="hideFeedback()">Not now</button></div>
+    ${FB_Q.map(([k, q]) => `<div class="fbq"><span>${esc(q)}</span><div class="chips" data-fb="${k}">${[1, 2, 3, 4, 5].map((n) =>
+      `<span class="chip" data-id="${n}">${n}</span>`).join("")}</div></div>`).join("")}
+    <p class="sub tiny">1 = not at all · 5 = completely</p>
+    <div class="field"><textarea id="fbComment" rows="2" placeholder="Anything else? (optional)"></textarea></div>
+    <label class="check"><input type="checkbox" id="fbQuote"> OK to quote my comment anonymously in the project report</label>
+    <div class="row"><span class="spacer"></span><button class="primary small" onclick="sendFeedback()">Send feedback</button></div>`;
+  $$(".chips[data-fb]", c).forEach((g) => $$(".chip", g).forEach((ch) => (ch.onclick = () => {
+    $$(".chip", g).forEach((x) => x.classList.remove("on")); ch.classList.add("on");
+  })));
+  c.classList.remove("hidden");
+  window.scrollTo({ top: 0 });
+}
+function hideFeedback() { localStorage.setItem("heardFbHide_" + PROFILE.id, "1"); $("#fbCard").classList.add("hidden"); }
+async function sendFeedback() {
+  const body = { comment: $("#fbComment").value, quote_ok: $("#fbQuote").checked };
+  for (const [k] of FB_Q) body[k] = +($(`#fbCard .chips[data-fb="${k}"] .chip.on`)?.dataset.id || 0);
+  if (FB_Q.some(([k]) => !body[k])) { alert("Please rate all three."); return; }
+  await api("/api/feedback", body);
+  $("#fbCard").innerHTML = `<p class="ok" style="margin:0">Thank you. This helps.</p>`;
+  setTimeout(() => $("#fbCard").classList.add("hidden"), 2200);
 }
 
 if ("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").catch(() => {});

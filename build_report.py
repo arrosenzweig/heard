@@ -69,11 +69,20 @@ with store.db() as _c:
                      "SELECT trend, COUNT(*) n FROM checkin WHERE 0 GROUP BY trend",
                      list(REAL_IDS)).fetchall()
 runs = store.all_runs(5000)
-real_runs = [r for r in runs if r["profile_id"] in REAL_IDS and r["label"] in ("entry", "chat")]
+real_runs = [r for r in runs if r["profile_id"] in REAL_IDS and r["label"] in ("entry", "chat", "sos")]
+real_sos = sum(1 for r in runs if r["profile_id"] in REAL_IDS and r["label"] == "sos")
 _ocd = {r["result"]: r["n"] for r in _oc}
 _tot = sum(_ocd.values())
 outcome = {"counts": _ocd, "total": _tot, "held_rate": (_ocd.get("held", 0) / _tot) if _tot else None}
 checkin_counts = {r["trend"]: r["n"] for r in _ck}
+with store.db() as _c:
+    _fb = _c.execute("SELECT understood, would_use, loving, comment, quote_ok FROM feedback WHERE profile_id IN (%s)"
+                     % ",".join("?" * len(REAL_IDS)) if REAL_IDS else
+                     "SELECT understood, would_use, loving, comment, quote_ok FROM feedback WHERE 0",
+                     list(REAL_IDS)).fetchall()
+FB_N = len(_fb)
+FB_AVG = {k: (sum(r[k] for r in _fb) / FB_N if FB_N else None) for k in ("understood", "would_use", "loving")}
+FB_QUOTES = [r["comment"] for r in _fb if r["quote_ok"] and (r["comment"] or "").strip()]
 n_real_users = len(REAL_IDS)
 
 # One traced run, taken verbatim from the database rather than written by hand:
@@ -352,6 +361,19 @@ def scale_rows():
     return "\n".join(rows)
 
 
+def feedback_html():
+    if not FB_N:
+        return "<p><b>User ratings:</b> none collected yet.</p>"
+    fmt = lambda v: f"{v:.1f}" if v is not None else "n/a"
+    quotes = "".join(f"<blockquote>{E(q)}</blockquote>" for q in FB_QUOTES[:4])
+    return (f"<h3>What testers said ({FB_N} response{'s' if FB_N != 1 else ''}, 1-5 scale)</h3>"
+            f"<div class='kpis'><div class='kpi'><b>{fmt(FB_AVG['understood'])}</b><span>Heard understood me and my faith</span></div>"
+            f"<div class='kpi'><b>{fmt(FB_AVG['would_use'])}</b><span>I'd open Heard in a hard moment</span></div>"
+            f"<div class='kpi'><b>{fmt(FB_AVG['loving'])}</b><span>The advice felt honest and loving</span></div></div>"
+            + (f"<p class='meta'>Comments testers agreed to have quoted anonymously:</p>{quotes}" if quotes else "")
+            + "<p class='meta'>Collected in the app from real users after their first reply; a small, self-selected sample.</p>")
+
+
 def part_c_rows():
     return "\n".join(f"<tr class='{'ok' if c['pass'] else 'bad'}'><td>{E(c['label'])}</td><td>{E(c['detail'])}</td>"
                      f"<td>{'pass' if c['pass'] else 'FAIL'}</td></tr>" for c in PART_C)
@@ -515,7 +537,9 @@ access the full text. One study is not proof; we cite it as a reason the mechani
 <div class="kpi"><b>{n_real_users}</b><span>real users so far</span></div>
 <div class="kpi"><b>{len(real_runs)}</b><span>real messages</span></div>
 <div class="kpi"><b>{sum(checkin_counts.values())}</b><span>real check-ins</span></div>
+<div class="kpi"><b>{real_sos}</b><span>real SOS uses</span></div>
 </div>
+{feedback_html()}
 <div class="note">All activity from building and testing, including the demo user and demo people and churches, is marked as
 test data and excluded. These counts include only genuine use. A credible impact claim needs a consenting pilot with a church
 or campus ministry, measuring commitments held and check-in trends over several weeks.</div>
@@ -608,7 +632,7 @@ SLIDES = [
 
     f"""<section><h2>Impact, limits, next steps</h2><ul>
 <li>Sponsorship predicted early abstinence (Tonigan &amp; Rice, 2010; one study, from summaries)</li>
-<li>{n_real_users} real user(s) so far; next: a consenting church or campus pilot</li>
+<li>{n_real_users} real user(s){f", rating {FB_AVG['would_use']:.1f}/5 'I'd open Heard in a hard moment' (n={FB_N})" if FB_N else ""}; next: a consenting church or campus pilot</li>
 <li>Measure the Claude path · larger safety set · reminders that reach people</li>
 <li>ESV/NASB via publisher APIs · semantic retrieval · real moderation</li></ul>
 <p class="repoline">Code (public): <a href="{REPO}">{REPO}</a></p></section>""",

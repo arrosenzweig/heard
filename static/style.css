@@ -289,3 +289,7 @@ a.btnlink.primary{background:var(--accent);color:#fff}a.btnlink.ghost{border:1px
 @keyframes shim{0%{background-position:200% 0}100%{background-position:-200% 0}}
 
 .contactbtns{display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap}
+
+.fbcard{border:2px solid var(--gold)}
+.fbq{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:10px 0 0}
+.fbq span:first-child{font-size:.95rem}.fbq .chip{min-width:34px;text-align:center}
