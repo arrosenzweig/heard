@@ -2,7 +2,10 @@
 
 > *"I don't understand, but I want to understand. That's why I need you God."*
 
-Heard is a companion for the moment you are tempted to abandon what you believe. You tell it what is pulling at you; it answers from inside **your own** Christian tradition, using **only the text of the Bible**, checks every verse it quotes against the real text, and connects you with someone who has **come through the same struggle**, the way a sponsor walks with someone in recovery.
+Heard is a Christian companion app. After a one-time setup about the user's tradition and beliefs, it offers a chat
+for hard questions that answers using **only the text of the Bible** and checks every verse it quotes, check-ins on the
+struggles the user is fighting, a way to connect with people who have **come through the same struggle**, and a
+church finder.
 
 Heard is not a counselor, pastor, or crisis service. When someone describes real danger, it stops and points them to people who can help.
 

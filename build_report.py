@@ -121,12 +121,20 @@ def cost_at(prompt, completion, pin, pout):
     return prompt / 1e6 * pin + completion / 1e6 * pout
 
 
-# Approximate split for scale projections: use real recorded runs if present.
-if real_runs:
-    pr = sum(r["trace"]["prompt_tokens"] for r in real_runs) / len(real_runs)
-    co = sum(r["trace"]["completion_tokens"] for r in real_runs) / len(real_runs)
+# Input/output split for cost: measured from every recorded response that
+# reached counsel (development and demo runs are real API calls, so their token
+# counts are real even though the users are not). Then scaled to the eval mean.
+_measured = [r["trace"] for r in runs if r["label"] in ("entry", "chat")
+             and "counsel" in r["trace"].get("by_agent", {})]
+SPLIT_N = len(_measured)
+if _measured:
+    _pt = sum(t["prompt_tokens"] for t in _measured)
+    _ct = sum(t["completion_tokens"] for t in _measured)
+    INPUT_SHARE = _pt / (_pt + _ct)
 else:
-    pr, co = heard_per_case * 0.55, heard_per_case * 0.45
+    INPUT_SHARE = None
+pr = heard_per_case * (INPUT_SHARE if INPUT_SHARE is not None else 0)
+co = heard_per_case * ((1 - INPUT_SHARE) if INPUT_SHARE is not None else 0)
 
 ENTRIES_PER_USER_MONTH = 20   # ASSUMPTION, stated in the report
 run_cost_luna = cost_at(pr, co, PRICE_IN, PRICE_OUT)
@@ -250,32 +258,25 @@ Slides: <code>slides.html</code> · Run locally: see README (about 3 minutes)</p
 </header>
 
 <h2>1. Motivation</h2>
-<p>The moment that matters for keeping your values is rarely the morning devotional. It is 11pm,
-when everyone around you is doing the thing and you are deciding whether to do it too: fudging the
-expense report because the whole office does, opening the browser tab, sending the message you will
-regret. Most faith tools are built for the calm hours. Heard is built for that moment.</p>
-<p>Someone in that moment needs three things, and a general chatbot gives them at most one:</p>
-<ol>
-<li><b>Scripture they can trust</b>, actually from the Bible, from their own tradition's canon, quoted exactly.</li>
-<li><b>Counsel that respects what they believe</b> rather than flattening every Christian into one generic voice
-or quietly steering them toward someone else's theology.</li>
-<li><b>A human being who has been there</b>, someone who fought the same thing and came through.</li>
-</ol>
-<p>Heard's name is the design principle. Before it advises anyone, it makes sure it has understood them, including
-asking a user to approve its restatement of their own beliefs before using them.</p>
+<p>In the author's words, from her first description of the idea: <i>"the world is crazy and we are tempted to break
+the morals and values others don't follow. I want to build an app to hear from the Christian perspective on how to
+combat the sins in our lives and stand strong with what we believe in."</i></p>
+<p>She asked for Bible verses, plain-language advice, perspectives from different denominations, and a way to connect
+with other Christians for community or to talk when needed.</p>
 
 <h2>2. What is new</h2>
-<p>Faith apps are a crowded space, so the claim here is narrow and specific.</p>
+<p>The claim here is narrow. We compared Heard with two well-known faith apps and with a plain chatbot prompt;
+we did not survey the market more widely.</p>
 <table>
 <tr><th>Product</th><th>What it is built around (from public descriptions)</th></tr>
 <tr><td>Hallow</td><td>Catholic prayer and meditation: guided audio prayer, daily readings, Rosary and Lectio Divina,
 community challenges. Subscription ($9.99/month or $69.99/year in the US).</td></tr>
 <tr><td>YouVersion Bible App</td><td>Free Bible app: many translations, audio Bibles, reading plans, studying with friends.
 A 2026 roundup reports an AI "life-situation" scripture search; we could not confirm this from a second source.</td></tr>
-<tr><td>General chatbots</td><td>Will give Christian advice with verses on request, in one generic voice, with no
-tradition model, no verification step, and no human connection.</td></tr>
+<tr><td>Plain chatbot prompt (our baseline)</td><td>A single prompt asking for Christian advice with verses. It has no
+stored profile of the user's tradition, no verification step, and no way to connect the user with other people.</td></tr>
 </table>
-<p>What Heard does that we did not find described for these products:</p>
+<p>What Heard does that we did not find in the public descriptions of these two apps:</p>
 <ul>
 <li><b>Tradition-conditioned counsel.</b> Users pick one <i>or more</i> of 14 traditions (including "exploring") and may
 state convictions on 14 contested questions. Counsel speaks from inside that frame and never argues them out of it.</li>
@@ -355,8 +356,9 @@ on {E(EVAL_MODEL)}.</p>
 us, so its dollar figures use a <b>placeholder</b> rate (${PRICE_IN}/${PRICE_OUT} per million input/output tokens) and
 are <b>not verified</b>. The Claude rows apply Anthropic's published prices to the token counts measured on luna. That
 is only illustrative: Claude uses a different tokenizer and always-on thinking, so its real token counts must be
-measured, not assumed. The per-user column assumes <b>{ENTRIES_PER_USER_MONTH} entries per user per month</b>, which is
-our assumption, not a measurement.</div>
+measured, not assumed. The input/output split ({(INPUT_SHARE or 0) * 100:.0f}% / {(1 - (INPUT_SHARE or 0)) * 100:.0f}%) is measured from
+{SPLIT_N} recorded responses. The per-user column assumes <b>{ENTRIES_PER_USER_MONTH} entries per user per month</b>,
+which is our assumption, not a measurement.</div>
 <table>
 <tr><th>Pricing basis</th><th>Per run</th><th>Per user / month</th><th>1,000 users</th><th>100,000 users</th><th>Status</th></tr>
 {scale_row("gpt-6-luna (placeholder rate)", run_cost_luna, "unverified rate")}
@@ -374,8 +376,8 @@ Acts 4:20 ("we cannot stop speaking") to Matthew 5:28.</td></tr>
 <tr><td>Check-ins answered by rule unless the user writes something</td><td>A check-in with no note costs <b>0 tokens</b>
 (the trend is computed from the answers). With a note or a "deeper" trend it calls the model{f": {CHECKIN_MODEL_TOKENS:,.0f} tokens on average, measured" if CHECKIN_MODEL_TOKENS else ""}.</td></tr>
 <tr><td>Retrieval depth (verses handed to counsel)</td><td>See the ablation below.</td></tr>
-<tr><td>Raise the counsel token ceiling (a cost <i>increase</i>)</td><td>A 1,400-token ceiling truncated the JSON in about half of test
-cases, which would have shown users a blank response. The ceiling is now 4,000 with one retry. Only tokens actually produced
+<tr><td>Raise the counsel token ceiling (a cost <i>increase</i>)</td><td>With a 1,400-token ceiling, a test response hit the ceiling exactly and came back as
+an empty reply, which a user would have seen as a blank response. The ceiling is now 4,000 with one retry. Only tokens actually produced
 are billed, so the change costs nothing when the model does not need the room.</td></tr>
 </table>
 <table><tr><th>Verses to counsel (k)</th><th>Avg total tokens</th><th>Avg counsel prompt tokens</th><th>Citations shown/claimed</th><th>Avg wall time</th></tr>
@@ -390,10 +392,10 @@ All numbers in this report come from runs with caching forced off.</div>
 <h3>Risks</h3>
 <ul>
 <li><b>Missing a crisis.</b> Someone suicidal, being abused, or describing a child in danger gets a devotional instead of help.</li>
-<li><b>False alarms.</b> A parent who confesses yelling at their kids gets told to call 911 and learns not to be honest with the app.</li>
+<li><b>False alarms.</b> A parent who confesses yelling at their kids is told to call 911, and may stop being honest with the app.</li>
 <li><b>Fabricated scripture.</b> Telling someone God said something God did not say, in the moment they are most inclined to believe it.</li>
 <li><b>Misreading someone's faith.</b> Conditioning every response on a distorted version of what a user believes.</li>
-<li><b>Predatory contact.</b> A list of people who just confessed loneliness or addiction is exactly what a predator would want.</li>
+<li><b>Predatory contact.</b> A list of people who disclosed loneliness or addiction could be misused by someone looking for vulnerable people.</li>
 </ul>
 <h3>Defenses</h3>
 <ul>
@@ -422,9 +424,9 @@ danger get counsel <i>with</i> the resources shown above it. If triage fails twi
 <p><b>Why the matching mechanic matters.</b> Heard's human-connection design borrows from sponsorship in 12-step
 recovery. In a prospective study, Tonigan and Rice found that having an AA sponsor predicted greater abstinence
 during early affiliation, after controlling for motivation and treatment (<i>Psychology of Addictive Behaviors</i>,
-2010, 24(3):397-403, doi:10.1037/a0019013; 182 participants with complete data). The evidence is not settled: a
-review of 18 studies concluded that the benefit specific to having a sponsor is unclear. We cite this as the reason
-the mechanic is worth testing, not as proof that Heard works.</p>
+2010, 24(3):397-403, doi:10.1037/a0019013; 182 participants with complete data). These details come from summaries of the paper; we could not access the
+full text. One study is not proof, and we have not reviewed the wider research. We cite it as a reason the mechanic is
+worth testing, not as evidence that Heard works.</p>
 <h3>Real use</h3>
 <div class="kpis">
 <div class="kpi"><b>{n_real_users}</b><span>real users so far</span></div>
@@ -441,8 +443,8 @@ need a small pilot with consenting users from a church or campus ministry, measu
 <h2>7. Limits and next steps</h2>
 <ul>
 <li><b>Claude path unmeasured.</b> Re-run both evaluations with an Anthropic key before quoting Claude costs or accuracy.</li>
-<li><b>Safety evaluation is small and written.</b> {len(safety.get('part_a', []))} explicit fixtures. Real crisis language is often oblique or coded;
-that is not tested here. Next: a larger set reviewed by someone with crisis-line training.</li>
+<li><b>Safety evaluation is small and written.</b> {len(safety.get('part_a', []))} fixtures, all using explicit language.
+Indirect or coded language is not tested. Next: a larger set reviewed by someone with crisis-line training.</li>
 <li><b>Crisis resources are US-only.</b></li>
 <li><b>Check-ins are in-app only.</b> There are no push notifications, texts or emails yet, so Heard can only ask when the
 user opens it. A real accountability loop needs reminders that reach the user.</li>
@@ -454,7 +456,7 @@ retrieval is the obvious upgrade.</li>
 <li><b>No moderation of user-to-user contact</b> beyond accept, decline and block. A real launch needs reporting, review and identity checks.</li>
 <li><b>Tradition notes are the model's general framing</b>, not drawn from each church's documents, by design (the Bible
 is the only content source). Users of a given tradition should review them.</li>
-<li><b>One user.</b> No pilot yet.</li>
+<li><b>No real users yet.</b> No pilot yet.</li>
 </ul>
 """
 
@@ -484,14 +486,14 @@ _fab_removed = sum(1 for r in _fab if r["verdict"] == "removed")
 SLIDES = [
     f"""<section class="title"><h1>Heard</h1>
 <p class="motto">"I don't understand, but I want to understand.<br>That's why I need you God."</p>
-<p class="small">A companion for the moment you are tempted to abandon what you believe<br>
+<p class="small">Help to stand strong in what you believe<br>
 Alexandria Rosenzweig · MGT 409 · github.com/arrosenzweig/heard</p></section>""",
 
-    """<section><h2>The problem</h2>
-<p class="big">Values break at 11pm, not at the morning devotional.</p>
-<ul><li>"Everyone at work fudges the numbers."</li><li>The browser tab you swore off.</li><li>The message you'll regret.</li></ul>
-<p>In that moment people need <b>scripture they can trust</b>, <b>counsel that respects what they believe</b>,
-and <b>someone who has been there</b>. A chatbot gives one of the three at most.</p></section>""",
+    """<section><h2>Why Heard</h2>
+<p class="big">"The world is crazy and we are tempted to break the morals and values others don't follow."</p>
+<p>The goal: hear the Christian perspective on how to combat the sins in our lives and stand strong in what we believe.</p>
+<ul><li>Bible verses</li><li>Plain-language advice</li><li>Perspectives from different denominations</li>
+<li>Community with other Christians</li></ul></section>""",
 
     f"""<section><h2>What is new</h2><ul>
 <li><b>Your tradition, not a generic one.</b> Pick one or more of 14, including "exploring."</li>
@@ -524,7 +526,7 @@ and <b>someone who has been there</b>. A chatbot gives one of the three at most.
 
     f"""<section><h2>Impact</h2>
 <p>Sponsorship in recovery: having a sponsor predicted greater early abstinence
-<span class="small">(Tonigan &amp; Rice, 2010)</span>, though a review of 18 studies calls the specific benefit unclear.</p>
+<span class="small">(Tonigan &amp; Rice, 2010; one study, from summaries)</span>.</p>
 <p><b>Honest status:</b> {n_real_users} real users so far. All building and testing activity is marked as test data and excluded.</p>
 <p>Next: a small consenting pilot with a church or campus ministry, measuring commitments held over weeks.</p></section>""",
 
@@ -535,7 +537,7 @@ and <b>someone who has been there</b>. A chatbot gives one of the three at most.
 <li>Real moderation for person-to-person contact.</li>
 <li>Reminders that reach people (check-ins are in-app only today).</li>
 <li>Crisis resources beyond the US.</li></ul>
-<p class="motto">Heard does not replace a pastor, a counselor, or a friend. It tries to get you to one.</p></section>""",
+</section>""",
 ]
 assert len(SLIDES) <= 10, "assignment allows 10 slides maximum"
 
