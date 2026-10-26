@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Heard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<!-- ============================================================ ONBOARDING -->
+<div id="onboard" class="onboard hidden">
+  <div class="ob-card">
+    <div class="ob-progress"><span id="obBar"></span></div>
+
+    <div class="ob-step" data-step="0">
+      <span class="mark big">H</span>
+      <h1>Welcome to Heard</h1>
+      <p class="motto">"{{ motto }}"</p>
+      <p>Heard walks with you in the moments you're tempted to let go of what you believe. First, a few questions so it can meet you where you are. This is the only time it will ask; you can change anything later in Settings.</p>
+      <div class="form">
+        <input id="obHandle" placeholder="A first name or nickname">
+        <input id="obCity" placeholder="City (used only at city level)">
+      </div>
+    </div>
+
+    <div class="ob-step" data-step="1">
+      <h2>Your faith</h2>
+      <p class="sub">Choose as many as fit. Many people belong to more than one tradition, and that's fine. Not sure yet? Choose "exploring."</p>
+      <div id="obTrads" class="chips"></div>
+      <input id="obTradOther" placeholder="Or describe it in your own words (optional)" style="margin-top:12px">
+    </div>
+
+    <div class="ob-step" data-step="2">
+      <h2>Where you stand</h2>
+      <p class="sub">All optional, so skip any you like. If neither side fits, say it in your own words. Heard will restate it simply and ask you to confirm before using it.</p>
+      <div id="obTopics" class="topics-scroll"></div>
+    </div>
+
+    <div class="ob-step" data-step="3">
+      <h2>What you're carrying</h2>
+      <h3>Struggles you're fighting now</h3>
+      <p class="sub">Heard will check in on these.</p>
+      <div id="obFighting" class="chips"></div>
+      <h3>Struggles you've come through</h3>
+      <p class="sub">Someone fighting one of these right now might be helped by your story.</p>
+      <div id="obOvercame" class="chips"></div>
+    </div>
+
+    <div class="ob-step" data-step="4">
+      <h2>Check-ins and fellowship</h2>
+      <h3>How often should Heard check in?</h3>
+      <div id="obCadence" class="chips"></div>
+      <h3>Fellowship</h3>
+      <label class="check"><input type="checkbox" id="obOpen"> I'm willing to be contacted by someone going through something I've been through</label>
+      <div class="row">
+        <select id="obMethod"><option value="">Contact method</option><option>text</option><option>call</option></select>
+        <input id="obContact" placeholder="Phone (shared only after you both agree)">
+      </div>
+      <div class="field"><textarea id="obBio" rows="3" placeholder="A few lines others will see if you're matched (optional)"></textarea></div>
+    </div>
+
+    <div class="ob-nav">
+      <button class="ghost" id="obBack">Back</button>
+      <span class="spacer"></span>
+      <button class="ghost" id="obSkip">Skip</button>
+      <button class="primary" id="obNext">Continue</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================ APP -->
+<header class="top">
+  <div class="brand">
+    <span class="mark">H</span>
+    <div><h1>Heard</h1><p class="motto">"{{ motto }}"</p></div>
+  </div>
+  <nav id="tabs">
+    <button data-tab="talk" class="on">Talk</button>
+    <button data-tab="checkins">Check-ins <span id="dueBadge" class="badge hidden"></span></button>
+    <button data-tab="fellowship">Fellowship</button>
+    <button data-tab="churches">Churches</button>
+    <button data-tab="settings">Settings</button>
+  </nav>
+</header>
+
+<main>
+<!-- ================================================================ TALK -->
+<section id="talk" class="tab on">
+  <div id="thread" class="thread"></div>
+  <div id="typing" class="bubble them typing hidden"><span></span><span></span><span></span></div>
+  <div class="composer">
+    <div class="field">
+      <textarea id="chatText" rows="2" placeholder="What's on your heart? Type, or tap the mic and speak."></textarea>
+    </div>
+    <div class="row">
+      <span class="sub tiny" id="talkHint">Enter to send · Shift+Enter for a new line</span>
+      <span class="spacer"></span>
+      <button class="primary" id="sendBtn" onclick="sendChat()">Send</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ CHECK-INS -->
+<section id="checkins" class="tab">
+  <div class="card">
+    <h2>Check-ins</h2>
+    <p class="sub">A few quick questions about each struggle you're fighting. Over time Heard shows you whether you're overcoming it or being pulled deeper, because what actually happens matters more than how good the advice sounded.</p>
+  </div>
+  <div id="ciList"></div>
+  <div class="card">
+    <h2>Commitments</h2>
+    <p class="sub">Promises made in Talk. Heard asks how each one went.</p>
+    <div id="cmList"></div>
+  </div>
+</section>
+
+<!-- ============================================================ FELLOWSHIP -->
+<section id="fellowship" class="tab">
+  <div class="card">
+    <h2>People who've been where you are</h2>
+    <p class="sub">Heard leads with people who have <b>come through</b> the same struggle, the way a sponsor walks with someone in recovery. Contact details unlock only after you both agree.</p>
+    <div class="row">
+      <select id="peopleTheme"><option value="">Choose a struggle…</option></select>
+      <button class="primary" onclick="loadMatches()">Suggest people</button>
+      <button class="ghost" onclick="loadBrowse()">Browse everyone</button>
+    </div>
+  </div>
+  <div id="peopleList"></div>
+  <div class="card">
+    <h2>Your connections</h2>
+    <div id="connList"><p class="sub">No connections yet.</p></div>
+  </div>
+</section>
+
+<!-- ============================================================= CHURCHES -->
+<section id="churches" class="tab">
+  <div class="card">
+    <h2>Find a church community</h2>
+    <p class="sub">Every church here created its own profile. Heard never invents a congregation.</p>
+    <div class="row">
+      <input id="churchCity" placeholder="City">
+      <button class="primary" onclick="loadChurches()">Search</button>
+    </div>
+  </div>
+  <div id="churchList"></div>
+  <details class="card">
+    <summary><b>Are you a church? Create a profile</b></summary>
+    <div class="form" style="margin-top:12px">
+      <input id="chName" placeholder="Church name">
+      <input id="chCity" placeholder="City">
+      <div id="chTrads" class="chips"></div>
+      <input id="chTimes" placeholder="Service times (e.g. Sundays 9:30 & 11am)">
+      <input id="chAddr" placeholder="Address">
+      <input id="chWeb" placeholder="Website">
+      <div class="field"><textarea id="chBio" rows="3" placeholder="What is your community like? Who would feel at home?"></textarea></div>
+      <button class="primary" onclick="registerChurch()">Publish church profile</button>
+    </div>
+  </details>
+</section>
+
+<!-- ============================================================= SETTINGS -->
+<section id="settings" class="tab">
+  <div class="card">
+    <h2>Your profile</h2>
+    <div class="form">
+      <input id="pfHandle" placeholder="Name or nickname">
+      <input id="pfCity" placeholder="City">
+      <h3>Tradition</h3>
+      <div id="pfTrads" class="chips"></div>
+      <input id="pfTradOther" placeholder="In your own words (optional)">
+      <h3>Fighting now</h3><div id="pfFighting" class="chips"></div>
+      <h3>Come through</h3><div id="pfOvercame" class="chips"></div>
+      <h3>Check-in frequency</h3><div id="pfCadence" class="chips"></div>
+      <div class="field"><textarea id="pfBio" rows="3" placeholder="Bio others see if matched"></textarea></div>
+      <label class="check"><input type="checkbox" id="pfOpen"> Open to being contacted</label>
+      <div class="row">
+        <select id="pfMethod"><option value="">Contact method</option><option>text</option><option>call</option></select>
+        <input id="pfContact" placeholder="Phone (shared only after you both agree)">
+      </div>
+    </div>
+  </div>
+  <details class="card">
+    <summary><b>Where you stand</b> <span class="sub">(beliefs on contested questions)</span></summary>
+    <div id="pfTopics" style="margin-top:10px"></div>
+  </details>
+  <div class="card"><button class="primary" onclick="saveSettings()">Save changes</button> <span id="pfSaved" class="ok hidden">Saved.</span></div>
+
+  <div class="card">
+    <h2>Voice</h2>
+    <p class="sub">The 🎙 button uses your browser's built-in speech recognition (Chrome or Edge). In Chrome, your audio is sent to Google to be transcribed. If you'd rather not, just type. The 🔊 button reads replies aloud on your device.</p>
+    <button class="ghost small" onclick="clearChat()">Clear my Talk history</button>
+    <button class="ghost small" onclick="startOver()">Start over as a new user</button>
+  </div>
+
+  <details class="card">
+    <summary><b>Under the hood</b> <span class="sub">(how Heard works, measured)</span></summary>
+    <div id="statsBox" style="margin-top:12px"></div>
+    <h3>Check any verse</h3>
+    <div class="row">
+      <input id="vRef" placeholder="e.g. John 3:16 or Hezekiah 4:2">
+      <select id="vTrans"></select>
+      <button class="ghost" onclick="lookupVerse()">Look up</button>
+    </div>
+    <div id="vOut"></div>
+    <h3>Last run trace</h3>
+    <pre id="traceBox" class="trace">Send a message in Talk to see its trace.</pre>
+  </details>
+</section>
+</main>
+
+<footer>Heard is a companion, not a therapist, pastor, or crisis service. If you are in danger, call or text <b>988</b> or call <b>911</b>.</footer>
+<script src="/static/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,64 @@
+{
+ "note": "Tradition labels for the profile picker. Families listed alphabetically; no ordering implies precedence. Exploring/re-examining are first-class options, not fallbacks.",
+ "traditions": [
+  {
+   "id": "exploring",
+   "label": "I am exploring / not sure what I believe yet",
+   "seeker": true
+  },
+  {
+   "id": "anabaptist",
+   "label": "Anabaptist (Mennonite, Brethren, Amish)"
+  },
+  {
+   "id": "anglican",
+   "label": "Anglican / Episcopal"
+  },
+  {
+   "id": "baptist",
+   "label": "Baptist"
+  },
+  {
+   "id": "catholic",
+   "label": "Roman Catholic"
+  },
+  {
+   "id": "lutheran",
+   "label": "Lutheran"
+  },
+  {
+   "id": "methodist",
+   "label": "Methodist / Wesleyan"
+  },
+  {
+   "id": "nondenom",
+   "label": "Non-denominational"
+  },
+  {
+   "id": "orthodox",
+   "label": "Eastern / Oriental Orthodox"
+  },
+  {
+   "id": "pentecostal",
+   "label": "Pentecostal / Charismatic"
+  },
+  {
+   "id": "reformed",
+   "label": "Reformed / Presbyterian"
+  },
+  {
+   "id": "restorationist",
+   "label": "Restorationist (Churches of Christ, Disciples)"
+  },
+  {
+   "id": "other",
+   "label": "Other / I'll describe it myself",
+   "freetext": true
+  },
+  {
+   "id": "unsure",
+   "label": "Raised in the faith, re-examining it now",
+   "seeker": true
+  }
+ ]
+}

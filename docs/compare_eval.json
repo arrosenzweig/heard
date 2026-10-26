@@ -1,0 +1,313 @@
+{
+ "generated": "2026-10-26 10:22",
+ "summary": {
+  "cases": 8,
+  "baseline_citations": 24,
+  "baseline_verified": 24,
+  "baseline_unverifiable_wording": 0,
+  "baseline_fabricated_refs": 0,
+  "baseline_tokens_total": 5846,
+  "baseline_tokens_per_case": 730.8,
+  "heard_citations_claimed": 8,
+  "heard_citations_shown": 8,
+  "heard_citations_removed": 0,
+  "heard_unverified_shown": 0,
+  "heard_tokens_total": 23276,
+  "heard_tokens_per_case": 2909.5
+ },
+ "part_a": [
+  {
+   "text": "I keep looking at porn late at night and feel disgusting afterwards.",
+   "baseline": [
+    {
+     "ref": "Romans 8:1",
+     "status": "verified",
+     "fidelity": 1.0,
+     "best_translation": "KJV"
+    },
+    {
+     "ref": "1 Corinthians 10:13",
+     "status": "verified",
+     "fidelity": 1.0,
+     "best_translation": "KJV"
+    },
+    {
+     "ref": "Psalm 103:12",
+     "status": "verified",
+     "fidelity": 1.0,
+     "best_translation": "KJV"
+    }
+   ],
+   "heard": {
+    "mode": "counsel",
+    "claimed": 1,
+    "shown": 1,
+    "removed": 0,
+    "shown_refs": [
+     "II Timothy 2:22"
+    ],
+    "tokens": 2872
+   }
+  },
+  {
+   "text": "Everyone at work fudges the numbers and I feel stupid for being honest.",
+   "baseline": [
+    {
+     "ref": "Proverbs 11:1",
+     "status": "verified",
+     "fidelity": 1.0,
+     "best_translation": "KJV"
+    },
+    {
+     "ref": "Ephesians 4:25",
+     "status": "verified",
+     "fidelity": 1.0,
+     "best_translation": "KJV"
+    },
+    {
+     "ref": "Galatians 6:9",
+     "status": "verified",
+     "fidelity": 1.0,
+     "best_translation": "KJV"
+    }
+   ],
+   "heard": {
+    "mode": "counsel",
+    "claimed": 0,
+    "shown": 0,
+    "removed": 0,
+    "shown_refs": [],
+    "tokens": 2722
+   }
+  },
+  {
+   "text": "My best friend just got engaged and I can't be happy for her. I'm so jealous.",
+   "baseline": [
+    {
+     "ref": "Psalm 62:8",
+     "status": "verified",
+     "fidelity": 1.0,
+     "best_translation": "KJV"
+    },
+    {
+     "ref": "Romans 12:15",
+     "status": "verified",
+     "fidelity": 1.0,
+     "best_translation": "KJV"
+    },
+    {
+     "ref": "Galatians 6:2",
+     "status": "verified",
+     "fidelity": 1.0,
+     "best_translation": "KJV"
+    }
+   ],
+   "heard": {
+    "mode": "counsel",
+    "claimed": 2,
+    "shown": 2,
+    "removed": 0,
+    "shown_refs": [
+     "Zephaniah 3:17",
+     "I Corinthians 13:4"
+    ],
+    "tokens": 2898
+   }
+  },
+  {
+   "text": "I'm not sure God is even listening anymore. Prayer feels like talking to a wall.",
+   "baseline": [
+    {
+     "ref": "Psalm 13:1",
+     "status": "verified",
+     "fidelity": 1.0,
+     "best_translation": "KJV"
+    },
+    {
+     "ref": "Psalm 34:18",
+     "status": "verified",
+     "fidelity": 1.0,
+     "best_translation": "KJV"
+    },
+    {
+     "ref": "Hebrews 4:16",
+     "status": "verified",
+     "fidelity": 1.0,
+     "best_translation": "KJV"
+    }
+   ],
+   "heard": {
+    "mode": "counsel",
+    "claimed": 1,
+    "shown": 1,
+    "removed": 0,
+    "shown_refs": [
+     "Jude 1:22"
+    ],
+    "tokens": 2594
+   }
+  },
+  {
+   "text": "I've been drinking alone most nights and hiding the bottles from my wife.",
+   "baseline": [
+    {
+     "ref": "Galatians 6:2",
+     "status": "verified",
+     "fidelity": 1.0,
+     "best_translation": "KJV"
+    },
+    {
+     "ref": "James 5:16",
+     "status": "verified",
+     "fidelity": 1.0,
+     "best_translation": "KJV"
+    },
+    {
+     "ref": "Matthew 11:28",
+     "status": "verified",
+     "fidelity": 1.0,
+     "best_translation": "KJV"
+    }
+   ],
+   "heard": {
+    "mode": "counsel",
+    "claimed": 1,
+    "shown": 1,
+    "removed": 0,
+    "shown_refs": [
+     "I Corinthians 10:13"
+    ],
+    "tokens": 3461
+   }
+  },
+  {
+   "text": "I told a secret my friend trusted me with and now the whole small group knows.",
+   "baseline": [
+    {
+     "ref": "Proverbs 11:13",
+     "status": "verified",
+     "fidelity": 1.0,
+     "best_translation": "KJV"
+    },
+    {
+     "ref": "Matthew 5:24",
+     "status": "verified",
+     "fidelity": 1.0,
+     "best_translation": "KJV"
+    },
+    {
+     "ref": "Galatians 6:1",
+     "status": "verified",
+     "fidelity": 1.0,
+     "best_translation": "KJV"
+    }
+   ],
+   "heard": {
+    "mode": "counsel",
+    "claimed": 1,
+    "shown": 1,
+    "removed": 0,
+    "shown_refs": [
+     "Psalms 15:3"
+    ],
+    "tokens": 2941
+   }
+  },
+  {
+   "text": "I snapped at my mom on the phone again and hung up on her.",
+   "baseline": [
+    {
+     "ref": "James 1:19",
+     "status": "verified",
+     "fidelity": 1.0,
+     "best_translation": "KJV"
+    },
+    {
+     "ref": "Proverbs 15:1",
+     "status": "verified",
+     "fidelity": 1.0,
+     "best_translation": "KJV"
+    },
+    {
+     "ref": "Ephesians 4:32",
+     "status": "verified",
+     "fidelity": 1.0,
+     "best_translation": "KJV"
+    }
+   ],
+   "heard": {
+    "mode": "counsel",
+    "claimed": 1,
+    "shown": 1,
+    "removed": 0,
+    "shown_refs": [
+     "Proverbs 15:1"
+    ],
+    "tokens": 2536
+   }
+  },
+  {
+   "text": "I can't forgive my dad for leaving. Every time someone says I should, I get angrier.",
+   "baseline": [
+    {
+     "ref": "Psalm 34:18",
+     "status": "verified",
+     "fidelity": 1.0,
+     "best_translation": "KJV"
+    },
+    {
+     "ref": "Matthew 11:28",
+     "status": "verified",
+     "fidelity": 1.0,
+     "best_translation": "KJV"
+    },
+    {
+     "ref": "Romans 12:18",
+     "status": "verified",
+     "fidelity": 1.0,
+     "best_translation": "KJV"
+    }
+   ],
+   "heard": {
+    "mode": "counsel",
+    "claimed": 1,
+    "shown": 1,
+    "removed": 0,
+    "shown_refs": [
+     "Colossians 3:13"
+    ],
+    "tokens": 3252
+   }
+  }
+ ],
+ "ablation": [
+  {
+   "k": 3,
+   "cases": 4,
+   "avg_total_tokens": 3864.0,
+   "avg_counsel_prompt_tokens": 1597.2,
+   "citations_shown": 4,
+   "citations_claimed": 4,
+   "avg_wall_s": 17.28
+  },
+  {
+   "k": 6,
+   "cases": 4,
+   "avg_total_tokens": 2721.8,
+   "avg_counsel_prompt_tokens": 1379.8,
+   "citations_shown": 4,
+   "citations_claimed": 4,
+   "avg_wall_s": 10.46
+  },
+  {
+   "k": 12,
+   "cases": 4,
+   "avg_total_tokens": 2949.0,
+   "avg_counsel_prompt_tokens": 1585.0,
+   "citations_shown": 4,
+   "citations_claimed": 4,
+   "avg_wall_s": 11.4
+  }
+ ],
+ "wall_s": 340.2
+}

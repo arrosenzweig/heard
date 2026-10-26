@@ -1,0 +1,8 @@
+.env
+*.db
+__pycache__/
+*.pyc
+data/_raw/
+data/_index_cache/
+.venv/
+venv/

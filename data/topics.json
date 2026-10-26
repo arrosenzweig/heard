@@ -1,0 +1,107 @@
+{
+ "status": "Reviewed by project owner 2026-10-26. All 14 kept; third free-form option added.",
+ "note": "Contested topics for the belief profile. Every item is optional. Beyond the two common positions, a user may answer in their own words by voice or text; that answer is simplified and shown back for approval before it is ever used (agents/beliefs.py).",
+ "answer_scale": [
+  "prefer_not_to_say",
+  "position_a",
+  "position_b",
+  "somewhere_between",
+  "still_discerning",
+  "own_words"
+ ],
+ "topics": [
+  {
+   "id": "scripture",
+   "question": "How do you read Scripture?",
+   "position_a": "Plainly and literally, as directly authoritative",
+   "position_b": "Through historical and literary context, with interpretation"
+  },
+  {
+   "id": "baptism",
+   "question": "Who should be baptized?",
+   "position_a": "Infants, as members of the covenant community",
+   "position_b": "Those old enough to profess faith for themselves"
+  },
+  {
+   "id": "communion",
+   "question": "What happens in Communion?",
+   "position_a": "Christ is truly present in the bread and wine",
+   "position_b": "It is a symbol and memorial"
+  },
+  {
+   "id": "women_leadership",
+   "question": "Who may lead and teach in church?",
+   "position_a": "Teaching and pastoral office is for men",
+   "position_b": "Women and men alike may hold any office"
+  },
+  {
+   "id": "sexuality",
+   "question": "What is your church's teaching on marriage and sexuality?",
+   "position_a": "Marriage is between one man and one woman",
+   "position_b": "Same-sex relationships can be blessed and affirmed"
+  },
+  {
+   "id": "divorce",
+   "question": "How do you understand divorce and remarriage?",
+   "position_a": "Permitted only in narrow circumstances",
+   "position_b": "Permitted with pastoral discernment"
+  },
+  {
+   "id": "alcohol",
+   "question": "Where do you land on alcohol?",
+   "position_a": "Complete abstinence",
+   "position_b": "Moderation is acceptable"
+  },
+  {
+   "id": "salvation",
+   "question": "How is a person saved?",
+   "position_a": "By grace through faith alone",
+   "position_b": "By grace through faith expressed in works and sacraments"
+  },
+  {
+   "id": "assurance",
+   "question": "Can salvation be lost?",
+   "position_a": "No, the saved are eternally secure",
+   "position_b": "Yes, it can be forfeited"
+  },
+  {
+   "id": "gifts",
+   "question": "Are the miraculous spiritual gifts active today?",
+   "position_a": "Yes, tongues, prophecy and healing continue",
+   "position_b": "No, those gifts ceased with the apostolic age"
+  },
+  {
+   "id": "sovereignty",
+   "question": "How do God's sovereignty and human choice fit together?",
+   "position_a": "God elects; salvation rests on his choosing",
+   "position_b": "People freely respond to grace offered to all"
+  },
+  {
+   "id": "politics",
+   "question": "Should the church speak on politics?",
+   "position_a": "The church should speak directly to political questions",
+   "position_b": "The church should stay out of partisan matters"
+  },
+  {
+   "id": "creation",
+   "question": "How do you understand creation?",
+   "position_a": "A literal six-day creation",
+   "position_b": "Creation through processes science describes"
+  },
+  {
+   "id": "contraception",
+   "question": "Where do you land on contraception?",
+   "position_a": "It is contrary to the purpose of marriage",
+   "position_b": "It is a matter of conscience"
+  }
+ ],
+ "own_words_option": {
+  "label": "Let me say it in my own words",
+  "input": [
+   "microphone",
+   "text"
+  ],
+  "flow": "transcribe -> simplify -> show back -> user approves -> store",
+  "rule": "An unapproved paraphrase is never used to condition counsel."
+ }
+}

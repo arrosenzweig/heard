@@ -1,0 +1,1574 @@
+{
+ "translation": "World English Bible (public domain)",
+ "source": "https://bible-api.com",
+ "themes": [
+  "addiction",
+  "anger",
+  "anxiety_fear",
+  "bitterness",
+  "despair",
+  "doubt",
+  "envy",
+  "forgiveness",
+  "gossip",
+  "greed_money",
+  "humility",
+  "loneliness",
+  "lust_purity",
+  "lying_integrity",
+  "patience",
+  "pride",
+  "relationships",
+  "self_control",
+  "temptation",
+  "work_integrity"
+ ],
+ "verses": [
+  {
+   "ref": "1 Corinthians 10:13",
+   "book": "1 Corinthians",
+   "chapter": 10,
+   "themes": [
+    "temptation",
+    "addiction"
+   ],
+   "text": "No temptation has taken you except what is common to man. God is faithful, who will not allow you to be tempted above what you are able, but will with the temptation also make the way of escape, that you may be able to endure it.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "James 1:12-15",
+   "book": "James",
+   "chapter": 1,
+   "themes": [
+    "temptation"
+   ],
+   "text": "Blessed is the man who endures temptation, for when he has been approved, he will receive the crown of life, which the Lord promised to those who love him. Let no man say when he is tempted, “I am tempted by God,” for God can’t be tempted by evil, and he himself tempts no one. But each one is tempted when he is drawn away by his own lust, and enticed. Then the lust, when it has conceived, bears sin; and the sin, when it is full grown, produces death.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Matthew 26:41",
+   "book": "Matthew",
+   "chapter": 26,
+   "themes": [
+    "temptation"
+   ],
+   "text": "Watch and pray, that you don’t enter into temptation. The spirit indeed is willing, but the flesh is weak.”",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Hebrews 4:15-16",
+   "book": "Hebrews",
+   "chapter": 4,
+   "themes": [
+    "temptation"
+   ],
+   "text": "For we don’t have a high priest who can’t be touched with the feeling of our infirmities, but one who has been in all points tempted like we are, yet without sin. Let us therefore draw near with boldness to the throne of grace, that we may receive mercy, and may find grace for help in time of need.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "1 Peter 5:8-9",
+   "book": "1 Peter",
+   "chapter": 5,
+   "themes": [
+    "temptation"
+   ],
+   "text": "Be sober and self-controlled. Be watchful. Your adversary, the devil, walks around like a roaring lion, seeking whom he may devour. Withstand him steadfast in your faith, knowing that your brothers who are in the world are undergoing the same sufferings.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Psalms 119:11",
+   "book": "Psalms",
+   "chapter": 119,
+   "themes": [
+    "temptation"
+   ],
+   "text": "I have hidden your word in my heart, that I might not sin against you.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Romans 6:12-14",
+   "book": "Romans",
+   "chapter": 6,
+   "themes": [
+    "temptation"
+   ],
+   "text": "Therefore don’t let sin reign in your mortal body, that you should obey it in its lusts. Also, do not present your members to sin as instruments of unrighteousness, but present yourselves to God, as alive from the dead, and your members as instruments of righteousness to God. For sin will not have dominion over you. For you are not under law, but under grace.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "2 Timothy 2:22",
+   "book": "2 Timothy",
+   "chapter": 2,
+   "themes": [
+    "temptation",
+    "lust_purity"
+   ],
+   "text": "Flee from youthful lusts; but pursue righteousness, faith, love, and peace with those who call on the Lord out of a pure heart.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "James 1:19-20",
+   "book": "James",
+   "chapter": 1,
+   "themes": [
+    "anger"
+   ],
+   "text": "So, then, my beloved brothers, let every man be swift to hear, slow to speak, and slow to anger; for the anger of man doesn’t produce the righteousness of God.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Ephesians 4:26-27",
+   "book": "Ephesians",
+   "chapter": 4,
+   "themes": [
+    "anger"
+   ],
+   "text": "“Be angry, and don’t sin.” Don’t let the sun go down on your wrath, and don’t give place to the devil.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Proverbs 15:1",
+   "book": "Proverbs",
+   "chapter": 15,
+   "themes": [
+    "anger"
+   ],
+   "text": "A gentle answer turns away wrath, but a harsh word stirs up anger.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Proverbs 29:11",
+   "book": "Proverbs",
+   "chapter": 29,
+   "themes": [
+    "anger"
+   ],
+   "text": "A fool vents all of his anger, but a wise man brings himself under control.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Colossians 3:8",
+   "book": "Colossians",
+   "chapter": 3,
+   "themes": [
+    "anger"
+   ],
+   "text": "but now you also put them all away: anger, wrath, malice, slander, and shameful speaking out of your mouth.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Psalms 37:8",
+   "book": "Psalms",
+   "chapter": 37,
+   "themes": [
+    "anger"
+   ],
+   "text": "Cease from anger, and forsake wrath. Don’t fret, it leads only to evildoing.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Matthew 5:21-24",
+   "book": "Matthew",
+   "chapter": 5,
+   "themes": [
+    "anger"
+   ],
+   "text": "“You have heard that it was said to the ancient ones, ‘You shall not murder;’ and ‘Whoever murders will be in danger of the judgment.’ But I tell you, that everyone who is angry with his brother without a cause will be in danger of the judgment; and whoever says to his brother, ‘Raca!’ will be in danger of the council; and whoever says, ‘You fool!’ will be in danger of the fire of Gehenna. “If therefore you are offering your gift at the altar, and there remember that your brother has anything against you, leave your gift there before the altar, and go your way. First be reconciled to your brother, and then come and offer your gift.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "1 Corinthians 6:18-20",
+   "book": "1 Corinthians",
+   "chapter": 6,
+   "themes": [
+    "lust_purity"
+   ],
+   "text": "Flee sexual immorality! “Every sin that a man does is outside the body,” but he who commits sexual immorality sins against his own body. Or don’t you know that your body is a temple of the Holy Spirit who is in you, whom you have from God? You are not your own, for you were bought with a price. Therefore glorify God in your body and in your spirit, which are God’s.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Job 31:1",
+   "book": "Job",
+   "chapter": 31,
+   "themes": [
+    "lust_purity"
+   ],
+   "text": "“I made a covenant with my eyes, how then should I look lustfully at a young woman?",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Philippians 4:8",
+   "book": "Philippians",
+   "chapter": 4,
+   "themes": [
+    "lust_purity"
+   ],
+   "text": "Finally, brothers, whatever things are true, whatever things are honorable, whatever things are just, whatever things are pure, whatever things are lovely, whatever things are of good report; if there is any virtue, and if there is any praise, think about these things.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Galatians 5:16",
+   "book": "Galatians",
+   "chapter": 5,
+   "themes": [
+    "lust_purity"
+   ],
+   "text": "But I say, walk by the Spirit, and you won’t fulfill the lust of the flesh.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Psalms 51:10",
+   "book": "Psalms",
+   "chapter": 51,
+   "themes": [
+    "lust_purity"
+   ],
+   "text": "Create in me a clean heart, O God. Renew a right spirit within me.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "1 Timothy 6:6-10",
+   "book": "1 Timothy",
+   "chapter": 6,
+   "themes": [
+    "greed_money"
+   ],
+   "text": "But godliness with contentment is great gain. For we brought nothing into the world, and we certainly can’t carry anything out. But having food and clothing, we will be content with that. But those who are determined to be rich fall into a temptation and a snare and many foolish and harmful lusts, such as drown men in ruin and destruction. For the love of money is a root of all kinds of evil. Some have been led astray from the faith in their greed, and have pierced themselves through with many sorrows.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Hebrews 13:5",
+   "book": "Hebrews",
+   "chapter": 13,
+   "themes": [
+    "greed_money",
+    "loneliness"
+   ],
+   "text": "Be free from the love of money, content with such things as you have, for he has said, “I will in no way leave you, neither will I in any way forsake you.”",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Matthew 6:19-21",
+   "book": "Matthew",
+   "chapter": 6,
+   "themes": [
+    "greed_money"
+   ],
+   "text": "“Don’t lay up treasures for yourselves on the earth, where moth and rust consume, and where thieves break through and steal; but lay up for yourselves treasures in heaven, where neither moth nor rust consume, and where thieves don’t break through and steal; for where your treasure is, there your heart will be also.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Luke 12:15",
+   "book": "Luke",
+   "chapter": 12,
+   "themes": [
+    "greed_money"
+   ],
+   "text": "He said to them, “Beware! Keep yourselves from covetousness, for a man’s life doesn’t consist of the abundance of the things which he possesses.”",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Proverbs 11:28",
+   "book": "Proverbs",
+   "chapter": 11,
+   "themes": [
+    "greed_money"
+   ],
+   "text": "He who trusts in his riches will fall, but the righteous shall flourish as the green leaf.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Ecclesiastes 5:10",
+   "book": "Ecclesiastes",
+   "chapter": 5,
+   "themes": [
+    "greed_money"
+   ],
+   "text": "He who loves silver shall not be satisfied with silver; nor he who loves abundance, with increase: this also is vanity.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Matthew 6:24",
+   "book": "Matthew",
+   "chapter": 6,
+   "themes": [
+    "greed_money"
+   ],
+   "text": "“No one can serve two masters, for either he will hate the one and love the other; or else he will be devoted to one and despise the other. You can’t serve both God and Mammon.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Proverbs 30:8-9",
+   "book": "Proverbs",
+   "chapter": 30,
+   "themes": [
+    "greed_money"
+   ],
+   "text": "Remove far from me falsehood and lies. Give me neither poverty nor riches. Feed me with the food that is needful for me; lest I be full, deny you, and say, ‘Who is Yahweh?’ or lest I be poor, and steal, and so dishonor the name of my God.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Proverbs 14:30",
+   "book": "Proverbs",
+   "chapter": 14,
+   "themes": [
+    "envy"
+   ],
+   "text": "The life of the body is a heart at peace, but envy rots the bones.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "1 Corinthians 13:4",
+   "book": "1 Corinthians",
+   "chapter": 13,
+   "themes": [
+    "envy"
+   ],
+   "text": "Love is patient and is kind; love doesn’t envy. Love doesn’t brag, is not proud,",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Exodus 20:17",
+   "book": "Exodus",
+   "chapter": 20,
+   "themes": [
+    "envy"
+   ],
+   "text": "“You shall not covet your neighbor’s house. You shall not covet your neighbor’s wife, nor his male servant, nor his female servant, nor his ox, nor his donkey, nor anything that is your neighbor’s.”",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Romans 12:15",
+   "book": "Romans",
+   "chapter": 12,
+   "themes": [
+    "envy"
+   ],
+   "text": "Rejoice with those who rejoice. Weep with those who weep.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "1 Peter 2:1",
+   "book": "1 Peter",
+   "chapter": 2,
+   "themes": [
+    "envy"
+   ],
+   "text": "Putting away therefore all wickedness, all deceit, hypocrisies, envies, and all evil speaking,",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Proverbs 16:18",
+   "book": "Proverbs",
+   "chapter": 16,
+   "themes": [
+    "pride"
+   ],
+   "text": "Pride goes before destruction, and a haughty spirit before a fall.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "James 4:6-10",
+   "book": "James",
+   "chapter": 4,
+   "themes": [
+    "pride"
+   ],
+   "text": "But he gives more grace. Therefore it says, “God resists the proud, but gives grace to the humble.” Be subject therefore to God. Resist the devil, and he will flee from you. Draw near to God, and he will draw near to you. Cleanse your hands, you sinners; and purify your hearts, you double-minded. Lament, mourn, and weep. Let your laughter be turned to mourning, and your joy to gloom. Humble yourselves in the sight of the Lord, and he will exalt you.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Philippians 2:3-8",
+   "book": "Philippians",
+   "chapter": 2,
+   "themes": [
+    "pride"
+   ],
+   "text": "doing nothing through rivalry or through conceit, but in humility, each counting others better than himself; each of you not just looking to his own things, but each of you also to the things of others. Have this in your mind, which was also in Christ Jesus, who, existing in the form of God, didn’t consider equality with God a thing to be grasped, but emptied himself, taking the form of a servant, being made in the likeness of men. And being found in human form, he humbled himself, becoming obedient to death, yes, the death of the cross.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Romans 12:3",
+   "book": "Romans",
+   "chapter": 12,
+   "themes": [
+    "pride"
+   ],
+   "text": "For I say, through the grace that was given me, to every man who is among you, not to think of himself more highly than he ought to think; but to think reasonably, as God has apportioned to each person a measure of faith.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "1 Peter 5:5-6",
+   "book": "1 Peter",
+   "chapter": 5,
+   "themes": [
+    "pride"
+   ],
+   "text": "Likewise, you younger ones, be subject to the elder. Yes, all of you clothe yourselves with humility, to subject yourselves to one another; for “God resists the proud, but gives grace to the humble.” Humble yourselves therefore under the mighty hand of God, that he may exalt you in due time;",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Proverbs 11:2",
+   "book": "Proverbs",
+   "chapter": 11,
+   "themes": [
+    "pride"
+   ],
+   "text": "When pride comes, then comes shame, but with humility comes wisdom.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Galatians 6:3",
+   "book": "Galatians",
+   "chapter": 6,
+   "themes": [
+    "pride"
+   ],
+   "text": "For if a man thinks himself to be something when he is nothing, he deceives himself.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Micah 6:8",
+   "book": "Micah",
+   "chapter": 6,
+   "themes": [
+    "pride",
+    "humility"
+   ],
+   "text": "He has shown you, O man, what is good. What does Yahweh require of you, but to act justly, to love mercy, and to walk humbly with your God?",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Proverbs 12:22",
+   "book": "Proverbs",
+   "chapter": 12,
+   "themes": [
+    "lying_integrity"
+   ],
+   "text": "Lying lips are an abomination to Yahweh, but those who do the truth are his delight.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Ephesians 4:25",
+   "book": "Ephesians",
+   "chapter": 4,
+   "themes": [
+    "lying_integrity"
+   ],
+   "text": "Therefore putting away falsehood, speak truth each one with his neighbor. For we are members of one another.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Colossians 3:9-10",
+   "book": "Colossians",
+   "chapter": 3,
+   "themes": [
+    "lying_integrity"
+   ],
+   "text": "Don’t lie to one another, seeing that you have put off the old man with his doings, and have put on the new man, who is being renewed in knowledge after the image of his Creator,",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Luke 16:10",
+   "book": "Luke",
+   "chapter": 16,
+   "themes": [
+    "lying_integrity",
+    "work_integrity"
+   ],
+   "text": "He who is faithful in a very little is faithful also in much. He who is dishonest in a very little is also dishonest in much.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Proverbs 19:1",
+   "book": "Proverbs",
+   "chapter": 19,
+   "themes": [
+    "lying_integrity"
+   ],
+   "text": "Better is the poor who walks in his integrity than he who is perverse in his lips and is a fool.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Proverbs 16:28",
+   "book": "Proverbs",
+   "chapter": 16,
+   "themes": [
+    "gossip"
+   ],
+   "text": "A perverse man stirs up strife. A whisperer separates close friends.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "James 4:11",
+   "book": "James",
+   "chapter": 4,
+   "themes": [
+    "gossip"
+   ],
+   "text": "Don’t speak against one another, brothers. He who speaks against a brother and judges his brother, speaks against the law and judges the law. But if you judge the law, you are not a doer of the law, but a judge.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Ephesians 4:29",
+   "book": "Ephesians",
+   "chapter": 4,
+   "themes": [
+    "gossip"
+   ],
+   "text": "Let no corrupt speech proceed out of your mouth, but only what is good for building others up as the need may be, that it may give grace to those who hear.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Proverbs 11:13",
+   "book": "Proverbs",
+   "chapter": 11,
+   "themes": [
+    "gossip"
+   ],
+   "text": "One who brings gossip betrays a confidence, but one who is of a trustworthy spirit is one who keeps a secret.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Psalms 141:3",
+   "book": "Psalms",
+   "chapter": 141,
+   "themes": [
+    "gossip"
+   ],
+   "text": "Set a watch, Yahweh, before my mouth. Keep the door of my lips.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Titus 3:2",
+   "book": "Titus",
+   "chapter": 3,
+   "themes": [
+    "gossip"
+   ],
+   "text": "to speak evil of no one, not to be contentious, to be gentle, showing all humility toward all men.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Proverbs 26:20",
+   "book": "Proverbs",
+   "chapter": 26,
+   "themes": [
+    "gossip"
+   ],
+   "text": "For lack of wood a fire goes out. Without gossip, a quarrel dies down.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "1 Peter 3:10",
+   "book": "1 Peter",
+   "chapter": 3,
+   "themes": [
+    "gossip"
+   ],
+   "text": "For, “He who would love life, and see good days, let him keep his tongue from evil, and his lips from speaking deceit.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "1 Corinthians 6:12",
+   "book": "1 Corinthians",
+   "chapter": 6,
+   "themes": [
+    "addiction"
+   ],
+   "text": "“All things are lawful for me,” but not all things are expedient. “All things are lawful for me,” but I will not be brought under the power of anything.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Romans 7:15-25",
+   "book": "Romans",
+   "chapter": 7,
+   "themes": [
+    "addiction"
+   ],
+   "text": "For I don’t know what I am doing. For I don’t practice what I desire to do; but what I hate, that I do. But if what I don’t desire, that I do, I consent to the law that it is good. So now it is no more I that do it, but sin which dwells in me. For I know that in me, that is, in my flesh, dwells no good thing. For desire is present with me, but I don’t find it doing that which is good. For the good which I desire, I don’t do; but the evil which I don’t desire, that I practice. But if what I don’t desire, that I do, it is no more I that do it, but sin which dwells in me. I find then the law, that, to me, while I desire to do good, evil is present. For I delight in God’s law after the inward man, but I see a different law in my members, warring against the law of my mind, and bringing me into captivity under the law of sin which is in my members. What a wretched man I am! Who will deliver me out of the body of this death? I thank God through Jesus Christ, our Lord! So then with the mind, I myself serve God’s law, but with the flesh, the sin’s law.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Galatians 5:1",
+   "book": "Galatians",
+   "chapter": 5,
+   "themes": [
+    "addiction"
+   ],
+   "text": "Stand firm therefore in the liberty by which Christ has made us free, and don’t be entangled again with a yoke of bondage.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "2 Corinthians 12:9-10",
+   "book": "2 Corinthians",
+   "chapter": 12,
+   "themes": [
+    "addiction"
+   ],
+   "text": "He has said to me, “My grace is sufficient for you, for my power is made perfect in weakness.” Most gladly therefore I will rather glory in my weaknesses, that the power of Christ may rest on me. Therefore I take pleasure in weaknesses, in injuries, in necessities, in persecutions, in distresses, for Christ’s sake. For when I am weak, then am I strong.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Psalms 40:1-3",
+   "book": "Psalms",
+   "chapter": 40,
+   "themes": [
+    "addiction"
+   ],
+   "text": "I waited patiently for Yahweh. He turned to me, and heard my cry. He brought me up also out of a horrible pit, out of the miry clay. He set my feet on a rock, and gave me a firm place to stand. He has put a new song in my mouth, even praise to our God. Many shall see it, and fear, and shall trust in Yahweh.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Philippians 4:6-7",
+   "book": "Philippians",
+   "chapter": 4,
+   "themes": [
+    "anxiety_fear"
+   ],
+   "text": "In nothing be anxious, but in everything, by prayer and petition with thanksgiving, let your requests be made known to God. And the peace of God, which surpasses all understanding, will guard your hearts and your thoughts in Christ Jesus.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "1 Peter 5:7",
+   "book": "1 Peter",
+   "chapter": 5,
+   "themes": [
+    "anxiety_fear"
+   ],
+   "text": "casting all your worries on him, because he cares for you.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Matthew 6:25-34",
+   "book": "Matthew",
+   "chapter": 6,
+   "themes": [
+    "anxiety_fear"
+   ],
+   "text": "Therefore I tell you, don’t be anxious for your life: what you will eat, or what you will drink; nor yet for your body, what you will wear. Isn’t life more than food, and the body more than clothing? See the birds of the sky, that they don’t sow, neither do they reap, nor gather into barns. Your heavenly Father feeds them. Aren’t you of much more value than they? “Which of you, by being anxious, can add one moment to his lifespan? Why are you anxious about clothing? Consider the lilies of the field, how they grow. They don’t toil, neither do they spin, yet I tell you that even Solomon in all his glory was not dressed like one of these. But if God so clothes the grass of the field, which today exists, and tomorrow is thrown into the oven, won’t he much more clothe you, you of little faith? “Therefore don’t be anxious, saying, ‘What will we eat?’, ‘What will we drink?’ or, ‘With what will we be clothed?’ For the Gentiles seek after all these things; for your heavenly Father knows that you need all these things. But seek first God’s Kingdom, and his righteousness; and all these things will be given to you as well. Therefore don’t be anxious for tomorrow, for tomorrow will be anxious for itself. Each day’s own evil is sufficient.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Isaiah 41:10",
+   "book": "Isaiah",
+   "chapter": 41,
+   "themes": [
+    "anxiety_fear"
+   ],
+   "text": "Don’t you be afraid, for I am with you. Don’t be dismayed, for I am your God. I will strengthen you. Yes, I will help you. Yes, I will uphold you with the right hand of my righteousness.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Psalms 55:22",
+   "book": "Psalms",
+   "chapter": 55,
+   "themes": [
+    "anxiety_fear"
+   ],
+   "text": "Cast your burden on Yahweh, and he will sustain you. He will never allow the righteous to be moved.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "John 14:27",
+   "book": "John",
+   "chapter": 14,
+   "themes": [
+    "anxiety_fear"
+   ],
+   "text": "Peace I leave with you. My peace I give to you; not as the world gives, give I to you. Don’t let your heart be troubled, neither let it be fearful.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Joshua 1:9",
+   "book": "Joshua",
+   "chapter": 1,
+   "themes": [
+    "anxiety_fear"
+   ],
+   "text": "Haven’t I commanded you? Be strong and courageous. Don’t be afraid. Don’t be dismayed, for Yahweh your God is with you wherever you go.”",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Psalms 94:19",
+   "book": "Psalms",
+   "chapter": 94,
+   "themes": [
+    "anxiety_fear"
+   ],
+   "text": "In the multitude of my thoughts within me, your comforts delight my soul.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Psalms 68:6",
+   "book": "Psalms",
+   "chapter": 68,
+   "themes": [
+    "loneliness"
+   ],
+   "text": "God sets the lonely in families. He brings out the prisoners with singing, but the rebellious dwell in a sun-scorched land.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Deuteronomy 31:6",
+   "book": "Deuteronomy",
+   "chapter": 31,
+   "themes": [
+    "loneliness"
+   ],
+   "text": "Be strong and courageous. Don’t be afraid or scared of them; for Yahweh your God himself is who goes with you. He will not fail you nor forsake you.”",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Psalms 25:16-18",
+   "book": "Psalms",
+   "chapter": 25,
+   "themes": [
+    "loneliness"
+   ],
+   "text": "Turn to me, and have mercy on me, for I am desolate and afflicted. The troubles of my heart are enlarged. Oh bring me out of my distresses. Consider my affliction and my travail. Forgive all my sins.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Matthew 28:20",
+   "book": "Matthew",
+   "chapter": 28,
+   "themes": [
+    "loneliness"
+   ],
+   "text": "teaching them to observe all things that I commanded you. Behold, I am with you always, even to the end of the age.” Amen.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Romans 8:38-39",
+   "book": "Romans",
+   "chapter": 8,
+   "themes": [
+    "loneliness"
+   ],
+   "text": "For I am persuaded that neither death, nor life, nor angels, nor principalities, nor things present, nor things to come, nor powers, nor height, nor depth, nor any other created thing, will be able to separate us from God’s love, which is in Christ Jesus our Lord.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "1 Kings 19:9-12",
+   "book": "1 Kings",
+   "chapter": 19,
+   "themes": [
+    "loneliness"
+   ],
+   "text": "He came to a cave there, and camped there; and behold, Yahweh’s word came to him, and he said to him, “What are you doing here, Elijah?” He said, “I have been very jealous for Yahweh, the God of Armies; for the children of Israel have forsaken your covenant, thrown down your altars, and killed your prophets with the sword. I, even I only, am left; and they seek my life, to take it away.” He said, “Go out, and stand on the mountain before Yahweh.” Behold, Yahweh passed by, and a great and strong wind tore the mountains, and broke in pieces the rocks before Yahweh; but Yahweh was not in the wind. After the wind there was an earthquake; but Yahweh was not in the earthquake. After the earthquake a fire passed; but Yahweh was not in the fire. After the fire, there was a still small voice.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Colossians 3:13",
+   "book": "Colossians",
+   "chapter": 3,
+   "themes": [
+    "forgiveness"
+   ],
+   "text": "bearing with one another, and forgiving each other, if any man has a complaint against any; even as Christ forgave you, so you also do.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Matthew 18:21-22",
+   "book": "Matthew",
+   "chapter": 18,
+   "themes": [
+    "forgiveness"
+   ],
+   "text": "Then Peter came and said to him, “Lord, how often shall my brother sin against me, and I forgive him? Until seven times?” Jesus said to him, “I don’t tell you until seven times, but, until seventy times seven.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Luke 6:37",
+   "book": "Luke",
+   "chapter": 6,
+   "themes": [
+    "forgiveness"
+   ],
+   "text": "Don’t judge, and you won’t be judged. Don’t condemn, and you won’t be condemned. Set free, and you will be set free.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Mark 11:25",
+   "book": "Mark",
+   "chapter": 11,
+   "themes": [
+    "forgiveness"
+   ],
+   "text": "Whenever you stand praying, forgive, if you have anything against anyone; so that your Father, who is in heaven, may also forgive you your transgressions.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Romans 12:17-21",
+   "book": "Romans",
+   "chapter": 12,
+   "themes": [
+    "forgiveness"
+   ],
+   "text": "Repay no one evil for evil. Respect what is honorable in the sight of all men. If it is possible, as much as it is up to you, be at peace with all men. Don’t seek revenge yourselves, beloved, but give place to God’s wrath. For it is written, “Vengeance belongs to me; I will repay, says the Lord.” Therefore “If your enemy is hungry, feed him. If he is thirsty, give him a drink; for in doing so, you will heap coals of fire on his head.” Don’t be overcome by evil, but overcome evil with good.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "1 John 1:9",
+   "book": "1 John",
+   "chapter": 1,
+   "themes": [
+    "forgiveness"
+   ],
+   "text": "If we confess our sins, he is faithful and righteous to forgive us the sins, and to cleanse us from all unrighteousness.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Hebrews 12:14-15",
+   "book": "Hebrews",
+   "chapter": 12,
+   "themes": [
+    "bitterness"
+   ],
+   "text": "Follow after peace with all men, and the sanctification without which no man will see the Lord, looking carefully lest there be any man who falls short of the grace of God; lest any root of bitterness springing up trouble you, and many be defiled by it;",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Ephesians 4:31",
+   "book": "Ephesians",
+   "chapter": 4,
+   "themes": [
+    "bitterness"
+   ],
+   "text": "Let all bitterness, wrath, anger, outcry, and slander, be put away from you, with all malice.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Romans 12:19",
+   "book": "Romans",
+   "chapter": 12,
+   "themes": [
+    "bitterness",
+    "anger"
+   ],
+   "text": "Don’t seek revenge yourselves, beloved, but give place to God’s wrath. For it is written, “Vengeance belongs to me; I will repay, says the Lord.”",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Job 21:25",
+   "book": "Job",
+   "chapter": 21,
+   "themes": [
+    "bitterness"
+   ],
+   "text": "Another dies in bitterness of soul, and never tastes of good.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Proverbs 14:10",
+   "book": "Proverbs",
+   "chapter": 14,
+   "themes": [
+    "bitterness"
+   ],
+   "text": "The heart knows its own bitterness and joy; he will not share these with a stranger.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Psalms 73:21-26",
+   "book": "Psalms",
+   "chapter": 73,
+   "themes": [
+    "bitterness"
+   ],
+   "text": "For my soul was grieved. I was embittered in my heart. I was so senseless and ignorant. I was a brute beast before you. Nevertheless, I am continually with you. You have held my right hand. You will guide me with your counsel, and afterward receive me to glory. Whom do I have in heaven? There is no one on earth whom I desire besides you. My flesh and my heart fails, but God is the strength of my heart and my portion forever.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Acts 8:23",
+   "book": "Acts",
+   "chapter": 8,
+   "themes": [
+    "bitterness"
+   ],
+   "text": "For I see that you are in the poison of bitterness and in the bondage of iniquity.”",
+   "translation": "WEB"
+  },
+  {
+   "ref": "James 3:14",
+   "book": "James",
+   "chapter": 3,
+   "themes": [
+    "bitterness"
+   ],
+   "text": "But if you have bitter jealousy and selfish ambition in your heart, don’t boast and don’t lie against the truth.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Colossians 3:23-24",
+   "book": "Colossians",
+   "chapter": 3,
+   "themes": [
+    "work_integrity"
+   ],
+   "text": "And whatever you do, work heartily, as for the Lord, and not for men, knowing that from the Lord you will receive the reward of the inheritance; for you serve the Lord Christ.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Proverbs 13:11",
+   "book": "Proverbs",
+   "chapter": 13,
+   "themes": [
+    "work_integrity"
+   ],
+   "text": "Wealth gained dishonestly dwindles away, but he who gathers by hand makes it grow.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "1 Thessalonians 4:11-12",
+   "book": "1 Thessalonians",
+   "chapter": 4,
+   "themes": [
+    "work_integrity"
+   ],
+   "text": "and that you make it your ambition to lead a quiet life, and to do your own business, and to work with your own hands, even as we instructed you; that you may walk properly toward those who are outside, and may have need of nothing.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Titus 2:7-8",
+   "book": "Titus",
+   "chapter": 2,
+   "themes": [
+    "work_integrity"
+   ],
+   "text": "in all things showing yourself an example of good works; in your teaching showing integrity, seriousness, incorruptibility, and soundness of speech that can’t be condemned; that he who opposes you may be ashamed, having no evil thing to say about us.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Daniel 6:4",
+   "book": "Daniel",
+   "chapter": 6,
+   "themes": [
+    "work_integrity"
+   ],
+   "text": "Then the presidents and the satraps sought to find occasion against Daniel as touching the kingdom; but they could find no occasion or fault, because he was faithful. There wasn’t any error or fault found in him.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "1 Corinthians 13:4-7",
+   "book": "1 Corinthians",
+   "chapter": 13,
+   "themes": [
+    "relationships"
+   ],
+   "text": "Love is patient and is kind; love doesn’t envy. Love doesn’t brag, is not proud, doesn’t behave itself inappropriately, doesn’t seek its own way, is not provoked, takes no account of evil; doesn’t rejoice in unrighteousness, but rejoices with the truth; bears all things, believes all things, hopes all things, endures all things.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Ephesians 5:21",
+   "book": "Ephesians",
+   "chapter": 5,
+   "themes": [
+    "relationships"
+   ],
+   "text": "subjecting yourselves to one another in the fear of Christ.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Proverbs 27:17",
+   "book": "Proverbs",
+   "chapter": 27,
+   "themes": [
+    "relationships"
+   ],
+   "text": "Iron sharpens iron; so a man sharpens his friend’s countenance.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Romans 12:10",
+   "book": "Romans",
+   "chapter": 12,
+   "themes": [
+    "relationships"
+   ],
+   "text": "In love of the brothers be tenderly affectionate to one another; in honor preferring one another;",
+   "translation": "WEB"
+  },
+  {
+   "ref": "1 John 4:7-8",
+   "book": "1 John",
+   "chapter": 4,
+   "themes": [
+    "relationships"
+   ],
+   "text": "Beloved, let us love one another, for love is of God; and everyone who loves has been born of God, and knows God. He who doesn’t love doesn’t know God, for God is love.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Philippians 2:4",
+   "book": "Philippians",
+   "chapter": 2,
+   "themes": [
+    "relationships"
+   ],
+   "text": "each of you not just looking to his own things, but each of you also to the things of others.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Hebrews 10:24-25",
+   "book": "Hebrews",
+   "chapter": 10,
+   "themes": [
+    "relationships"
+   ],
+   "text": "Let us consider how to provoke one another to love and good works, not forsaking our own assembling together, as the custom of some is, but exhorting one another; and so much the more, as you see the Day approaching.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Ecclesiastes 4:9-12",
+   "book": "Ecclesiastes",
+   "chapter": 4,
+   "themes": [
+    "relationships"
+   ],
+   "text": "Two are better than one, because they have a good reward for their labor. For if they fall, the one will lift up his fellow; but woe to him who is alone when he falls, and doesn’t have another to lift him up. Again, if two lie together, then they have warmth; but how can one keep warm alone? If a man prevails against one who is alone, two shall withstand him; and a threefold cord is not quickly broken.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Mark 9:24",
+   "book": "Mark",
+   "chapter": 9,
+   "themes": [
+    "doubt"
+   ],
+   "text": "Immediately the father of the child cried out with tears, “I believe. Help my unbelief!”",
+   "translation": "WEB"
+  },
+  {
+   "ref": "James 1:5-8",
+   "book": "James",
+   "chapter": 1,
+   "themes": [
+    "doubt"
+   ],
+   "text": "But if any of you lacks wisdom, let him ask of God, who gives to all liberally and without reproach; and it will be given to him. But let him ask in faith, without any doubting, for he who doubts is like a wave of the sea, driven by the wind and tossed. For that man shouldn’t think that he will receive anything from the Lord. He is a double-minded man, unstable in all his ways.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "John 20:24-29",
+   "book": "John",
+   "chapter": 20,
+   "themes": [
+    "doubt"
+   ],
+   "text": "But Thomas, one of the twelve, called Didymus, wasn’t with them when Jesus came. The other disciples therefore said to him, “We have seen the Lord!” But he said to them, “Unless I see in his hands the print of the nails, put my finger into the print of the nails, and put my hand into his side, I will not believe.” After eight days again his disciples were inside, and Thomas was with them. Jesus came, the doors being locked, and stood in the middle, and said, “Peace be to you.” Then he said to Thomas, “Reach here your finger, and see my hands. Reach here your hand, and put it into my side. Don’t be unbelieving, but believing.” Thomas answered him, “My Lord and my God!” Jesus said to him, “Because you have seen me, you have believed. Blessed are those who have not seen, and have believed.”",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Jude 1:22",
+   "book": "Jude",
+   "chapter": 1,
+   "themes": [
+    "doubt"
+   ],
+   "text": "On some have compassion, making a distinction,",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Matthew 11:2-6",
+   "book": "Matthew",
+   "chapter": 11,
+   "themes": [
+    "doubt"
+   ],
+   "text": "Now when John heard in the prison the works of Christ, he sent two of his disciples and said to him, “Are you he who comes, or should we look for another?” Jesus answered them, “Go and tell John the things which you hear and see: the blind receive their sight, the lame walk, the lepers are cleansed, the deaf hear, the dead are raised up, and the poor have good news preached to them. Blessed is he who finds no occasion for stumbling in me.”",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Psalms 34:17-18",
+   "book": "Psalms",
+   "chapter": 34,
+   "themes": [
+    "despair"
+   ],
+   "text": "The righteous cry, and Yahweh hears, and delivers them out of all their troubles. Yahweh is near to those who have a broken heart, and saves those who have a crushed spirit.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Psalms 42:5-11",
+   "book": "Psalms",
+   "chapter": 42,
+   "themes": [
+    "despair"
+   ],
+   "text": "Why are you in despair, my soul? Why are you disturbed within me? Hope in God! For I shall still praise him for the saving help of his presence. My God, my soul is in despair within me. Therefore I remember you from the land of the Jordan, the heights of Hermon, from the hill Mizar. Deep calls to deep at the noise of your waterfalls. All your waves and your billows have swept over me. Yahweh will command his loving kindness in the daytime. In the night his song shall be with me: a prayer to the God of my life. I will ask God, my rock, “Why have you forgotten me? Why do I go mourning because of the oppression of the enemy?” As with a sword in my bones, my adversaries reproach me, while they continually ask me, “Where is your God?” Why are you in despair, my soul? Why are you disturbed within me? Hope in God! For I shall still praise him, the saving help of my countenance, and my God.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "2 Corinthians 4:8-9",
+   "book": "2 Corinthians",
+   "chapter": 4,
+   "themes": [
+    "despair"
+   ],
+   "text": "We are pressed on every side, yet not crushed; perplexed, yet not to despair; pursued, yet not forsaken; struck down, yet not destroyed;",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Lamentations 3:19-24",
+   "book": "Lamentations",
+   "chapter": 3,
+   "themes": [
+    "despair"
+   ],
+   "text": "Remember my affliction and my misery, the wormwood and the bitterness. My soul still remembers them, and is bowed down within me. This I recall to my mind; therefore I have hope. It is because of Yahweh’s loving kindnesses that we are not consumed, because his compassion doesn’t fail. They are new every morning. Great is your faithfulness. “Yahweh is my portion,” says my soul. “Therefore I will hope in him.”",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Isaiah 43:1-3",
+   "book": "Isaiah",
+   "chapter": 43,
+   "themes": [
+    "despair"
+   ],
+   "text": "But now Yahweh who created you, Jacob, and he who formed you, Israel says: “Don’t be afraid, for I have redeemed you. I have called you by your name. You are mine. When you pass through the waters, I will be with you; and through the rivers, they will not overflow you. When you walk through the fire, you will not be burned, and flame will not scorch you. For I am Yahweh your God, the Holy One of Israel, your Savior. I have given Egypt as your ransom, Ethiopia and Seba in your place.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Romans 8:28",
+   "book": "Romans",
+   "chapter": 8,
+   "themes": [
+    "despair"
+   ],
+   "text": "We know that all things work together for good for those who love God, to those who are called according to his purpose.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Psalms 23:4",
+   "book": "Psalms",
+   "chapter": 23,
+   "themes": [
+    "despair"
+   ],
+   "text": "Even though I walk through the valley of the shadow of death, I will fear no evil, for you are with me. Your rod and your staff, they comfort me.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Revelation 21:4",
+   "book": "Revelation",
+   "chapter": 21,
+   "themes": [
+    "despair"
+   ],
+   "text": "He will wipe away every tear from their eyes. Death will be no more; neither will there be mourning, nor crying, nor pain, any more. The first things have passed away.”",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Romans 12:12",
+   "book": "Romans",
+   "chapter": 12,
+   "themes": [
+    "patience"
+   ],
+   "text": "rejoicing in hope; enduring in troubles; continuing steadfastly in prayer;",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Galatians 6:9",
+   "book": "Galatians",
+   "chapter": 6,
+   "themes": [
+    "patience"
+   ],
+   "text": "Let us not be weary in doing good, for we will reap in due season, if we don’t give up.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "James 5:7-8",
+   "book": "James",
+   "chapter": 5,
+   "themes": [
+    "patience"
+   ],
+   "text": "Be patient therefore, brothers, until the coming of the Lord. Behold, the farmer waits for the precious fruit of the earth, being patient over it, until it receives the early and late rain. You also be patient. Establish your hearts, for the coming of the Lord is at hand.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Psalms 27:14",
+   "book": "Psalms",
+   "chapter": 27,
+   "themes": [
+    "patience"
+   ],
+   "text": "Wait for Yahweh. Be strong, and let your heart take courage. Yes, wait for Yahweh.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Ecclesiastes 7:8",
+   "book": "Ecclesiastes",
+   "chapter": 7,
+   "themes": [
+    "patience"
+   ],
+   "text": "Better is the end of a thing than its beginning. The patient in spirit is better than the proud in spirit.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Philippians 2:3-4",
+   "book": "Philippians",
+   "chapter": 2,
+   "themes": [
+    "humility"
+   ],
+   "text": "doing nothing through rivalry or through conceit, but in humility, each counting others better than himself; each of you not just looking to his own things, but each of you also to the things of others.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Proverbs 22:4",
+   "book": "Proverbs",
+   "chapter": 22,
+   "themes": [
+    "humility"
+   ],
+   "text": "The result of humility and the fear of Yahweh is wealth, honor, and life.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Matthew 23:12",
+   "book": "Matthew",
+   "chapter": 23,
+   "themes": [
+    "humility"
+   ],
+   "text": "Whoever exalts himself will be humbled, and whoever humbles himself will be exalted.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "1 Peter 5:5",
+   "book": "1 Peter",
+   "chapter": 5,
+   "themes": [
+    "humility"
+   ],
+   "text": "Likewise, you younger ones, be subject to the elder. Yes, all of you clothe yourselves with humility, to subject yourselves to one another; for “God resists the proud, but gives grace to the humble.”",
+   "translation": "WEB"
+  },
+  {
+   "ref": "James 4:10",
+   "book": "James",
+   "chapter": 4,
+   "themes": [
+    "humility"
+   ],
+   "text": "Humble yourselves in the sight of the Lord, and he will exalt you.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Luke 14:11",
+   "book": "Luke",
+   "chapter": 14,
+   "themes": [
+    "humility"
+   ],
+   "text": "For everyone who exalts himself will be humbled, and whoever humbles himself will be exalted.”",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Romans 12:16",
+   "book": "Romans",
+   "chapter": 12,
+   "themes": [
+    "humility"
+   ],
+   "text": "Be of the same mind one toward another. Don’t set your mind on high things, but associate with the humble. Don’t be wise in your own conceits.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Galatians 5:22-23",
+   "book": "Galatians",
+   "chapter": 5,
+   "themes": [
+    "self_control"
+   ],
+   "text": "But the fruit of the Spirit is love, joy, peace, patience, kindness, goodness, faith, gentleness, and self-control. Against such things there is no law.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Proverbs 25:28",
+   "book": "Proverbs",
+   "chapter": 25,
+   "themes": [
+    "self_control"
+   ],
+   "text": "Like a city that is broken down and without walls is a man whose spirit is without restraint.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "2 Peter 1:5-7",
+   "book": "2 Peter",
+   "chapter": 1,
+   "themes": [
+    "self_control"
+   ],
+   "text": "Yes, and for this very cause adding on your part all diligence, in your faith supply moral excellence; and in moral excellence, knowledge; and in knowledge, self-control; and in self-control perseverance; and in perseverance godliness; and in godliness brotherly affection; and in brotherly affection, love.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "1 Corinthians 9:24-27",
+   "book": "1 Corinthians",
+   "chapter": 9,
+   "themes": [
+    "self_control"
+   ],
+   "text": "Don’t you know that those who run in a race all run, but one receives the prize? Run like that, that you may win. Every man who strives in the games exercises self-control in all things. Now they do it to receive a corruptible crown, but we an incorruptible. I therefore run like that, not aimlessly. I fight like that, not beating the air, but I beat my body and bring it into submission, lest by any means, after I have preached to others, I myself should be rejected.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Titus 2:11-12",
+   "book": "Titus",
+   "chapter": 2,
+   "themes": [
+    "self_control"
+   ],
+   "text": "For the grace of God has appeared, bringing salvation to all men, instructing us to the intent that, denying ungodliness and worldly lusts, we would live soberly, righteously, and godly in this present age;",
+   "translation": "WEB"
+  },
+  {
+   "ref": "2 Timothy 1:7",
+   "book": "2 Timothy",
+   "chapter": 1,
+   "themes": [
+    "self_control"
+   ],
+   "text": "For God didn’t give us a spirit of fear, but of power, love, and self-control.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Romans 13:14",
+   "book": "Romans",
+   "chapter": 13,
+   "themes": [
+    "self_control"
+   ],
+   "text": "But put on the Lord Jesus Christ, and make no provision for the flesh, for its lusts.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Matthew 5:27-28",
+   "book": "Matthew",
+   "chapter": 5,
+   "themes": [
+    "lust_purity"
+   ],
+   "text": "“You have heard that it was said, ‘You shall not commit adultery;’ but I tell you that everyone who gazes at a woman to lust after her has committed adultery with her already in his heart.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "1 Thessalonians 4:3-5",
+   "book": "1 Thessalonians",
+   "chapter": 4,
+   "themes": [
+    "lust_purity"
+   ],
+   "text": "For this is the will of God: your sanctification, that you abstain from sexual immorality, that each one of you know how to control his own body in sanctification and honor, not in the passion of lust, even as the Gentiles who don’t know God;",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Galatians 5:26",
+   "book": "Galatians",
+   "chapter": 5,
+   "themes": [
+    "envy"
+   ],
+   "text": "Let’s not become conceited, provoking one another, and envying one another.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "James 3:14-16",
+   "book": "James",
+   "chapter": 3,
+   "themes": [
+    "envy"
+   ],
+   "text": "But if you have bitter jealousy and selfish ambition in your heart, don’t boast and don’t lie against the truth. This wisdom is not that which comes down from above, but is earthly, sensual, and demonic. For where jealousy and selfish ambition are, there is confusion and every evil deed.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Psalms 73:2-3",
+   "book": "Psalms",
+   "chapter": 73,
+   "themes": [
+    "envy"
+   ],
+   "text": "But as for me, my feet were almost gone. My steps had nearly slipped. For I was envious of the arrogant, when I saw the prosperity of the wicked.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Psalms 15:1-4",
+   "book": "Psalms",
+   "chapter": 15,
+   "themes": [
+    "lying_integrity"
+   ],
+   "text": "Yahweh, who shall dwell in your sanctuary? Who shall live on your holy hill? He who walks blamelessly does what is right, and speaks truth in his heart; He who doesn’t slander with his tongue, nor does evil to his friend, nor casts slurs against his fellow man; In whose eyes a vile man is despised, but who honors those who fear Yahweh; he who keeps an oath even when it hurts, and doesn’t change;",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Proverbs 10:9",
+   "book": "Proverbs",
+   "chapter": 10,
+   "themes": [
+    "lying_integrity"
+   ],
+   "text": "He who walks blamelessly walks surely, but he who perverts his ways will be found out.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Zechariah 8:16",
+   "book": "Zechariah",
+   "chapter": 8,
+   "themes": [
+    "lying_integrity"
+   ],
+   "text": "These are the things that you shall do: speak every man the truth with his neighbor. Execute the judgment of truth and peace in your gates,",
+   "translation": "WEB"
+  },
+  {
+   "ref": "John 8:34-36",
+   "book": "John",
+   "chapter": 8,
+   "themes": [
+    "addiction"
+   ],
+   "text": "Jesus answered them, “Most certainly I tell you, everyone who commits sin is the bondservant of sin. A bondservant doesn’t live in the house forever. A son remains forever. If therefore the Son makes you free, you will be free indeed.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Philippians 4:13",
+   "book": "Philippians",
+   "chapter": 4,
+   "themes": [
+    "addiction"
+   ],
+   "text": "I can do all things through Christ, who strengthens me.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Psalms 139:7-10",
+   "book": "Psalms",
+   "chapter": 139,
+   "themes": [
+    "loneliness"
+   ],
+   "text": "Where could I go from your Spirit? Or where could I flee from your presence? If I ascend up into heaven, you are there. If I make my bed in Sheol, behold, you are there! If I take the wings of the dawn, and settle in the uttermost parts of the sea; Even there your hand will lead me, and your right hand will hold me.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Ephesians 4:31-32",
+   "book": "Ephesians",
+   "chapter": 4,
+   "themes": [
+    "forgiveness"
+   ],
+   "text": "Let all bitterness, wrath, anger, outcry, and slander, be put away from you, with all malice. And be kind to one another, tender hearted, forgiving each other, just as God also in Christ forgave you.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Matthew 6:14-15",
+   "book": "Matthew",
+   "chapter": 6,
+   "themes": [
+    "forgiveness"
+   ],
+   "text": "“For if you forgive men their trespasses, your heavenly Father will also forgive you. But if you don’t forgive men their trespasses, neither will your Father forgive your trespasses.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Proverbs 11:1",
+   "book": "Proverbs",
+   "chapter": 11,
+   "themes": [
+    "work_integrity"
+   ],
+   "text": "A false balance is an abomination to Yahweh, but accurate weights are his delight.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Ephesians 6:5-8",
+   "book": "Ephesians",
+   "chapter": 6,
+   "themes": [
+    "work_integrity"
+   ],
+   "text": "Servants, be obedient to those who according to the flesh are your masters, with fear and trembling, in singleness of your heart, as to Christ; not in the way of service only when eyes are on you, as men pleasers; but as servants of Christ, doing the will of God from the heart; with good will doing service, as to the Lord, and not to men; knowing that whatever good thing each one does, he will receive the same again from the Lord, whether he is bound or free.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Psalms 13:1-6",
+   "book": "Psalms",
+   "chapter": 13,
+   "themes": [
+    "doubt"
+   ],
+   "text": "How long, Yahweh? Will you forget me forever? How long will you hide your face from me? How long shall I take counsel in my soul, having sorrow in my heart every day? How long shall my enemy triumph over me? Behold, and answer me, Yahweh, my God. Give light to my eyes, lest I sleep in death; Lest my enemy say, “I have prevailed against him”; Lest my adversaries rejoice when I fall. But I trust in your loving kindness. My heart rejoices in your salvation. I will sing to Yahweh, because he has been good to me.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Hebrews 11:1",
+   "book": "Hebrews",
+   "chapter": 11,
+   "themes": [
+    "doubt"
+   ],
+   "text": "Now faith is assurance of things hoped for, proof of things not seen.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Isaiah 55:8-9",
+   "book": "Isaiah",
+   "chapter": 55,
+   "themes": [
+    "doubt"
+   ],
+   "text": "“For my thoughts are not your thoughts, and your ways are not my ways,” says Yahweh. “For as the heavens are higher than the earth, so are my ways higher than your ways, and my thoughts than your thoughts.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Colossians 1:11",
+   "book": "Colossians",
+   "chapter": 1,
+   "themes": [
+    "patience"
+   ],
+   "text": "strengthened with all power, according to the might of his glory, for all endurance and perseverance with joy;",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Isaiah 40:31",
+   "book": "Isaiah",
+   "chapter": 40,
+   "themes": [
+    "patience"
+   ],
+   "text": "But those who wait for Yahweh will renew their strength. They will mount up with wings like eagles. They will run, and not be weary. They will walk, and not faint.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "Romans 5:3-5",
+   "book": "Romans",
+   "chapter": 5,
+   "themes": [
+    "patience"
+   ],
+   "text": "Not only this, but we also rejoice in our sufferings, knowing that suffering produces perseverance; and perseverance, proven character; and proven character, hope: and hope doesn’t disappoint us, because God’s love has been poured out into our hearts through the Holy Spirit who was given to us.",
+   "translation": "WEB"
+  },
+  {
+   "ref": "1 Thessalonians 5:6-8",
+   "book": "1 Thessalonians",
+   "chapter": 5,
+   "themes": [
+    "self_control"
+   ],
+   "text": "so then let’s not sleep, as the rest do, but let’s watch and be sober. For those who sleep, sleep in the night; and those who are drunk are drunk in the night. But let us, since we belong to the day, be sober, putting on the breastplate of faith and love, and, for a helmet, the hope of salvation.",
+   "translation": "WEB"
+  }
+ ]
+}
