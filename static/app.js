@@ -538,7 +538,7 @@ async function sendChat(opts = {}) {
   $("#typing").classList.remove("hidden"); $("#typing").scrollIntoView({ block: "end" });
   try {
     LAST = await api("/api/chat", { text, sos: !!opts.sos });
-    $("#traceBox").textContent = JSON.stringify(LAST.trace, null, 2);
+    $("#traceBox").textContent = showTrace(LAST.trace);
     await loadChat();
     refreshDue();
   } catch (e) {
@@ -620,7 +620,7 @@ async function submitCheckin(btn) {
   btn.disabled = true; btn.textContent = "…";
   try {
     const r = await api("/api/checkin", body);
-    $("#traceBox").textContent = JSON.stringify(r.trace, null, 2);
+    $("#traceBox").textContent = showTrace(r.trace);
     const out = $(".ciout", f);
     if (r.mode === "crisis") {
       out.innerHTML = `<div class="bubble them crisis"><h3>This sounds like more than a check-in should carry.</h3>
@@ -730,24 +730,40 @@ async function loadBrowse() {
   $("#peopleList").innerHTML = r.people.map((p) => personCard(p)).join("") || `<div class="card"><p class="sub">No one matches these filters yet.</p></div>`;
 }
 async function connectTo(id, btn, theme) {
-  try { await api("/api/connect", { to_id: id, theme: theme || $("#peopleTheme").value }); }
+  let r;
+  try { r = await api("/api/connect", { to_id: id, theme: theme || $("#peopleTheme").value }); }
   catch { alert("That connection isn't available."); return; }
-  btn.outerHTML = `<span class="ok">Request sent. You'll see their contact once they accept.</span>`;
+  btn.outerHTML = r.demo_auto_accepted
+    ? `<span class="ok">Connected. (Demo profiles accept automatically so you can see the flow; real people choose.) See Your connections to call or text.</span>`
+    : `<span class="ok">Request sent. You'll be able to call or text once they accept.</span>`;
   loadConnections();
 }
 async function loadConnections() {
   if (!PROFILE || !isPerson()) return;
   const r = await api("/api/connections");
   $("#connList").innerHTML = r.connections.length ? r.connections.map((c) => `
-    <div class="row" style="justify-content:space-between"><span><b>${esc(c.other_handle)}</b> · ${esc(pretty(c.theme))} · ${c.direction} · <i>${esc(c.status)}</i></span>
+    <div class="row" style="justify-content:space-between"><span><b>${esc(c.other_handle)}</b>${c.other_synthetic ? ' <span class="demo">demo</span>' : ""} · ${esc(pretty(c.theme))} · ${c.direction} · <i>${esc(c.status)}</i></span>
     ${c.direction === "received" && c.status === "pending" ? `<span><button class="primary small" onclick="decide('${c.id}','accepted')">Accept</button>
       <button class="ghost small" onclick="decide('${c.id}','declined')">Decline</button> <button class="ghost small" onclick="decide('${c.id}','blocked')">Block</button></span>` : ""}
-    ${c.status === "accepted" ? `<button class="ghost small" onclick="reveal('${c.id}', this)">Show contact</button>` : ""}</div>`).join("")
-    : `<p class="sub">No connections yet.</p>`;
+    ${c.status === "accepted" ? `<button class="primary small" onclick="reveal('${c.id}', this)">Call or text</button>` : ""}</div>`).join("")
+    : `<p class="sub">No connections yet. Ask someone in Suggested fellowships or Find people to connect.</p>
+       <button class="ghost small" onclick="addDemoConnections(this)">Try with demo connections</button>
+       <span class="sub tiny">Adds two demo connections and one demo request, so you can see how calling, texting, and accepting work.</span>`;
+}
+async function addDemoConnections(btn) {
+  btn.disabled = true;
+  try { await api("/api/demo/connections", {}); } catch (e) { alert(e.data?.error === "not_eligible" ? "Add your age (18+) in Settings to use Fellowship." : "Couldn't add demo connections."); }
+  loadConnections();
 }
 async function decide(id, status) { await api(`/api/connect/${id}/decide`, { status }); loadConnections(); }
 async function reveal(id, btn) {
-  try { const r = await api("/api/contact/" + id); btn.outerHTML = `<span class="ok">${esc(r.method)}: ${esc(r.value)}${r.synthetic ? " (demo number)" : ""}</span>`; }
+  try {
+    const r = await api("/api/contact/" + id);
+    const num = String(r.value || "").replace(/[^\d+]/g, "");
+    btn.outerHTML = `<span class="contactbtns"><a class="primary small btnlink" href="tel:${esc(num)}">Call</a>
+      <a class="ghost small btnlink" href="sms:${esc(num)}">Text</a>
+      <span class="sub tiny">${esc(r.value)}${r.synthetic ? " · demo number, won't connect" : ""}${r.method ? " · prefers " + esc(r.method) : ""}</span></span>`;
+  }
   catch (e) { alert(e.data?.message || "Not available yet."); }
 }
 
@@ -792,6 +808,16 @@ function renderListing() {
 }
 
 // ======================================================== UNDER THE HOOD
+// The trace view shows token counts per call; the model name is left out of
+// the app's display (the project owner asked for it not to appear in the UI).
+function showTrace(tr) {
+  const strip = (o) => {
+    if (Array.isArray(o)) return o.map(strip);
+    if (o && typeof o === "object") return Object.fromEntries(Object.entries(o).filter(([k]) => k !== "model").map(([k, v]) => [k, strip(v)]));
+    return o;
+  };
+  return JSON.stringify(strip(tr), null, 2);
+}
 async function loadStats() {
   const s = await api("/api/stats");
   $("#statsBox").innerHTML = `<div class="stats">
@@ -1050,7 +1076,7 @@ async function checkinSend(box, spoken) {
   thread.insertAdjacentHTML("beforeend", `<div class="bubble me">${paras(text)}</div><div class="bubble them typing"><span></span><span></span><span></span></div>`);
   const r = await api("/api/checkin/chat", { theme: box._theme, messages: box._msgs });
   $(".typing", thread)?.remove();
-  $("#traceBox").textContent = JSON.stringify(r.trace, null, 2);
+  $("#traceBox").textContent = showTrace(r.trace);
   if (r.mode === "crisis") {
     box._done = true;
     const say = "This sounds like more than a check-in should carry. Please reach out to one of these right now. " + r.resources.map((x) => x.name + ". " + x.contact + ".").join(" ");

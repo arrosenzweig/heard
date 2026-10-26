@@ -610,7 +610,13 @@ def connect():
     if not target or target.get("kind") != "person" or not matcher.fellowship_eligible(p)             or not matcher.fellowship_eligible(target):
         return jsonify({"error": "not_allowed"}), 403
     cid = store.request_connection(p["id"], d.get("to_id"), d.get("theme"))
-    return jsonify({"ok": True, "connection_id": cid})
+    # Demo profiles are not real people and can never press Accept. So that the
+    # whole flow (request -> accept -> call or text) can be seen, a demo profile
+    # accepts at once, and the interface says so. Real people always decide.
+    demo = bool(target.get("synthetic"))
+    if demo:
+        store.decide_connection(cid, "accepted")
+    return jsonify({"ok": True, "connection_id": cid, "demo_auto_accepted": demo})
 
 
 @app.route("/api/connect/<cid>/decide", methods=["POST"])
@@ -638,8 +644,46 @@ def connections():
     for c in store.connections_for(p["id"]):
         other = store.get_profile(c["to_id"] if c["from_id"] == p["id"] else c["from_id"])
         rows.append(dict(c, other_handle=(other or {}).get("handle", "?"),
+                         other_synthetic=bool((other or {}).get("synthetic")),
                          direction="sent" if c["from_id"] == p["id"] else "received"))
     return jsonify({"connections": rows})
+
+
+@app.route("/api/demo/connections", methods=["POST"])
+def demo_connections():
+    """For demos only, and only when the user asks: two accepted connections
+    with demo people (so Call/Text and SOS "reach a person" can be shown) and
+    one incoming request to accept or decline. Every one is a labelled demo
+    profile; nothing here creates a connection with a real person."""
+    p, err = require_profile()
+    if err:
+        return err
+    if not matcher.fellowship_eligible(p):
+        return jsonify({"error": "not_eligible"}), 403
+    prof = dict(p)
+    prof["tradition"] = _as_list(p.get("tradition"))
+    existing = {c["to_id"] if c["from_id"] == p["id"] else c["from_id"] for c in store.connections_for(p["id"])}
+    demos = [d for d in store.all_profiles("person")
+             if d.get("synthetic") and d.get("open_to_contact") and matcher.fellowship_eligible(d)
+             and d["id"] not in existing and d["id"] != p["id"]]
+    ranked = []
+    for theme in matcher.themes_of(prof, "fighting") or ["temptation"]:
+        for m in matcher.suggest(prof, theme, k=5):
+            if m["id"] in {d["id"] for d in demos} and m["id"] not in [r[0] for r in ranked]:
+                ranked.append((m["id"], theme))
+    for d in demos:  # top up if their struggles matched fewer than three
+        if d["id"] not in [r[0] for r in ranked]:
+            ranked.append((d["id"], (d.get("overcame") or d.get("fighting") or ["temptation"])[0]))
+    made = []
+    for pid, theme in ranked[:2]:
+        cid = store.request_connection(p["id"], pid, theme)
+        store.decide_connection(cid, "accepted")
+        made.append(pid)
+    if len(ranked) > 2:
+        pid, theme = ranked[2]
+        store.request_connection(pid, p["id"], theme)   # incoming, left pending
+        made.append(pid)
+    return jsonify({"ok": True, "created": len(made)})
 
 
 @app.route("/api/contact/<cid>")
@@ -761,11 +805,11 @@ def trace(rid):
 
 
 def _seed_if_empty():
-    """A fresh clone has an empty database. Load the labelled demo profiles so
-    the People and Churches tabs show something. Never runs twice."""
-    if not store.all_profiles("person") and not store.all_profiles("church"):
-        import seed_demo
-        seed_demo.main()
+    """Make sure the labelled demo people and churches exist (fixed ids, so this
+    is safe to run on every start and never duplicates them). Real profiles
+    are never touched."""
+    import seed_demo
+    seed_demo.main()
 
 
 if __name__ == "__main__":

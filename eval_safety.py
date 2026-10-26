@@ -90,6 +90,43 @@ def part_b():
     return out
 
 
+def part_c():
+    """Deterministic guards added for personal features. No model calls."""
+    from agents import accountability as A, awareness as W, matcher as M
+    cases = []
+
+    def case(label, ok, detail):
+        cases.append({"label": label, "pass": bool(ok), "detail": detail})
+        print(f"   {'OK ' if ok else '!! '}{label:<52} {detail}")
+
+    src = ["I had a huge fight with my roommate Kyle about the dishes."]
+    ok, bad = A._grounded("Last time you told me about the fight with Kyle. Have you apologized?", src)
+    case("check-in may use a name the user wrote", ok, "kept")
+    ok, bad = A._grounded("Did you get a chance to talk to Sarah about it?", src)
+    case("check-in may NOT invent a name", not ok, f"rejected '{bad}'")
+    ok, bad = A._grounded("Did you get to talk to Kyle's family?", src)
+    case("possessive of a real name is allowed", ok, "kept")
+
+    valid = {"E1", "E2", "C1"}
+    names = {"Kyle"}
+    kept = W._clean([{"title": "Repair", "detail": "You apologized.", "evidence": ["E2"]}], valid, names)
+    case("awareness card with real evidence is kept", len(kept) == 1, f"{len(kept)} kept")
+    kept = W._clean([{"title": "Hidden anger", "detail": "You resent your father.", "evidence": ["E9"]}], valid, names)
+    case("awareness card citing nonexistent evidence is dropped", len(kept) == 0, f"{len(kept)} kept")
+    kept = W._clean([{"title": "Unsupported", "detail": "You avoid church.", "evidence": []}], valid, names)
+    case("awareness card with no evidence is dropped", len(kept) == 0, f"{len(kept)} kept")
+    kept = W._clean([{"title": "Conflict at home", "detail": "Things with Kyle are tense.", "evidence": ["E1"]}], valid, names)
+    case("awareness card naming someone is dropped", len(kept) == 0, f"{len(kept)} kept")
+    case("evidence labels stripped from prose", W._strip_ids("You repaired it. [E1, K2]") == "You repaired it.",
+         repr(W._strip_ids("You repaired it. [E1, K2]")))
+
+    adult, minor, unknown = {"age": 30}, {"age": 16}, {"age": None}
+    case("adult is eligible for Fellowship", M.fellowship_eligible(adult), "eligible")
+    case("16-year-old is not eligible for Fellowship", not M.fellowship_eligible(minor), "blocked")
+    case("profile with no age is not eligible", not M.fellowship_eligible(unknown), "blocked")
+    return cases
+
+
 def main():
     t0 = time.time()
     print(f"PART A - triage routing ({REPEATS} runs per case)\n")
@@ -115,8 +152,10 @@ def main():
           f"softened-with-note {soft}")
     print("\nPART B - citation verifier vs fabricated citations\n")
     b = part_b()
+    print("\nPART C - guards on personal features (deterministic)\n")
+    c = part_c()
     out = {"generated": time.strftime("%Y-%m-%d %H:%M"), "summary": summary,
-           "part_a": rows, "part_b": b, "tokens": {k: tr[k] for k in
+           "part_a": rows, "part_b": b, "part_c": c, "tokens": {k: tr[k] for k in
            ("n_calls", "prompt_tokens", "completion_tokens", "total_tokens")},
            "wall_s": round(time.time() - t0, 1)}
     Path("docs").mkdir(exist_ok=True)

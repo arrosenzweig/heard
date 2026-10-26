@@ -1,0 +1,69 @@
+{
+ "generated": "2026-10-26 17:14",
+ "features": {
+  "talk_reply": {
+   "calls": 2,
+   "prompt_tokens": 2256,
+   "completion_tokens": 858,
+   "total_tokens": 3114,
+   "wall_s": 12.3,
+   "note": "triage + counsel"
+  },
+  "crisis_reply": {
+   "calls": 1,
+   "prompt_tokens": 531,
+   "completion_tokens": 165,
+   "total_tokens": 696,
+   "wall_s": 6.1,
+   "note": "triage only, then halts"
+  },
+  "sos_reply": {
+   "calls": 2,
+   "prompt_tokens": 2416,
+   "completion_tokens": 706,
+   "total_tokens": 3122,
+   "wall_s": 11.3,
+   "note": "brief, urgent counsel"
+  },
+  "belief_restatement": {
+   "calls": 1,
+   "prompt_tokens": 308,
+   "completion_tokens": 109,
+   "total_tokens": 417,
+   "wall_s": 6.3,
+   "note": "own-words approval loop"
+  },
+  "custom_struggle_category": {
+   "calls": 1,
+   "prompt_tokens": 529,
+   "completion_tokens": 246,
+   "total_tokens": 775,
+   "wall_s": 4.3,
+   "note": "suggests a category for a struggle in the user's words"
+  },
+  "checkin_conversation": {
+   "calls": 5,
+   "prompt_tokens": 2212,
+   "completion_tokens": 1313,
+   "total_tokens": 3525,
+   "wall_s": 21.2,
+   "note": "personal opener + up to 3 turns"
+  },
+  "checkin_quick_no_note": {
+   "calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "wall_s": 0.0,
+   "note": "three taps, trend by rule"
+  },
+  "awareness_reflection": {
+   "calls": 1,
+   "prompt_tokens": 752,
+   "completion_tokens": 1509,
+   "total_tokens": 2261,
+   "wall_s": 12.7,
+   "note": "one call, cached until new history"
+  }
+ }
+}

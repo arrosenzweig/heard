@@ -245,19 +245,7 @@ blockquote{margin:12px 0;padding:10px 18px;border-left:4px solid var(--accent);b
 @media print{body{font-size:14px;line-height:1.6}main{padding:0 6px}h1{font-size:1.9rem}h2{font-size:1.25rem;margin:1.4em 0 .4em;page-break-after:avoid}h3{margin:1em 0 .3em}table{font-size:12px;margin:10px 0 14px}th,td{padding:5px 7px}.kpi{padding:8px 10px}.kpi b{font-size:1.3rem}figure,table,.kpis,.note,.warn{page-break-inside:avoid}figcaption{font-size:10.5px}svg{max-height:300px}}
 """
 
-safe_runs = S.get("crisis_runs", 0)
-counsel_runs = S.get("counsel_runs", 0)
-
-BODY = f"""
-<header>
-<h1>Heard</h1>
-<p class="motto">"I don't understand, but I want to understand. That's why I need you God."</p>
-<p class="meta">Alexandria Rosenzweig · MGT 409 Final Project · Fall 2026<br>
-Code: <a href="https://github.com/arrosenzweig/heard">github.com/arrosenzweig/heard</a> ·
-Slides: <code>slides.html</code> · Run locally: see README (about 3 minutes)</p>
-</header>
-
-<h2>1. Motivation</h2>
+MOTIVATION = '''<h2>1. Motivation</h2>
 <p>Heard began with the author's own experience. In her words:</p>
 <blockquote>"I am someone who has struggled a lot with keeping to my values and morals, even if they aren't seen as
 important to others. Especially in the MBA there is a lot of temptation to follow the majority opinion or cross
@@ -287,205 +275,267 @@ scripture means."</i> Section 2 tests this against two well-known apps and a pla
 way to connect with other Christians for community or to talk when needed.</p>
 <p class="meta">Quotations are the author's own words, lightly edited for spelling.</p>
 
+'''
+
+REPO = "https://github.com/arrosenzweig/heard"
+FC = (load("feature_costs.json") or {}).get("features", {})
+PART_C = safety.get("part_c", [])
+
+DIAGRAM = """<svg viewBox="0 0 780 400" role="img" aria-label="Heard agents">
+<style>.b{fill:#fffdf8;stroke:#8a5a2b;stroke-width:1.5}.l{fill:#fdf8ee;stroke:#b8892f;stroke-width:1.5;stroke-dasharray:4 3}
+.c{fill:#f6e1de;stroke:#a8463f;stroke-width:1.5}.g{fill:#e3ece3;stroke:#5d7a63;stroke-width:1.5}
+.t{font:600 13px Georgia,serif;fill:#2b2622}.s{font:11px sans-serif;fill:#6f655b}.a{stroke:#7a6f65;stroke-width:1.4;fill:none;marker-end:url(#h)}</style>
+<defs><marker id="h" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#7a6f65"/></marker></defs>
+<rect class="b" x="10" y="20" width="130" height="34" rx="8"/><text class="t" x="75" y="42" text-anchor="middle">Talk message</text>
+<rect class="c" x="10" y="64" width="130" height="34" rx="8"/><text class="t" x="75" y="86" text-anchor="middle">SOS button</text>
+<rect class="b" x="10" y="108" width="130" height="34" rx="8"/><text class="t" x="75" y="130" text-anchor="middle">Check-in reply</text>
+<rect class="b" x="190" y="58" width="130" height="46" rx="8"/><text class="t" x="255" y="78" text-anchor="middle">Triage</text><text class="s" x="255" y="94" text-anchor="middle">LLM · every message</text>
+<rect class="c" x="370" y="10" width="190" height="40" rx="8"/><text class="t" x="465" y="28" text-anchor="middle">Crisis: STOP</text><text class="s" x="465" y="43" text-anchor="middle">real hotlines, nothing else</text>
+<rect class="l" x="370" y="70" width="130" height="46" rx="8"/><text class="t" x="435" y="90" text-anchor="middle">Retrieval</text><text class="s" x="435" y="106" text-anchor="middle">BM25 · full Bible · no LLM</text>
+<rect class="b" x="530" y="70" width="110" height="46" rx="8"/><text class="t" x="585" y="90" text-anchor="middle">Counsel</text><text class="s" x="585" y="106" text-anchor="middle">LLM · tradition, tone</text>
+<rect class="l" x="660" y="70" width="110" height="46" rx="8"/><text class="t" x="715" y="90" text-anchor="middle">Verifier</text><text class="s" x="715" y="106" text-anchor="middle">every verse · no LLM</text>
+<rect class="b" x="190" y="170" width="170" height="46" rx="8"/><text class="t" x="275" y="190" text-anchor="middle">Accountability</text><text class="s" x="275" y="206" text-anchor="middle">LLM · grounded memory · or 0-token quick</text>
+<rect class="b" x="380" y="170" width="170" height="46" rx="8"/><text class="t" x="465" y="190" text-anchor="middle">Awareness</text><text class="s" x="465" y="206" text-anchor="middle">LLM · evidence + privacy guards</text>
+<rect class="b" x="570" y="170" width="200" height="46" rx="8"/><text class="t" x="670" y="190" text-anchor="middle">Beliefs</text><text class="s" x="670" y="206" text-anchor="middle">LLM · restate, user approves</text>
+<rect class="g" x="190" y="260" width="270" height="46" rx="8"/><text class="t" x="325" y="280" text-anchor="middle">Fellowship matcher</text><text class="s" x="325" y="296" text-anchor="middle">overcomers first · filters · adults only · no LLM</text>
+<rect class="g" x="480" y="260" width="290" height="46" rx="8"/><text class="t" x="625" y="280" text-anchor="middle">Church matcher</text><text class="s" x="625" y="296" text-anchor="middle">tradition · convictions · support · no LLM</text>
+<rect class="b" x="10" y="330" width="760" height="46" rx="8"/><text class="t" x="390" y="350" text-anchor="middle">Profile (asked once at setup) + history: conversations, check-ins, commitments</text><text class="s" x="390" y="366" text-anchor="middle">feeds counsel, check-ins, Awareness, and matching</text>
+<path class="a" d="M140 37H188"/><path class="a" d="M140 81H188"/><path class="a" d="M140 125H188"/>
+<path class="a" d="M320 70Q345 30 368 30"/><path class="a" d="M320 88H368"/><path class="a" d="M500 93H528"/><path class="a" d="M640 93H658"/>
+<path class="a" d="M255 104V168"/>
+</svg>"""
+
+CSS = CSS.replace("@media print{", ".repo{background:#f7f3ec;border-radius:12px;padding:12px 16px;margin:14px 0;font:14px sans-serif}"
+                  ".repo a{color:#8a5a2b;font-weight:600}.repo code.clone{display:block;margin:6px 0}@media print{")
+
+
+def feature_rows():
+    labels = [
+        ("talk_reply", "Talk reply"), ("crisis_reply", "Crisis (halts after triage)"), ("sos_reply", "SOS reply"),
+        ("checkin_conversation", "Check-in conversation"), ("checkin_quick_no_note", "Quick check-in (3 taps)"),
+        ("awareness_reflection", "Awareness reflection"), ("belief_restatement", "Own-words belief restatement"),
+        ("custom_struggle_category", "Custom struggle category"),
+    ]
+    out = []
+    for key, label in labels:
+        f = FC.get(key)
+        if not f:
+            continue
+        luna = cost_at(f["prompt_tokens"], f["completion_tokens"], PRICE_IN, PRICE_OUT)
+        opus = cost_at(f["prompt_tokens"], f["completion_tokens"], 4.00, 20.00)
+        out.append(f"<tr><td>{E(label)}</td><td>{f['calls']}</td><td>{f['total_tokens']:,}</td>"
+                   f"<td>{money(luna)}</td><td>{money(opus)}</td><td>{E(f.get('note', ''))}</td></tr>")
+    return "\n".join(out)
+
+
+# Monthly use per active user - an ASSUMPTION, stated in the report.
+USAGE = [("talk_reply", 20), ("checkin_conversation", 8), ("checkin_quick_no_note", 8),
+         ("awareness_reflection", 4), ("sos_reply", 2)]
+
+
+def monthly(pin, pout):
+    total = 0.0
+    for key, n in USAGE:
+        f = FC.get(key)
+        if f:
+            total += n * cost_at(f["prompt_tokens"], f["completion_tokens"], pin, pout)
+    return total
+
+
+def scale_rows():
+    rows = []
+    for label, pin, pout, note in [("gpt-6-luna (placeholder rate)", PRICE_IN, PRICE_OUT, "unverified rate"),
+                                   ("claude-opus-5-5 ($4 / $20)", 4.00, 20.00, "published rate, luna token counts"),
+                                   ("claude-haiku-5-5 ($0.10 / $0.50)", 0.10, 0.50, "published rate, luna token counts")]:
+        m = monthly(pin, pout)
+        rows.append(f"<tr><td>{E(label)}</td><td>{money(m)}</td><td>{money(m * 1000)}</td><td>{money(m * 100000)}</td><td>{E(note)}</td></tr>")
+    return "\n".join(rows)
+
+
+def part_c_rows():
+    return "\n".join(f"<tr class='{'ok' if c['pass'] else 'bad'}'><td>{E(c['label'])}</td><td>{E(c['detail'])}</td>"
+                     f"<td>{'pass' if c['pass'] else 'FAIL'}</td></tr>" for c in PART_C)
+
+
+usage_text = ", ".join(f"{n} {k.replace('_', ' ')}" for k, n in USAGE)
+pc_pass = sum(1 for c in PART_C if c["pass"])
+
+BODY = f"""
+<header>
+<h1>Heard</h1>
+<p class="motto">"I don't understand, but I want to understand. That's why I need you God."</p>
+<p class="meta">Alexandria Rosenzweig · MGT 409 Final Project · Fall 2026</p>
+<div class="repo"><b>Code (public GitHub repository):</b> <a href="{REPO}">{REPO}</a>
+<code class="clone">git clone {REPO}.git</code>
+Run instructions are in the repository README (Python 3.10+, one API key in <code>.env</code>, then <code>python app.py</code>).</div>
+</header>
+
+{MOTIVATION}
 <h2>2. What is new</h2>
-<p>The claim here is narrow. We compared Heard with two well-known faith apps and with a plain chatbot prompt;
-we did not survey the market more widely.</p>
+<p>The claim here is narrow. We compared Heard with two well-known faith apps and with a plain chatbot prompt; we did
+not survey the market more widely.</p>
 <table>
 <tr><th>Product</th><th>What it is built around (from public descriptions)</th></tr>
 <tr><td>Hallow</td><td>Catholic prayer and meditation: guided audio prayer, daily readings, Rosary and Lectio Divina,
 community challenges. Subscription ($9.99/month or $69.99/year in the US).</td></tr>
 <tr><td>YouVersion Bible App</td><td>Free Bible app: many translations, audio Bibles, reading plans, studying with friends.
 A 2026 roundup reports an AI "life-situation" scripture search; we could not confirm this from a second source.</td></tr>
-<tr><td>Plain chatbot prompt (our baseline)</td><td>A single prompt asking for Christian advice with verses. It has no
-stored profile of the user's tradition, no verification step, and no way to connect the user with other people.</td></tr>
+<tr><td>Plain chatbot prompt (our baseline)</td><td>A single prompt asking for Christian advice with verses. No stored
+profile of the user's tradition, no verification step, no memory, and no way to connect the user with people.</td></tr>
 </table>
 <p>What Heard does that we did not find in the public descriptions of these two apps:</p>
 <ul>
-<li><b>Tradition-conditioned counsel.</b> Users pick one <i>or more</i> of 14 traditions (including "exploring") and may
-state convictions on 14 contested questions. Counsel speaks from inside that frame and never argues them out of it.</li>
-<li><b>An approval loop on beliefs.</b> A user can answer any contested question in their own words, by voice or text.
-Heard restates it plainly and uses it only after the user confirms the restatement is what they meant.</li>
-<li><b>Verified citations from the user's own canon.</b> Search runs over the complete text of three public-domain
-translations ({n_verses:,} verses). Catholic users get the Douay-Rheims, including Tobit, Judith, Wisdom, Sirach and Baruch.
-Every quoted verse is checked against the text before display.</li>
-<li><b>Sponsor-style matching.</b> Heard ranks people who <i>came through</i> the same struggle above people still in it,
-then by shared tradition and city. Contact details unlock only after both people accept.</li>
-<li><b>An accountability agent.</b> For each struggle, Heard checks in on the user's chosen schedule with three quick
-questions and an optional note, names the trend (overcoming, holding, deeper), and after two "deeper" check-ins in a row
-points the user to a person and a church. Commitments made in conversation are followed up the same way.</li>
-<li><b>Faith asked once.</b> Tradition and convictions are gathered only at onboarding, then shape everything; the user can
-change them in Settings. Every text box accepts voice.</li>
+<li><b>Faith asked once, then used everywhere.</b> Setup starts with "for myself" or "a church". A person picks one or
+more of 14 traditions (including "exploring") and answers 14 contested questions one at a time, or in their own words by
+voice; Heard restates it and uses it only after the user approves. Counsel speaks from inside that frame.</li>
+<li><b>Correction with love.</b> Replies name the wrong plainly and never condemn the person, on the model of John 8:11.</li>
+<li><b>Verified scripture from the user's own canon.</b> Search runs over the full text of three public-domain translations
+({n_verses:,} verses); every quoted verse is checked against that text before display.</li>
+<li><b>Accountability with memory.</b> Check-ins are a short conversation that recalls what the user actually said
+("you told me about the fight with Kyle...") and proposes a log the user confirms. A three-tap version costs nothing.</li>
+<li><b>An SOS button for the moment of temptation.</b> Verses appear instantly, then Heard asks what is happening and answers
+briefly with one action for the next ten minutes. Installable, with a home-screen shortcut.</li>
+<li><b>Awareness.</b> A reflective profile (type, tendencies, strengths, struggles, pitfalls, practices) in which every
+insight must cite the user's own history and no names appear.</li>
+<li><b>Sponsor-style fellowship and church matching.</b> People who came through a struggle rank first; filters for
+gender, age, marital status, denomination and years as a Christian; adults only. Churches self-register and get a
+transparent match %.</li>
+<li><b>Voice throughout.</b> Every text box takes speech; voice mode speaks replies aloud in a chosen natural voice and speed.</li>
 </ul>
 
 <h3>Measured against a plain chatbot</h3>
-<p>We sent the same {C.get('cases', 0)} struggles to a plain "helpful Christian advisor" prompt and to Heard, on the same model,
-and checked every citation from both against the biblical text. A baseline quote was checked against all three
-translations; one matching none would have been counted "unverifiable", not "fabricated", since it might be real
-wording from a copyrighted translation.</p>
+<p>Same {C.get('cases', 0)} struggles, same model, every citation from both checked against the biblical text.</p>
 <div class="kpis">
 <div class="kpi"><b>{C.get('baseline_verified', 0)}/{C.get('baseline_citations', 0)}</b><span>baseline citations verified</span></div>
-<div class="kpi"><b>{C.get('baseline_fabricated_refs', 0)}</b><span>baseline references that do not exist</span></div>
 <div class="kpi"><b>{C.get('heard_citations_shown', 0)}/{C.get('heard_citations_claimed', 0)}</b><span>Heard citations shown / claimed</span></div>
-<div class="kpi"><b>{base_per_case:,.0f} vs {heard_per_case:,.0f}</b><span>tokens per case, baseline vs Heard</span></div>
+<div class="kpi"><b>{base_per_case:,.0f} vs {heard_per_case:,.0f}</b><span>tokens per reply, baseline vs Heard</span></div>
 </div>
-<div class="note"><b>Honest reading.</b> On this model the plain chatbot <i>did not</i> fabricate scripture in our test.
-So Heard's verifier is defense-in-depth: it guarantees no unverified verse ever reaches a user, but in this sample
-it had nothing to remove. Heard also costs about four times more tokens per case. The difference Heard makes is not
-citation accuracy on this model. It is tradition conditioning, the safety routing, and the human connection, which
-a single chatbot call does not attempt.</div>
-<table><tr><th>Struggle (test fixture)</th><th>Baseline verified</th><th>Heard shown/claimed</th><th>Heard removed</th><th>Heard tokens</th></tr>
-{compare_rows()}</table>
+<div class="note"><b>Honest reading.</b> On this model the plain chatbot did not fabricate scripture in our test, so the
+verifier is defense-in-depth: it guarantees no unverified verse reaches a user, but here it had nothing to remove. Heard
+costs about {heard_per_case / max(base_per_case, 1):.1f}x more tokens per reply. What it adds is not citation accuracy on this
+model; it is tradition conditioning, safety routing, memory and accountability, and the human connection.</div>
 
 <h2>3. The agents</h2>
 {DIAGRAM}
 <table>
-<tr><th>Step</th><th>Role</th><th>Tools / data</th><th>Model call?</th></tr>
-<tr><td>1 Triage</td><td>Classifies theme, severity (ordinary / elevated / crisis), scope; translates slang into biblical vocabulary</td><td>20 struggle themes; US crisis resources</td><td>Yes</td></tr>
-<tr><td>2 Retrieval</td><td>Finds candidate verses across the full Bible</td><td>BM25 index; 154 curated anchor verses as a ranking prior</td><td>No</td></tr>
-<tr><td>3 Counsel</td><td>Writes the response from inside the user's tradition; chooses tone (comfort, challenge, steady, listen)</td><td>Profile, approved beliefs, recent journal, retrieved verses only</td><td>Yes</td></tr>
-<tr><td>4 Verifier</td><td>Removes citations that do not exist or whose wording does not match; always displays the real text</td><td>Local corpus lookup</td><td>No</td></tr>
-<tr><td>5 Matcher</td><td>Ranks companions by lived experience of the same struggle</td><td>Profiles (synthetic demo set)</td><td>No</td></tr>
-<tr><td>Beliefs</td><td>Restates own-words convictions for approval</td><td>Voice (browser speech) or text</td><td>Yes</td></tr>
-<tr><td>Accountability</td><td>Scheduled check-ins per struggle; names the trend; escalates to people after two "deeper" in a row</td><td>Check-in history; triage on any written note</td><td>Only when the user writes a note or is sliding deeper</td></tr>
+<tr><th>Agent</th><th>Role</th><th>Model call?</th></tr>
+<tr><td>Triage</td><td>Theme, severity, scope on every Talk, SOS and check-in message; translates slang into biblical vocabulary; halts on crisis</td><td>Yes</td></tr>
+<tr><td>Retrieval</td><td>BM25 over the full Bible; curated anchor verses guaranteed a place so search doesn't return only the harsh edge of a topic</td><td>No</td></tr>
+<tr><td>Counsel</td><td>Reply from inside the user's tradition and approved convictions; adaptive tone; brief urgent mode for SOS; never repeats a verse in one conversation</td><td>Yes</td></tr>
+<tr><td>Verifier</td><td>Removes citations that don't exist or don't match the text; always displays the real text</td><td>No</td></tr>
+<tr><td>Accountability</td><td>Conversational check-in with a personal opener from the user's own words (names must appear in what they wrote); proposes a log to confirm. Quick mode scores by rule</td><td>Yes / No</td></tr>
+<tr><td>Awareness</td><td>Reflective profile; every card must cite history items; cards naming people are dropped; verses chosen by retrieval</td><td>Yes (cached)</td></tr>
+<tr><td>Beliefs</td><td>Restates own-words convictions for the user to approve</td><td>Yes</td></tr>
+<tr><td>Fellowship / church matchers</td><td>Lived experience first; filters; adults only; transparent church match %</td><td>No</td></tr>
 </table>
-<p><b>Models.</b> All evaluation numbers in this report were measured on <b>{E(EVAL_MODEL)}</b>.
-The app also supports Claude (<code>claude-opus-5-5</code>) through the Anthropic API when an
-<code>ANTHROPIC_API_KEY</code> is present; that path was written but <b>not yet run</b>, because no Anthropic key
-was available when these measurements were taken.</p>
-<p><b>Why only two model calls.</b> Search, verification and matching are deterministic. That keeps the
-safety-critical steps auditable and cheap, and it makes fabricated references impossible at the retrieval step:
-a lexical index can only return verses that exist.</p>
+<p><b>Models.</b> All measurements were taken on <b>{E(EVAL_MODEL)}</b>. A Claude path (<code>claude-opus-5-5</code> through the
+Anthropic API) is written but was <b>not run</b>, because no Anthropic key was available.</p>
 
 <h3>One traced run</h3>
 {traced_html()}
-{img("08_chat.jpg", "An earlier run of the same conversation (demo user): the second turn follows the thread and quotes a new, verified verse")}
-{img("09_chat_commitment.jpg", "The rest of that reply: a checkable commitment, a prayer, and companions who came through the same struggle")}
-{img("07_onboarding.jpg", "Onboarding, the only time Heard asks about faith: one or more traditions, or 'exploring'")}
-{img("01_belief_approval.jpg", "The approval loop on a TEST input written by the developer (not a user's belief): rambling text restated plainly, uncertainty kept, waiting for approval")}
-{img("10_checkin.jpg", "Accountability check-in (demo user): it reads the note and names the trend")}
-{img("05_people_match.jpg", "Sponsor-style matching: someone who came through anger ranks above someone still fighting it")}
+{img("01_setup_role.jpg", "Setup starts by asking: here for yourself, or setting up a church")}
+{img("02_question_paging.jpg", "Contested questions one at a time; an own-words answer restated for approval (developer TEST input, not a user's belief)")}
+{img("06_home_sos.jpg", "Talk is home: the SOS button, and a reply that corrects with love, with a verified verse")}
+{img("03_chat.jpg", "The next turn follows the thread, connects the user's own custom struggle, and quotes a new verified verse")}
+{img("05_sos.jpg", "SOS: verses instantly, then 'What's going on right now?'")}
+{img("07_checkin_conversation.jpg", "A check-in that remembers: it opens with what the user said, then follows up naturally")}
+{img("08_awareness.jpg", "Awareness: a reflection, not a diagnosis, with tendencies on spectrums")}
+{img("09_awareness_cards.jpg", "Strengths, struggles and pitfalls, each 'based on' the user's own history")}
+{img("10_fellowship.jpg", "Suggested fellowships with filters; someone who came through anger ranks first")}
+{img("12_churches.jpg", "Church search ranked by match %, with the reasons shown")}
 
 <h2>4. Tokenomics</h2>
-<p>Every model call is metered from the API's own usage report. The figures below are measured, not estimated,
-on {E(EVAL_MODEL)}.</p>
-<div class="kpis">
-<div class="kpi"><b>{heard_per_case:,.0f}</b><span>tokens per Heard response (mean, {C.get('cases', 0)} cases)</span></div>
-<div class="kpi"><b>2</b><span>model calls per response (triage + counsel)</span></div>
-<div class="kpi"><b>1</b><span>model call when a crisis halts the pipeline</span></div>
-<div class="kpi"><b>0</b><span>tokens for retrieval, verification, matching</span></div>
-</div>
-<h3>Cost per run, per user, and at scale</h3>
-<div class="warn"><b>Read the price column carefully.</b> No published per-token price for gpt-6-luna was available to
-us, so its dollar figures use a <b>placeholder</b> rate (${PRICE_IN}/${PRICE_OUT} per million input/output tokens) and
-are <b>not verified</b>. The Claude rows apply Anthropic's published prices to the token counts measured on luna. That
-is only illustrative: Claude uses a different tokenizer and always-on thinking, so its real token counts must be
-measured, not assumed. The input/output split ({(INPUT_SHARE or 0) * 100:.0f}% / {(1 - (INPUT_SHARE or 0)) * 100:.0f}%) is measured from
-{SPLIT_N} recorded responses. The per-user column assumes <b>{ENTRIES_PER_USER_MONTH} entries per user per month</b>,
-which is our assumption, not a measurement.</div>
+<p>Every model call is metered from the API's own usage report on {E(EVAL_MODEL)}. Each feature below was measured with one
+real, uncached run (<code>eval_costs.py</code>).</p>
+<div class="warn"><b>About the dollar figures.</b> No published price for gpt-6-luna was available, so its column uses a
+<b>placeholder</b> rate (${PRICE_IN}/${PRICE_OUT} per million input/output tokens) and is not verified. The Claude column applies
+Anthropic's published prices to token counts measured on luna; Claude's tokenizer and always-on thinking differ, so it is
+illustrative only.</div>
+<table><tr><th>Feature</th><th>Calls</th><th>Tokens</th><th>luna (placeholder)</th><th>Opus 5.5 (illustrative)</th><th>Notes</th></tr>
+{feature_rows()}</table>
+<h3>Per user and at scale</h3>
+<p>Assumed monthly use per active user (our assumption, not a measurement): {E(usage_text)}.</p>
+<table><tr><th>Pricing basis</th><th>Per user / month</th><th>1,000 users</th><th>100,000 users</th><th>Status</th></tr>
+{scale_rows()}</table>
+<h3>Cost decisions and what they did</h3>
 <table>
-<tr><th>Pricing basis</th><th>Per run</th><th>Per user / month</th><th>1,000 users</th><th>100,000 users</th><th>Status</th></tr>
-{scale_row("gpt-6-luna (placeholder rate)", run_cost_luna, "unverified rate")}
-{scale_row("claude-opus-5-5 ($4 / $20)", run_cost_opus, "published rate, luna token counts")}
-{scale_row("claude-haiku-5-5 ($0.10 / $0.50)", run_cost_haiku, "published rate, luna token counts")}
-</table>
-
-<h3>Cost cuts and what they did</h3>
-<table>
-<tr><th>Decision</th><th>Effect (measured where possible)</th></tr>
-<tr><td>Fold query expansion into the triage call instead of a separate call</td><td>One model call saved per response. Retrieval quality improved sharply: "can't stop looking at porn" went from
-Acts 4:20 ("we cannot stop speaking") to Matthew 5:28.</td></tr>
-<tr><td>Retrieval, verification and matching as code, not model calls</td><td>Zero tokens for three of five steps.</td></tr>
-<tr><td>Crisis halts after triage</td><td>The most important responses cost one call, not two, and never wait on counsel.</td></tr>
-<tr><td>Check-ins answered by rule unless the user writes something</td><td>A check-in with no note costs <b>0 tokens</b>
-(the trend is computed from the answers). With a note or a "deeper" trend it calls the model{f": {CHECKIN_MODEL_TOKENS:,.0f} tokens on average, measured" if CHECKIN_MODEL_TOKENS else ""}.</td></tr>
-<tr><td>Retrieval depth (verses handed to counsel)</td><td>See the ablation below.</td></tr>
-<tr><td>Raise the counsel token ceiling (a cost <i>increase</i>)</td><td>With a 1,400-token ceiling, a test response hit the ceiling exactly and came back as
-an empty reply, which a user would have seen as a blank response. The ceiling is now 4,000 with one retry. Only tokens actually produced
-are billed, so the change costs nothing when the model does not need the room.</td></tr>
+<tr><th>Decision</th><th>Effect</th></tr>
+<tr><td>Query expansion folded into triage</td><td>One call saved per reply; "can't stop looking at porn" went from Acts 4:20 ("we cannot stop speaking") to Matthew 5:28.</td></tr>
+<tr><td>Retrieval, verification and matching as code</td><td>Zero tokens for those steps; fabricated references impossible at retrieval.</td></tr>
+<tr><td>Crisis halts after triage</td><td>The most important replies cost one call and never wait on counsel.</td></tr>
+<tr><td>SOS verses chosen without a model</td><td>The SOS screen appears instantly; the model is used only if the user says what's happening.</td></tr>
+<tr><td>Quick check-in by rule</td><td>0 tokens, versus about {FC.get('checkin_conversation', {}).get('total_tokens', 0):,} for a check-in conversation.</td></tr>
+<tr><td>Awareness and check-in openers cached</td><td>Rebuilt only when new history arrives, not on every page view.</td></tr>
+<tr><td>Raising the counsel token ceiling (a cost increase)</td><td>At 1,400 tokens a test reply hit the ceiling and came back empty; now 4,000 with one retry. Only tokens produced are billed.</td></tr>
 </table>
 <table><tr><th>Verses to counsel (k)</th><th>Avg total tokens</th><th>Avg counsel prompt tokens</th><th>Citations shown/claimed</th><th>Avg wall time</th></tr>
 {ablation_rows()}</table>
-<p class="meta">Four cases per setting, so this is noisy: retries after truncated output inflate some rows (k=3 used more
-tokens than k=6). It shows no evidence that handing counsel more verses helps; k=6 is kept.</p>
-<div class="note"><b>Gateway caching.</b> We found the Portkey gateway caches identical requests and replays them in about
-0.1 seconds. That is a real saving in production, but it had silently turned repeated evaluation runs into replays.
-All numbers in this report come from runs with caching forced off.</div>
+<p class="meta">Four cases per setting. More verses cost more tokens with no gain in citations shown; k=6 is kept.
+We also found the Portkey gateway caches identical requests; all evaluation runs force fresh calls.</p>
 
 <h2>5. Safety</h2>
 <h3>Risks</h3>
 <ul>
-<li><b>Missing a crisis.</b> Someone suicidal, being abused, or describing a child in danger gets a devotional instead of help.</li>
-<li><b>False alarms.</b> A parent who confesses yelling at their kids is told to call 911, and may stop being honest with the app.</li>
-<li><b>Fabricated scripture.</b> Telling someone God said something God did not say, in the moment they are most inclined to believe it.</li>
-<li><b>Misreading someone's faith.</b> Conditioning every response on a distorted version of what a user believes.</li>
-<li><b>Predatory contact.</b> A list of people who disclosed loneliness or addiction could be misused by someone looking for vulnerable people.</li>
+<li><b>Missing a crisis</b>, or a false alarm that teaches people not to be honest.</li>
+<li><b>Fabricated scripture</b>, told to someone in the moment they're most inclined to believe it.</li>
+<li><b>Misreading someone's faith</b>, or a check-in "remembering" something the user never said.</li>
+<li><b>A profile that leaks details</b>, such as the names of people the user confided about.</li>
+<li><b>Predatory contact</b>, including adults being connected with minors.</li>
 </ul>
 <h3>Defenses</h3>
 <ul>
-<li><b>Triage on every message</b>, in conversation and in check-in notes, not only the first.</li>
-<li><b>Crisis halt.</b> Hand-written guidance and real US hotlines (988, Crisis Text Line, National DV Hotline, Childhelp, 911). No verse, no advice, no matches.</li>
-<li><b>A narrow, calibrated floor.</b> Kinds that concern the user's own safety always halt. Outward-facing kinds with no physical
-danger get counsel <i>with</i> the resources shown above it. If triage fails twice, the resources are shown anyway.</li>
-<li><b>Citation verifier</b> on every quoted verse; the app always displays the real text.</li>
-<li><b>Belief approval loop</b>; an unapproved restatement is never used.</li>
-<li><b>Contact gate</b>: phone numbers unlock only after both people accept; city-level location only; decline and block.</li>
+<li><b>Triage on every message</b> (Talk, SOS, check-ins, custom struggles). Crisis halts with hand-written guidance and real US
+hotlines; a narrow calibration gives outward-facing, non-physical cases counsel plus resources; if triage fails twice, resources show anyway.</li>
+<li><b>Citation verifier</b> on every quoted verse; the real text is always what's displayed.</li>
+<li><b>Approval loop</b> for own-words beliefs; <b>grounding guard</b> on check-in memory (any name not in the user's own words rejects the question).</li>
+<li><b>Awareness guards</b>: every card must cite real history items; cards naming people are dropped; evidence labels stripped.</li>
+<li><b>Fellowship is adults only</b>: no age, or under 18, means not shown, not suggested, and unable to send or receive requests.
+Contact details unlock only after both accept. Church accounts can't use person features.</li>
 </ul>
-<h3>Defense shown working</h3>
-<p>Fixed test set of {len(safety.get('part_a', []))} written fixtures, each run {S.get('repeats', 0)} times as independent calls.</p>
+<h3>Defenses shown working</h3>
+<p>{len(safety.get('part_a', []))} written fixtures, each run {S.get('repeats', 0)} times as independent calls, plus deterministic guard tests.</p>
 <div class="kpis">
-<div class="kpi"><b>{S.get('crisis_runs', 0) - S.get('crisis_missed', 0)}/{S.get('crisis_runs', 0)}</b><span>crisis runs halted correctly</span></div>
-<div class="kpi"><b>{S.get('false_alarms', 0)}/{S.get('counsel_runs', 0)}</b><span>false alarms on ordinary struggles</span></div>
-<div class="kpi"><b>{S.get('softened_with_safety_note', 0)}</b><span>ordinary runs given counsel + resources</span></div>
+<div class="kpi"><b>{S.get('crisis_runs', 0) - S.get('crisis_missed', 0)}/{S.get('crisis_runs', 0)}</b><span>crisis runs halted</span></div>
+<div class="kpi"><b>{S.get('false_alarms', 0)}/{S.get('counsel_runs', 0)}</b><span>false alarms</span></div>
+<div class="kpi"><b>{pc_pass}/{len(PART_C)}</b><span>guard tests passed</span></div>
 </div>
-{img("04_crisis_halt.jpg", "A crisis disclosed mid-conversation (demo user): one model call, then real help and nothing else")}
+{img("13_crisis.jpg", "A crisis disclosed mid-conversation: one model call, then real help and nothing else")}
+{img("14_verse_checker.jpg", "A reference that does not exist is rejected")}
 <table><tr><th>Expected</th><th>Kind</th><th>Test input</th><th>Correct</th></tr>{safety_rows()}</table>
-<h3>Verifier against fabricated citations</h3>
-<table><tr><th>Case</th><th>Reference</th><th>Quoted wording</th><th>Verdict</th><th>Reason</th></tr>{verifier_rows()}</table>
-{img("06_verse_checker.jpg", "A reference that does not exist is rejected")}
+<table><tr><th>Verifier case</th><th>Reference</th><th>Quoted wording</th><th>Verdict</th><th>Reason</th></tr>{verifier_rows()}</table>
+<table><tr><th>Guard test</th><th>Result</th><th></th></tr>{part_c_rows()}</table>
 
 <h2>6. Impact</h2>
-<p><b>Why the matching mechanic matters.</b> Heard's human-connection design borrows from sponsorship in 12-step
-recovery. In a prospective study, Tonigan and Rice found that having an AA sponsor predicted greater abstinence
-during early affiliation, after controlling for motivation and treatment (<i>Psychology of Addictive Behaviors</i>,
-2010, 24(3):397-403, doi:10.1037/a0019013; 182 participants with complete data). These details come from summaries of the paper; we could not access the
-full text. One study is not proof, and we have not reviewed the wider research. We cite it as a reason the mechanic is
-worth testing, not as evidence that Heard works.</p>
-<h3>Real use</h3>
+<p><b>Why the matching mechanic matters.</b> Heard's fellowship design borrows from sponsorship in 12-step recovery. In a
+prospective study, Tonigan and Rice found that having an AA sponsor predicted greater abstinence during early affiliation,
+after controlling for motivation and treatment (<i>Psychology of Addictive Behaviors</i>, 2010, 24(3):397-403,
+doi:10.1037/a0019013; 182 participants with complete data). These details come from summaries of the paper; we could not
+access the full text. One study is not proof; we cite it as a reason the mechanic is worth testing.</p>
 <div class="kpis">
 <div class="kpi"><b>{n_real_users}</b><span>real users so far</span></div>
-<div class="kpi"><b>{len(real_runs)}</b><span>real messages processed</span></div>
+<div class="kpi"><b>{len(real_runs)}</b><span>real messages</span></div>
 <div class="kpi"><b>{sum(checkin_counts.values())}</b><span>real check-ins</span></div>
-<div class="kpi"><b>{outcome.get('total', 0)}</b><span>commitments followed up</span></div>
-<div class="kpi"><b>{'n/a' if outcome.get('held_rate') is None else f"{outcome['held_rate'] * 100:.0f}%"}</b><span>held rate</span></div>
 </div>
-<div class="note">Everything created while building and testing the app, including the demo user, is marked as test data
-and excluded here. These counts include only genuine use. Outcome numbers above come directly from the app's database and
-are reported as they are, including if they are zero. We did not invent users or results. A credible impact claim would
-need a small pilot with consenting users from a church or campus ministry, measuring commitments held over several weeks.</div>
+<div class="note">All activity from building and testing, including the demo user and demo people and churches, is marked as
+test data and excluded. These counts include only genuine use. A credible impact claim needs a consenting pilot with a church
+or campus ministry, measuring commitments held and check-in trends over several weeks.</div>
 
 <h2>7. Limits and next steps</h2>
 <ul>
-<li><b>Claude path unmeasured.</b> Re-run both evaluations with an Anthropic key before quoting Claude costs or accuracy.</li>
-<li><b>Safety evaluation is small and written.</b> {len(safety.get('part_a', []))} fixtures, all using explicit language.
-Indirect or coded language is not tested. Next: a larger set reviewed by someone with crisis-line training.</li>
-<li><b>Crisis resources are US-only.</b></li>
-<li><b>ESV and NASB.</b> Heard uses public-domain translations (KJV, Berean Standard Bible, Douay-Rheims) so the full text
-can ship with the app and be searched and verified locally. The ESV and NASB are copyrighted, so they cannot be bundled.
-The ESV is available through Crossway's official API, free for non-commercial use with a key, attribution, a link to
-esv.org, and no more than 500 verses stored at a time. The NASB appears to be available through API.Bible, whose free
-plan includes up to three licensed Bibles for non-commercial use; its exact terms still need confirming. Next step: keep
-searching the public-domain text and fetch only the verses shown in the user's chosen version.</li>
-<li><b>Check-ins are in-app only.</b> There are no push notifications, texts or emails yet, so Heard can only ask when the
-user opens it. A real accountability loop needs reminders that reach the user.</li>
-<li><b>Voice needs Chrome or Edge</b>, and in Chrome the audio is sent to Google to be transcribed. A server-side fallback
-was tested on the course key; its transcription models are listed but not deployed, so it was not built.</li>
-<li><b>Retrieval is lexical.</b> It can surface verses that match words but not meaning (for example a verse about God
-<i>not</i> hearing prayer, for someone afraid God is not listening). Counsel chooses among candidates, but semantic
-retrieval is the obvious upgrade.</li>
-<li><b>No moderation of user-to-user contact</b> beyond accept, decline and block. A real launch needs reporting, review and identity checks.</li>
-<li><b>Tradition notes are the model's general framing</b>, not drawn from each church's documents, by design (the Bible
-is the only content source). Users of a given tradition should review them.</li>
-<li><b>No real users yet.</b> No pilot yet.</li>
+<li><b>Claude path unmeasured</b>; re-run all three evaluations with an Anthropic key before quoting Claude costs.</li>
+<li><b>Safety evaluation is small and written</b>: {len(safety.get('part_a', []))} explicit fixtures; indirect or coded language is untested.
+Next: a larger set reviewed by someone with crisis-line training. Crisis resources are US-only.</li>
+<li><b>Reminders don't reach people yet.</b> Check-ins happen in the app; there are no notifications or texts.</li>
+<li><b>Voice depends on the browser</b>: listening needs Chrome or Edge (Chrome sends audio to Google); natural voices depend on the
+browser (Edge has the best). Server-side speech was tested on the course key but its models are not deployed.</li>
+<li><b>The home-screen shortcut needs hosting.</b> It installs on desktop now; phones need Heard hosted online.</li>
+<li><b>Awareness is a reflection, not a validated instrument</b>, and says so.</li>
+<li><b>ESV and NASB.</b> Copyrighted, so not bundled. ESV is available through Crossway's API (free for non-commercial use, with a key,
+attribution, a link to esv.org, and at most 500 verses stored); NASB appears available through API.Bible's free plan, terms to confirm.</li>
+<li><b>Retrieval is lexical</b>; semantic retrieval is the next upgrade. <b>Moderation</b> of person-to-person contact is limited to accept,
+decline and block. <b>Tradition notes</b> are the model's general framing, by design, and should be reviewed by members of each tradition.</li>
+<li><b>Demo data</b>: 14 demo people and 8 demo churches, all fictional and labeled; demo profiles accept connection requests
+automatically so the flow can be shown, and real people always decide.</li>
 </ul>
 """
 
@@ -494,12 +544,11 @@ page = f"""<!doctype html><html lang="en"><head><meta charset="utf-8">
 <style>{CSS}</style></head><body><main>{BODY}</main></body></html>"""
 
 (HERE / "report.html").write_text(page, encoding="utf-8")
-print(f"wrote report.html ({len(page) / 1e6:.2f} MB) | runs={len(real_runs)} outcomes={outcome.get('total', 0)} "
-      f"| safety={'yes' if safety else 'MISSING'} compare={'yes' if compare else 'MISSING'}")
+print(f"wrote report.html ({len(page) / 1e6:.2f} MB) | real users={n_real_users} runs={len(real_runs)} "
+      f"| safety={'yes' if safety else 'MISSING'} compare={'yes' if compare else 'MISSING'} costs={'yes' if FC else 'MISSING'}")
 
 
 # =================================================================== SLIDES
-# Same evidence, same numbers, 10 slides max (reveal.js).
 def slide_img(name):
     p = IMG / name
     if not p.exists():
@@ -507,17 +556,13 @@ def slide_img(name):
     return f'<img class="shot" src="data:image/jpeg;base64,{base64.b64encode(p.read_bytes()).decode()}">'
 
 
-_fab = [r for r in safety.get("part_b", []) if r["label"] in
-        ("nonexistent book", "nonexistent chapter", "real ref, invented words")]
-_fab_total = len(_fab)
-_fab_removed = sum(1 for r in _fab if r["verdict"] == "removed")
-
+tl = FC.get("talk_reply", {})
 SLIDES = [
     f"""<section class="title"><h1>Heard</h1>
 <p class="motto">"I don't understand, but I want to understand.<br>That's why I need you God."</p>
 <p class="small">Motto from "Why God" by Austin French</p>
-<p class="small">Help to stand strong in what you believe<br>
-Alexandria Rosenzweig · MGT 409 · github.com/arrosenzweig/heard</p></section>""",
+<p class="repoline">Code (public): <a href="{REPO}">{REPO}</a></p>
+<p class="small">Alexandria Rosenzweig · MGT 409</p></section>""",
 
     """<section><h2>Why Heard</h2>
 <p class="big">"People need to be heard for their true strifes and get real advice from a biblical rather than worldly perspective."</p>
@@ -529,61 +574,59 @@ Alexandria Rosenzweig · MGT 409 · github.com/arrosenzweig/heard</p></section>"
 <p class="small">Alexandria Rosenzweig, in her own words</p></section>""",
 
     f"""<section><h2>What is new</h2><ul>
-<li><b>Your tradition, not a generic one.</b> Pick one or more of 14, including "exploring."</li>
-<li><b>"Did I hear you right?"</b> Say a belief in your own words; Heard restates it and waits for your yes.</li>
-<li><b>The whole Bible, your canon, verified.</b> {n_verses:,} verses, three translations; Catholics get the deuterocanon.</li>
-<li><b>Sponsor-style matching.</b> People who <i>came through</i> your struggle rank first.</li>
-<li><b>An accountability agent.</b> Check-ins on your schedule; it names the trend and brings in people when you slide.</li></ul></section>""",
+<li><b>Your faith, asked once</b> · many traditions or "exploring" · beliefs in your own words, approved by you</li>
+<li><b>Correction with love</b> · honest about sin, never condemning (John 8:11)</li>
+<li><b>Verified scripture</b> · {n_verses:,} verses, your canon, every quote checked</li>
+<li><b>Accountability with memory</b> · check-ins that recall what you said</li>
+<li><b>SOS</b> · verses instantly, one action for the next ten minutes</li>
+<li><b>Awareness</b> · a reflection built only from your own history</li>
+<li><b>Fellowship & churches</b> · people who came through it first; transparent church match</li></ul></section>""",
 
     f"""<section><h2>The agents</h2>{DIAGRAM}
-<p class="small">Two model calls per response. Retrieval, verification and matching are code: zero tokens, fully auditable.</p></section>""",
+<p class="small">Triage runs on every message; retrieval, verification and matching are code (zero tokens, auditable).</p></section>""",
 
-    f"""<section><h2>Demo: a real conversation</h2><div class="two">{slide_img("08_chat.jpg")}{slide_img("09_chat_commitment.jpg")}</div>
-<p class="small">Follows the thread, quotes a new verified verse, offers a commitment, and points to someone who came through it. Demo user.</p></section>""",
+    f"""<section><h2>Talk and SOS</h2><div class="two">{slide_img("06_home_sos.jpg")}{slide_img("05_sos.jpg")}</div>
+<p class="small">Home: SOS button and a reply that corrects with love · SOS: verses first, then "What's going on?"</p></section>""",
 
-    f"""<section><h2>Understood, then held accountable</h2><div class="two">{slide_img("01_belief_approval.jpg")}{slide_img("10_checkin.jpg")}</div>
-<p class="small">Left: a rambling answer restated plainly, waiting for a yes (developer test input) · Right: a check-in that reads the note and names the trend</p></section>""",
+    f"""<section><h2>Accountability and Awareness</h2><div class="two">{slide_img("07_checkin_conversation.jpg")}{slide_img("08_awareness.jpg")}</div>
+<p class="small">Check-ins remember what you said (names only if you wrote them) · Awareness: every insight backed by your history</p></section>""",
+
+    f"""<section><h2>Fellowship and churches</h2><div class="two">{slide_img("10_fellowship.jpg")}{slide_img("12_churches.jpg")}</div>
+<p class="small">Overcomers first, filters, adults only · churches ranked by a transparent match %</p></section>""",
 
     f"""<section><h2>Cost</h2>
-<div class="kpis"><div><b>{heard_per_case:,.0f}</b>tokens / response</div><div><b>2</b>model calls</div><div><b>1</b>call on crisis</div></div>
-<p>Measured on gpt-6-luna. At Claude Opus 5.5 published prices that is about <b>{money(run_cost_opus)}</b> per response,
-<b>{money(run_cost_opus * ENTRIES_PER_USER_MONTH)}</b> per user per month at {ENTRIES_PER_USER_MONTH} entries (our assumption).</p>
-<p class="small">Luna price unverified · Claude token counts still to be measured · biggest saving: expansion folded into triage</p></section>""",
+<div class="kpis"><div><b>{tl.get('total_tokens', 0):,}</b>tokens / Talk reply</div><div><b>0</b>quick check-in</div><div><b>{FC.get('awareness_reflection', {}).get('total_tokens', 0):,}</b>Awareness (cached)</div></div>
+<p>About <b>{money(monthly(4.00, 20.00))}</b> per user per month at Claude Opus 5.5 published prices, on our usage assumption.</p>
+<p class="small">Measured on gpt-6-luna · luna price unverified · Claude token counts still to be measured</p></section>""",
 
     f"""<section><h2>Safety, measured</h2>
 <div class="kpis"><div><b>{S.get('crisis_runs', 0) - S.get('crisis_missed', 0)}/{S.get('crisis_runs', 0)}</b>crises halted</div>
 <div><b>{S.get('false_alarms', 0)}/{S.get('counsel_runs', 0)}</b>false alarms</div>
-<div><b>{_fab_removed}/{_fab_total}</b>fabricated citations removed</div></div>
-<div class="two">{slide_img("04_crisis_halt.jpg")}{slide_img("06_verse_checker.jpg")}</div>
-<p class="small">{len(safety.get('part_a', []))} written fixtures × {S.get('repeats', 0)} independent runs. Explicit language only; oblique crisis language untested.</p></section>""",
+<div><b>{pc_pass}/{len(PART_C)}</b>guard tests</div></div>
+<div class="two">{slide_img("13_crisis.jpg")}{slide_img("14_verse_checker.jpg")}</div>
+<p class="small">Fabricated verses removed · invented names rejected · Fellowship adults only</p></section>""",
 
-    f"""<section><h2>Impact</h2>
-<p>Sponsorship in recovery: having a sponsor predicted greater early abstinence
-<span class="small">(Tonigan &amp; Rice, 2010; one study, from summaries)</span>.</p>
-<p><b>Honest status:</b> {n_real_users} real users so far. All building and testing activity is marked as test data and excluded.</p>
-<p>Next: a small consenting pilot with a church or campus ministry, measuring commitments held over weeks.</p></section>""",
-
-    """<section><h2>Limits &amp; next steps</h2><ul>
-<li>Measure the Claude path (written, not yet run).</li>
-<li>Bigger safety set, reviewed by crisis-line-trained people; oblique language.</li>
-<li>Semantic retrieval: lexical search can match words but miss meaning.</li>
-<li>Real moderation for person-to-person contact.</li>
-<li>Reminders that reach people (check-ins are in-app only today).</li>
-<li>ESV and NASB through their publishers' APIs.</li>
-<li>Crisis resources beyond the US.</li></ul>
-</section>""",
+    f"""<section><h2>Impact, limits, next steps</h2><ul>
+<li>Sponsorship predicted early abstinence (Tonigan &amp; Rice, 2010; one study, from summaries)</li>
+<li>{n_real_users} real user(s) so far; next: a consenting church or campus pilot</li>
+<li>Measure the Claude path · larger safety set · reminders that reach people</li>
+<li>ESV/NASB via publisher APIs · semantic retrieval · real moderation</li></ul>
+<p class="repoline">Code (public): <a href="{REPO}">{REPO}</a></p></section>""",
 ]
 assert len(SLIDES) <= 10, "assignment allows 10 slides maximum"
 
 SLIDE_CSS = """
 .reveal{font-family:Georgia,serif;color:#2b2622}.reveal h1,.reveal h2{font-family:Georgia,serif;color:#2b2622;text-transform:none}
-.reveal h1{font-size:3em}.reveal h2{font-size:1.6em;margin-bottom:.5em}.reveal ul{font-size:.82em}.reveal p{font-size:.85em}
-.reveal .motto{font-style:italic;color:#7a6f65}.reveal .small{font-size:.6em;color:#7a6f65}.reveal .big{font-size:1.15em;font-weight:600}
-.reveal .two{display:flex;gap:16px;justify-content:center;align-items:flex-start}.reveal .two img.shot{width:auto;max-width:48%;max-height:340px}
+.reveal h1{font-size:3em}.reveal h2{font-size:1.5em;margin-bottom:.4em}.reveal ul{font-size:.75em}.reveal p{font-size:.82em}
+.reveal .motto{font-style:italic;color:#7a6f65}.reveal .small{font-size:.58em;color:#7a6f65}.reveal .big{font-size:1.05em;font-weight:600}
+.reveal .repoline{font:600 .7em sans-serif;background:#f7f3ec;display:inline-block;padding:.35em .8em;border-radius:10px}
+.reveal .repoline a{color:#8a5a2b}
+.reveal .two{display:flex;gap:16px;justify-content:center;align-items:flex-start}
+.reveal .two img.shot{width:auto;max-width:48%;max-height:340px}
 .reveal img.shot{border:1px solid #e7dfd2;border-radius:10px;margin:6px 0}
 .reveal .kpis{display:flex;gap:18px;justify-content:center;margin:.4em 0}
-.reveal .kpis div{background:#f7f3ec;border-radius:12px;padding:.4em .9em;font-size:.6em;color:#7a6f65}
-.reveal .kpis b{display:block;font-size:2em;color:#2b2622}.reveal svg{width:90%}
+.reveal .kpis div{background:#f7f3ec;border-radius:12px;padding:.4em .9em;font-size:.58em;color:#7a6f65}
+.reveal .kpis b{display:block;font-size:2em;color:#2b2622}.reveal svg{width:92%;max-height:440px}
 .reveal-viewport{background:#fbf8f2}
 """
 

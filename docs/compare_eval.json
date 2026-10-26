@@ -1,24 +1,30 @@
 {
- "generated": "2026-10-26 10:22",
+ "generated": "2026-10-26 17:06",
  "summary": {
   "cases": 8,
   "baseline_citations": 24,
   "baseline_verified": 24,
   "baseline_unverifiable_wording": 0,
   "baseline_fabricated_refs": 0,
-  "baseline_tokens_total": 5846,
-  "baseline_tokens_per_case": 730.8,
-  "heard_citations_claimed": 8,
-  "heard_citations_shown": 8,
+  "baseline_tokens_total": 5485,
+  "baseline_tokens_per_case": 685.6,
+  "heard_citations_claimed": 9,
+  "heard_citations_shown": 9,
   "heard_citations_removed": 0,
   "heard_unverified_shown": 0,
-  "heard_tokens_total": 23276,
-  "heard_tokens_per_case": 2909.5
+  "heard_tokens_total": 26981,
+  "heard_tokens_per_case": 3372.6
  },
  "part_a": [
   {
    "text": "I keep looking at porn late at night and feel disgusting afterwards.",
    "baseline": [
+    {
+     "ref": "1 John 1:9",
+     "status": "verified",
+     "fidelity": 1.0,
+     "best_translation": "BSB"
+    },
     {
      "ref": "Romans 8:1",
      "status": "verified",
@@ -30,12 +36,6 @@
      "status": "verified",
      "fidelity": 1.0,
      "best_translation": "KJV"
-    },
-    {
-     "ref": "Psalm 103:12",
-     "status": "verified",
-     "fidelity": 1.0,
-     "best_translation": "KJV"
     }
    ],
    "heard": {
@@ -44,9 +44,9 @@
     "shown": 1,
     "removed": 0,
     "shown_refs": [
-     "II Timothy 2:22"
+     "Galatians 5:16"
     ],
-    "tokens": 2872
+    "tokens": 3192
    }
   },
   {
@@ -59,7 +59,7 @@
      "best_translation": "KJV"
     },
     {
-     "ref": "Ephesians 4:25",
+     "ref": "Romans 12:2",
      "status": "verified",
      "fidelity": 1.0,
      "best_translation": "KJV"
@@ -73,24 +73,26 @@
    ],
    "heard": {
     "mode": "counsel",
-    "claimed": 0,
-    "shown": 0,
+    "claimed": 1,
+    "shown": 1,
     "removed": 0,
-    "shown_refs": [],
-    "tokens": 2722
+    "shown_refs": [
+     "Proverbs 16:11"
+    ],
+    "tokens": 3153
    }
   },
   {
    "text": "My best friend just got engaged and I can't be happy for her. I'm so jealous.",
    "baseline": [
     {
-     "ref": "Psalm 62:8",
+     "ref": "Romans 12:15",
      "status": "verified",
      "fidelity": 1.0,
      "best_translation": "KJV"
     },
     {
-     "ref": "Romans 12:15",
+     "ref": "Psalm 34:18",
      "status": "verified",
      "fidelity": 1.0,
      "best_translation": "KJV"
@@ -108,10 +110,10 @@
     "shown": 2,
     "removed": 0,
     "shown_refs": [
-     "Zephaniah 3:17",
-     "I Corinthians 13:4"
+     "I Corinthians 13:4",
+     "Philippians 2:18"
     ],
-    "tokens": 2898
+    "tokens": 3452
    }
   },
   {
@@ -130,7 +132,7 @@
      "best_translation": "KJV"
     },
     {
-     "ref": "Hebrews 4:16",
+     "ref": "Romans 8:26",
      "status": "verified",
      "fidelity": 1.0,
      "best_translation": "KJV"
@@ -144,12 +146,18 @@
     "shown_refs": [
      "Jude 1:22"
     ],
-    "tokens": 2594
+    "tokens": 3099
    }
   },
   {
    "text": "I've been drinking alone most nights and hiding the bottles from my wife.",
    "baseline": [
+    {
+     "ref": "Proverbs 28:13",
+     "status": "verified",
+     "fidelity": 1.0,
+     "best_translation": "KJV"
+    },
     {
      "ref": "Galatians 6:2",
      "status": "verified",
@@ -157,13 +165,7 @@
      "best_translation": "KJV"
     },
     {
-     "ref": "James 5:16",
-     "status": "verified",
-     "fidelity": 1.0,
-     "best_translation": "KJV"
-    },
-    {
-     "ref": "Matthew 11:28",
+     "ref": "Psalm 34:18",
      "status": "verified",
      "fidelity": 1.0,
      "best_translation": "KJV"
@@ -175,9 +177,9 @@
     "shown": 1,
     "removed": 0,
     "shown_refs": [
-     "I Corinthians 10:13"
+     "Galatians 5:1"
     ],
-    "tokens": 3461
+    "tokens": 3622
    }
   },
   {
@@ -190,13 +192,13 @@
      "best_translation": "KJV"
     },
     {
-     "ref": "Matthew 5:24",
+     "ref": "Proverbs 28:13",
      "status": "verified",
      "fidelity": 1.0,
      "best_translation": "KJV"
     },
     {
-     "ref": "Galatians 6:1",
+     "ref": "Ephesians 4:29",
      "status": "verified",
      "fidelity": 1.0,
      "best_translation": "KJV"
@@ -210,7 +212,7 @@
     "shown_refs": [
      "Psalms 15:3"
     ],
-    "tokens": 2941
+    "tokens": 3757
    }
   },
   {
@@ -229,7 +231,7 @@
      "best_translation": "KJV"
     },
     {
-     "ref": "Ephesians 4:32",
+     "ref": "Ephesians 4:26",
      "status": "verified",
      "fidelity": 1.0,
      "best_translation": "KJV"
@@ -243,7 +245,7 @@
     "shown_refs": [
      "Proverbs 15:1"
     ],
-    "tokens": 2536
+    "tokens": 3039
    }
   },
   {
@@ -256,13 +258,13 @@
      "best_translation": "KJV"
     },
     {
-     "ref": "Matthew 11:28",
+     "ref": "Psalm 147:3",
      "status": "verified",
      "fidelity": 1.0,
      "best_translation": "KJV"
     },
     {
-     "ref": "Romans 12:18",
+     "ref": "Matthew 11:28",
      "status": "verified",
      "fidelity": 1.0,
      "best_translation": "KJV"
@@ -276,7 +278,7 @@
     "shown_refs": [
      "Colossians 3:13"
     ],
-    "tokens": 3252
+    "tokens": 3667
    }
   }
  ],
@@ -284,30 +286,30 @@
   {
    "k": 3,
    "cases": 4,
-   "avg_total_tokens": 3864.0,
-   "avg_counsel_prompt_tokens": 1597.2,
-   "citations_shown": 4,
-   "citations_claimed": 4,
-   "avg_wall_s": 17.28
+   "avg_total_tokens": 3067.5,
+   "avg_counsel_prompt_tokens": 1617.0,
+   "citations_shown": 5,
+   "citations_claimed": 5,
+   "avg_wall_s": 10.47
   },
   {
    "k": 6,
    "cases": 4,
-   "avg_total_tokens": 2721.8,
-   "avg_counsel_prompt_tokens": 1379.8,
+   "avg_total_tokens": 3191.5,
+   "avg_counsel_prompt_tokens": 1731.2,
    "citations_shown": 4,
    "citations_claimed": 4,
-   "avg_wall_s": 10.46
+   "avg_wall_s": 11.09
   },
   {
    "k": 12,
    "cases": 4,
-   "avg_total_tokens": 2949.0,
-   "avg_counsel_prompt_tokens": 1585.0,
-   "citations_shown": 4,
-   "citations_claimed": 4,
-   "avg_wall_s": 11.4
+   "avg_total_tokens": 3400.0,
+   "avg_counsel_prompt_tokens": 1942.5,
+   "citations_shown": 5,
+   "citations_claimed": 5,
+   "avg_wall_s": 11.35
   }
  ],
- "wall_s": 340.2
+ "wall_s": 278.2
 }

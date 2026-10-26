@@ -287,3 +287,5 @@ a.btnlink.primary{background:var(--accent);color:#fff}a.btnlink.ghost{border:1px
 .shimmer{height:14px;border-radius:8px;margin:10px auto;max-width:420px;background:linear-gradient(90deg,#efe8dc 25%,#f8f3ea 50%,#efe8dc 75%);background-size:200% 100%;animation:shim 1.4s infinite}
 .shimmer.short{max-width:260px}
 @keyframes shim{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+.contactbtns{display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap}

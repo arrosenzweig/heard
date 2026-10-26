@@ -1,15 +1,13 @@
 # Heard
 
 > *"I don't understand, but I want to understand. That's why I need you God."*
+> (motto from "Why God" by Austin French)
 
-Heard is a Christian companion app. After a one-time setup about the user's tradition and beliefs, it offers a chat
-for hard questions that answers using **only the text of the Bible** and checks every verse it quotes, check-ins on the
-struggles the user is fighting, a way to connect with people who have **come through the same struggle**, and a
-church finder.
+Heard is a Christian companion app. After a one-time setup about the user's tradition and beliefs, it offers a chat for hard questions that answers using **only the text of the Bible** and checks every verse it quotes; an **SOS button** for the moment of temptation; **check-ins** that remember what you said; an **Awareness** reflection built from your own history; **fellowship** with people who have come through the same struggle; and a **church finder**.
 
 Heard is not a counselor, pastor, or crisis service. When someone describes real danger, it stops and points them to people who can help.
 
-MGT 409 final project · Alexandria Rosenzweig · [github.com/arrosenzweig](https://github.com/arrosenzweig)
+MGT 409 final project · Alexandria Rosenzweig · public repository: https://github.com/arrosenzweig/heard
 
 ---
 
@@ -43,94 +41,61 @@ Open `.env` and fill in **one** key:
 
 | Key | Model used |
 |---|---|
-| `ANTHROPIC_API_KEY` | `claude-opus-5-5` |
 | `PORTKEY_API_KEY` (course key) | `gpt-6-luna` |
+| `ANTHROPIC_API_KEY` | `claude-opus-5-5` (written, not yet measured) |
 | `OPENAI_API_KEY` | `gpt-4o-mini` |
 
-The app looks for `.env` in the repo folder first, then in the folder above it, so a class-wide `.env` one level up also works.
+The app looks for `.env` in the repo folder first, then in the folder above it.
 
 ```bash
 python app.py
 ```
 
-Open **http://127.0.0.1:5000**.
+Open **http://127.0.0.1:5000** in **Chrome or Edge** (needed for voice; Edge has the most natural voices).
 
-The first launch loads clearly labelled demo profiles (Raleigh, NC) so the People and Churches tabs are not empty. The full Bible (three translations, about 98,000 verses) ships in the repo, so there is nothing else to download.
+On every start Heard makes sure the labelled demo data exists: **14 demo people and 8 demo churches** in Raleigh, NC. All are fictional and marked "demo". The full Bible (three public-domain translations, about 98,000 verses) ships in the repo.
 
 ### Try it
 
-1. **Setup (first launch only).** Heard asks your name and city, your tradition (one or more, or "exploring"), where you stand on contested questions (all optional; pick *"Let me say it in my own words"* to type or speak, then approve Heard's restatement), the struggles you're fighting or have come through, and how often to check in. It never asks about faith again; change anything in **Settings**.
-2. **Talk** - a conversation. Ask a hard question or describe what's pulling at you. Replies come from inside your tradition, quote verses marked ✓ verified, and may offer a commitment and people who came through the same thing. 🔊 reads a reply aloud.
-3. **Check-ins** - three quick questions per struggle on your schedule, plus an optional note. Heard names the trend (overcoming, holding, deeper) and charts it. Two "deeper" in a row and it points you to people and a church. Commitments from Talk are followed up here too.
-4. **Fellowship** - people who came through your struggle rank first. Contact details unlock only after both of you accept.
-5. **Churches** - find a church by city, or register one.
-6. **Settings → Under the hood** - measured token counts and a verse checker. Try `Hezekiah 3:5`: it does not exist, and the verifier says so. **Start over as a new user** lets you run setup again.
+1. **Setup** asks once: *I'm here for myself* or *I'm setting up a church*. A person gives name, city, **age (required)**, optional gender, marital status and years as a Christian, one or more traditions (or "exploring"), the 14 contested questions **one at a time** (or *say it in your own words*, then approve Heard's restatement), the struggles they're fighting or came through (plus *Something else?* in their own words, by voice), and how often to check in.
+2. **Talk** is home. Ask a hard question or describe what's pulling at you. 🔊 reads a reply aloud; **🎧 Voice mode** makes it a spoken conversation.
+3. **I'm being tempted right now** (the red button) shows verses instantly, asks what's going on, and answers with one thing to do in the next ten minutes.
+4. **Check-ins**: *Talk it through* (a short conversation that recalls what you said) or *Quick check-in* (three taps). Trends are charted.
+5. **Awareness**: a reflective profile from your own history. It needs a few conversations or check-ins to become personal.
+6. **Fellowship**: *Suggested fellowships · Find people · Your connections*, with filters. In *Your connections*, **Try with demo connections** adds two demo connections (Call / Text) and one demo request to accept. Fellowship is adults only.
+7. **Churches**: ranked by match %, with the reasons shown.
+8. **Settings**: edit your profile, choose Heard's voice (▶ Listen, Select) and speaking speed, and **Start over as a new user**. *Under the hood* has a verse checker: try `Hezekiah 3:5`.
 
-Every text box has a 🎙 button. Voice uses the browser's built-in speech recognition (Chrome or Edge); in Chrome, audio is sent to Google to be transcribed.
+**Install it:** in Chrome or Edge, use *Install app*. Right-click (desktop) or long-press (Android) the icon for the **"I'm tempted"** shortcut, which opens SOS directly. Phones need Heard hosted online to reach it.
 
 ---
 
 ## How it works
 
-```
-entry ─▶ TRIAGE ──crisis?──▶ STOP · real help (988, DV hotline, 911)
-           │
-           ▼
-        RETRIEVAL      BM25 over the full Bible             (no model call)
-           │
-           ▼
-        COUNSEL        your tradition, your convictions, adaptive tone
-           │
-           ▼
-        VERIFIER       every citation checked against the text (no model call)
-           │
-           ▼
-        MATCHER        people who came through this struggle (no model call)
-```
-
-Only **triage** and **counsel** call a model. Retrieval, verification and matching are deterministic code, which keeps cost down and keeps the safety-critical steps auditable.
+Only these steps call a model: **triage** (every Talk, SOS and check-in message), **counsel**, **accountability** conversations, **Awareness**, and **belief restatement**. Retrieval, citation verification, people matching and church matching are deterministic code.
 
 | File | Role |
 |---|---|
-| `agents/triage.py` | Classifies theme, severity and scope; translates slang into biblical vocabulary for search; halts on crisis |
-| `agents/retrieval.py` | BM25 search across KJV, BSB, and Douay-Rheims (Catholic canon, with deuterocanonical books) |
-| `agents/counsel.py` | Writes the response from inside the user's tradition, citing only retrieved verses |
-| `agents/verifier.py` | Removes citations that do not exist or whose wording does not match the text |
-| `agents/beliefs.py` | Restates own-words convictions for the user to approve before they are used |
-| `agents/accountability.py` | Scheduled check-ins per struggle; names the trend; escalates to people after two "deeper" in a row |
-| `agents/matcher.py` | Ranks companions by lived experience of the same struggle, then tradition and city |
-| `agents/pipeline.py` | Wires the steps together and records a trace of every call |
-
-### Data
-
-- **Scripture:** public-domain translations from [scrollmapper/bible_databases](https://github.com/scrollmapper/bible_databases), normalized by `build_bible.py` into `data/bible/`. The Bible is the only content source; Heard does not draw on commentary, websites or devotional writing.
-- **Anchor verses:** `data/verses.json`, 154 hand-picked verses for common struggles (fetched with `build_corpus.py`), used only as a search-ranking prior.
-- **Demo people and churches:** `seed_demo.py`. Every one is synthetic, marked `demo` in the interface, and uses 555-01xx fictional phone numbers. None is a real person or congregation.
+| `agents/triage.py` | Theme, severity, scope; slang → biblical search terms; halts on crisis |
+| `agents/retrieval.py` | BM25 over KJV, BSB, and Douay-Rheims (Catholic canon) |
+| `agents/counsel.py` | Replies from inside the user's tradition; correction with love; brief SOS mode |
+| `agents/verifier.py` | Removes citations that don't exist or don't match the text |
+| `agents/accountability.py` | Check-ins: personal opener grounded in the user's own words, conversation, confirm-to-log, quick mode |
+| `agents/awareness.py` | Reflective profile; evidence and privacy guards |
+| `agents/beliefs.py` | Restates own-words convictions for the user to approve |
+| `agents/matcher.py` | Fellowship matching, filters, adults-only gate; church match % |
+| `agents/pipeline.py` | Wires triage → retrieval → counsel → verifier → matcher |
 
 ### Reproduce the evaluations
 
 ```bash
-python eval_safety.py     # crisis routing + verifier vs fabricated citations -> docs/safety_eval.json
-python eval_compare.py    # plain chatbot vs Heard, and retrieval-depth ablation -> docs/compare_eval.json
+python eval_safety.py     # crisis routing, verifier, guard tests        -> docs/safety_eval.json
+python eval_compare.py    # plain chatbot vs Heard, retrieval depth       -> docs/compare_eval.json
+python eval_costs.py      # measured cost of each feature                 -> docs/feature_costs.json
 python build_report.py    # rebuilds report.html and slides.html from those files and the database
 ```
 
-Both make real model calls and cost real tokens.
-
----
-
-## Safety design
-
-- **Crisis halts the pipeline.** Suicidal thoughts, self-harm, abuse, a child in danger, or a medical emergency get hand-written guidance and real US hotlines. No verse, no advice, no peer matches.
-- **The safety floor is narrow on purpose.** Heard adapts to every doctrinal position without arguing. It departs from affirmation only when following a belief would put a person in physical danger.
-- **Every quoted verse is verified** against the biblical text before display, and the app always shows the real text, never the model's version of it.
-- **Own-words beliefs need approval.** A paraphrase the user has not confirmed is never used.
-- **Contact details unlock only after both people agree.** Browsing a profile never exposes a phone number. Location is city-level only.
-- **Churches register themselves.** Heard never invents a congregation.
-
-## Limits
-
-See the report for the full list. In short: crisis resources are US-only; the safety evaluation uses written test cases rather than real crisis messages; there is no moderation of user-to-user contact beyond accept, decline and block; and the outcome data comes from a single user.
+The first three make real model calls.
 
 ## Never commit
 
