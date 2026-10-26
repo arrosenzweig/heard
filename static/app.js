@@ -548,14 +548,18 @@ async function loadCheckins() {
   const every = everyLabel(r.hours);
   $("#ciList").innerHTML = r.struggles.length ? r.struggles.map((s) => {
     const last = s.last ? `<span class="trend ${esc(s.last.trend)}">${esc(s.last.trend)}</span> last time` : "";
-    const form = s.due ? `<div class="ciform" data-theme="${esc(s.theme)}">
+    const form = s.due ? `<div class="row cistart"><button class="primary" onclick="startCheckinChat(this)">Talk it through</button>
+        <button class="ghost" onclick="showQuick(this)">Quick check-in</button>
+        <span class="sub tiny">Talk it through is a short conversation. Quick is three taps.</span></div>
+      <div class="cichat hidden"></div>
+      <div class="ciform hidden" data-theme="${esc(s.theme)}">
         ${s.questions.map((q) => q.type === "text"
           ? `<div class="q">${esc(q.q)}</div><div class="field"><textarea name="note" rows="2" placeholder="Type or speak"></textarea></div>`
           : `<div class="q">${esc(q.q)}</div><div class="chips" data-q="${q.id}">${q.options.map((o) => `<span class="chip" data-id="${o.v}">${esc(o.label)}</span>`).join("")}</div>`).join("")}
         <div class="row"><span class="spacer"></span><button class="primary" onclick="submitCheckin(this)">Check in</button></div>
         <div class="ciout"></div></div>`
       : `<p class="sub">Checked in. Next one ${s.next_at ? fmtTime(s.next_at) : "soon"} (${every}).</p>`;
-    return `<div class="card"><div class="row" style="margin:0"><h2 style="margin:0">${esc(s.label)}</h2><span class="spacer"></span>${last}</div>
+    return `<div class="card cicard" data-theme="${esc(s.theme)}"><div class="row" style="margin:0"><h2 style="margin:0">${esc(s.label)}</h2><span class="spacer"></span>${last}</div>
       ${spark(s.series)}${form}</div>`;
   }).join("") : `<div class="card"><p class="sub">Nothing to check in on yet. Add struggles you're fighting in Settings, or talk to Heard and it will start checking in on what comes up.</p></div>`;
   $$(".ciform .chips").forEach((c) => $$(".chip", c).forEach((ch) => (ch.onclick = () => {
@@ -712,6 +716,206 @@ async function lookupVerse() {
   const r = await api(`/api/verse?ref=${encodeURIComponent($("#vRef").value)}&t=${$("#vTrans").value}`);
   $("#vOut").innerHTML = r.found ? `<div class="verse"><q>${esc(r.verse.text)}</q><div class="ref">${esc(r.verse.ref)} · ${esc(r.verse.translation)}</div></div>`
     : `<p class="warn">No such verse in ${esc($("#vTrans").value)}. If a model had cited this, Heard's verifier would have removed it.</p>`;
+}
+
+
+// ============================================================ VOICE MODE
+// Hands-free conversation, like a phone call: listen -> send when you pause ->
+// Heard speaks its reply -> listen again. Browser speech only (no key, no
+// cost). Listening needs Chrome or Edge; Edge has the most natural voices.
+let VOICE = null;   // {kind:'talk'|'checkin', ...} while voice mode is on
+
+function bestVoice() {
+  const vs = speechSynthesis.getVoices().filter((v) => /^en(-|_)/i.test(v.lang));
+  const rank = (v) => (/natural/i.test(v.name) ? 0 : /google us english/i.test(v.name) ? 1
+    : /aria|jenny|guy|samantha|ava|allison/i.test(v.name) ? 2 : /en-us/i.test(v.lang) ? 3 : 4);
+  return vs.sort((a, b) => rank(a) - rank(b))[0] || null;
+}
+if ("speechSynthesis" in window) speechSynthesis.onvoiceschanged = () => bestVoice();
+
+function sayAloud(text) {
+  return new Promise((resolve) => {
+    if (!("speechSynthesis" in window) || !text) return resolve();
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    const v = bestVoice(); if (v) u.voice = v;
+    u.rate = 1.0; u.onend = resolve; u.onerror = resolve;
+    speechSynthesis.speak(u);
+  });
+}
+function listenOnce() {
+  // Resolves with what was said, ending automatically at a natural pause.
+  return new Promise((resolve, reject) => {
+    if (!SR) return reject(new Error("Voice mode needs Chrome or Edge."));
+    const rec = new SR();
+    rec.lang = "en-US"; rec.interimResults = true; rec.continuous = false;
+    let finalText = "";
+    rec.onresult = (e) => {
+      let interim = "";
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        if (e.results[i].isFinal) finalText += e.results[i][0].transcript + " ";
+        else interim += e.results[i][0].transcript;
+      }
+      if (VOICE?.onInterim) VOICE.onInterim(finalText + interim);
+    };
+    rec.onerror = (e) => (e.error === "no-speech" ? resolve("") : reject(new Error(e.error)));
+    rec.onend = () => resolve(finalText.trim());
+    if (VOICE) VOICE.rec = rec;
+    rec.start();
+  });
+}
+async function voiceLoop() {
+  // Runs until VOICE is cleared. Two silent rounds in a row end it.
+  let silent = 0;
+  while (VOICE) {
+    VOICE.setState("Listening…");
+    let said = "";
+    try { said = await listenOnce(); } catch (e) { alert(e.message); stopVoice(); return; }
+    if (!VOICE) return;
+    if (!said) { if (++silent >= 2) { stopVoice(); return; } continue; }
+    silent = 0;
+    VOICE.setState("Thinking…");
+    const reply = await VOICE.send(said);
+    if (!VOICE) return;
+    if (reply?.stop) { VOICE.setState("Speaking…"); await sayAloud(reply.text); stopVoice(); return; }
+    VOICE.setState("Speaking…");
+    await sayAloud(reply?.text || "");
+  }
+}
+function stopVoice() {
+  if (!VOICE) return;
+  try { VOICE.rec?.abort(); } catch { /* already stopped */ }
+  speechSynthesis.cancel();
+  const v = VOICE; VOICE = null; v.onStop?.();
+}
+
+// Talk: voice mode
+function toggleTalkVoice() {
+  if (VOICE) { stopVoice(); return; }
+  if (!SR) { alert("Voice mode needs Chrome or Edge. Edge has the most natural voices."); return; }
+  const btn = $("#talkVoice"), st = $("#talkVoiceState");
+  btn.classList.add("rec"); btn.textContent = "■ End voice mode";
+  VOICE = {
+    kind: "talk",
+    setState: (s) => (st.textContent = s),
+    onInterim: (t) => ($("#chatText").value = t),
+    send: async (text) => {
+      $("#chatText").value = text;
+      await sendChat();
+      const r = await api("/api/chat");
+      const last = r.messages.filter((m) => m.role === "assistant").at(-1);
+      if (!last) return { text: "" };
+      const x = last.meta || {};
+      if (x.mode === "crisis") {
+        return { stop: true, text: `${x.headline || ""} ${last.content} ${(x.resources || []).map((r) => r.name + ". " + r.contact + ".").join(" ")}` };
+      }
+      return { text: [last.content, ...(x.verses || []).map((v) => `${v.text} ${v.ref}.`)].join(" ") };
+    },
+    onStop: () => { btn.classList.remove("rec"); btn.textContent = "🎧 Voice mode"; st.textContent = "Enter to send · Shift+Enter for a new line"; },
+  };
+  voiceLoop();
+}
+
+// ===================================================== CHECK-IN CONVERSATION
+const PULL_WORD = { 1: "barely there", 2: "noticeable", 3: "strong", 4: "very strong", 5: "overwhelming" };
+const ACT_WORD = { none: "didn't act on it", once: "acted on it once", several: "acted on it more than once" };
+const DIR_WORD = { stronger: "getting stronger", holding: "holding steady", slipping: "slipping" };
+
+function showQuick(btn) {
+  const card = btn.closest(".cicard");
+  $(".cistart", card).classList.add("hidden");
+  $(".ciform", card).classList.remove("hidden");
+}
+async function startCheckinChat(btn) {
+  const card = btn.closest(".cicard"), theme = card.dataset.theme, box = $(".cichat", card);
+  $(".cistart", card).classList.add("hidden");
+  box.classList.remove("hidden");
+  box.innerHTML = `<div class="cithread"></div>
+    <div class="field"><textarea rows="2" placeholder="Answer however you like. Type, or tap the mic."></textarea></div>
+    <div class="row"><button class="ghost voicebtn">🎧 Voice mode</button><span class="sub tiny vstate"></span>
+      <span class="spacer"></span><button class="primary send">Send</button></div>
+    <div class="cidone"></div>`;
+  box._msgs = [];
+  box._theme = theme;
+  const thread = $(".cithread", box);
+  thread.innerHTML = `<div class="bubble them typing"><span></span><span></span><span></span></div>`;
+  const o = await api("/api/checkin/start", { theme });
+  box._msgs.push({ role: "assistant", content: o.text });
+  thread.innerHTML = `<div class="bubble them">${paras(o.text)}</div>`;
+  $(".send", box).onclick = () => checkinSend(box);
+  $("textarea", box).addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); checkinSend(box); } });
+  $(".voicebtn", box).onclick = () => toggleCheckinVoice(box, o.text);
+}
+async function checkinSend(box, spoken) {
+  const ta = $("textarea", box);
+  const text = (spoken ?? ta.value).trim();
+  if (!text || box._done) return null;
+  ta.value = "";
+  const thread = $(".cithread", box);
+  box._msgs.push({ role: "user", content: text });
+  thread.insertAdjacentHTML("beforeend", `<div class="bubble me">${paras(text)}</div><div class="bubble them typing"><span></span><span></span><span></span></div>`);
+  const r = await api("/api/checkin/chat", { theme: box._theme, messages: box._msgs });
+  $(".typing", thread)?.remove();
+  $("#traceBox").textContent = JSON.stringify(r.trace, null, 2);
+  if (r.mode === "crisis") {
+    box._done = true;
+    const say = "This sounds like more than a check-in should carry. Please reach out to one of these right now. " + r.resources.map((x) => x.name + ". " + x.contact + ".").join(" ");
+    thread.insertAdjacentHTML("beforeend", `<div class="bubble them crisis"><h3>This sounds like more than a check-in should carry.</h3>
+      <p>Please reach out to one of these right now. They're free, confidential, and trained for exactly this.</p>
+      ${r.resources.map((x) => `<div class="resource"><b>${esc(x.name)}</b><span>${esc(x.contact)}</span></div>`).join("")}</div>`);
+    return { stop: true, text: say };
+  }
+  box._msgs.push({ role: "assistant", content: r.reply });
+  thread.insertAdjacentHTML("beforeend", `<div class="bubble them">
+    ${r.safety_note ? `<div class="safety">If anyone is in physical danger right now, get help first: ${r.resources.map((x) => `<b>${esc(x.name)}</b> ${esc(x.contact)}`).join(" · ")}</div>` : ""}
+    ${paras(r.reply)}</div>`);
+  if (r.done) { box._done = true; showProposed(box, r); return { stop: true, text: r.reply + " Here's how I'd log this. Tell me if it's right." }; }
+  return { text: r.reply };
+}
+// "Did I hear you right?" before anything is logged.
+function showProposed(box, r) {
+  const p = r.proposed;
+  box._closing = r.reply;
+  $(".cidone", box).innerHTML = `<div class="confirm"><b>Here's how I'd log this. Is it right?</b>
+    <div class="said">Pull ${p.pull}/5 (${PULL_WORD[p.pull]}) · ${ACT_WORD[p.acted]} · ${DIR_WORD[p.direction]}</div>
+    <div class="row"><button class="primary small yes">Yes, log it</button><button class="ghost small adjust">Adjust</button></div>
+    <div class="adjustbox hidden">
+      <div class="q">Pull</div><div class="chips" data-q="pull">${[1, 2, 3, 4, 5].map((k) => `<span class="chip ${k === p.pull ? "on" : ""}" data-id="${k}">${k} · ${PULL_WORD[k]}</span>`).join("")}</div>
+      <div class="q">Did you act on it?</div><div class="chips" data-q="acted">${Object.entries(ACT_WORD).map(([k, v]) => `<span class="chip ${k === p.acted ? "on" : ""}" data-id="${k}">${v}</span>`).join("")}</div>
+      <div class="q">Heading</div><div class="chips" data-q="direction">${Object.entries(DIR_WORD).map(([k, v]) => `<span class="chip ${k === p.direction ? "on" : ""}" data-id="${k}">${v}</span>`).join("")}</div>
+      <div class="row"><button class="primary small save">Log it</button></div></div></div>`;
+  $$(".adjustbox .chips", box).forEach((c) => $$(".chip", c).forEach((ch) => (ch.onclick = () => { $$(".chip", c).forEach((x) => x.classList.remove("on")); ch.classList.add("on"); })));
+  const pick = (q) => $(`.adjustbox .chips[data-q="${q}"] .chip.on`, box)?.dataset.id;
+  $(".yes", box).onclick = () => logConversation(box, p);
+  $(".adjust", box).onclick = () => $(".adjustbox", box).classList.remove("hidden");
+  $(".save", box).onclick = () => logConversation(box, { pull: +pick("pull"), acted: pick("acted"), direction: pick("direction") });
+}
+async function logConversation(box, vals) {
+  const note = box._msgs.filter((m) => m.role === "user").map((m) => m.content).join("\n");
+  const r = await api("/api/checkin", { theme: box._theme, ...vals, note, closing: box._closing, conversation: true });
+  const mt = r.match_theme || "";
+  $(".cidone", box).innerHTML = `<div class="ciresult"><span class="trend ${esc(r.trend)}">${esc(r.trend)}</span> <span class="sub">Logged.</span>
+    ${r.escalate ? `<div class="escalate"><b>Two check-ins in a row, it's been pulling you deeper.</b> This is the moment to bring a person in.
+      <div class="row"><button class="primary small" onclick="go('fellowship')">Find someone who came through it</button>
+      <button class="ghost small" onclick="go('churches')">Find a church community</button></div></div>` : ""}
+    <div class="row"><button class="ghost small" onclick="loadCheckins()">Done</button></div></div>`;
+  $(".field", box)?.classList.add("hidden"); $(".row", box)?.classList.add("hidden");
+  refreshDue();
+}
+function toggleCheckinVoice(box, opener) {
+  const btn = $(".voicebtn", box), st = $(".vstate", box);
+  if (VOICE) { stopVoice(); return; }
+  if (!SR) { alert("Voice mode needs Chrome or Edge. Edge has the most natural voices."); return; }
+  btn.classList.add("rec"); btn.textContent = "■ End voice mode";
+  VOICE = {
+    kind: "checkin",
+    setState: (s) => (st.textContent = s),
+    onInterim: (t) => ($("textarea", box).value = t),
+    send: (text) => checkinSend(box, text),
+    onStop: () => { btn.classList.remove("rec"); btn.textContent = "🎧 Voice mode"; st.textContent = ""; },
+  };
+  // Speak Heard's opening question first, so it feels like a conversation.
+  (async () => { if (box._msgs.length === 1) { st.textContent = "Speaking…"; await sayAloud(opener); } if (VOICE) voiceLoop(); })();
 }
 
 boot();

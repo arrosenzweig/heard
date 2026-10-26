@@ -143,7 +143,8 @@
       <textarea id="chatText" rows="2" placeholder="What's on your heart? Type, or tap the mic and speak."></textarea>
     </div>
     <div class="row">
-      <span class="sub tiny">Enter to send · Shift+Enter for a new line</span>
+      <button class="ghost voicebtn" id="talkVoice" onclick="toggleTalkVoice()">🎧 Voice mode</button>
+      <span class="sub tiny" id="talkVoiceState">Enter to send · Shift+Enter for a new line</span>
       <span class="spacer"></span>
       <button class="primary" id="sendBtn" onclick="sendChat()">Send</button>
     </div>

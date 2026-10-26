@@ -71,6 +71,10 @@ CREATE TABLE IF NOT EXISTS checkin (
   pull INTEGER, acted TEXT, direction TEXT, note TEXT,
   trend TEXT, reply TEXT, used_model INTEGER DEFAULT 0, created REAL
 );
+CREATE TABLE IF NOT EXISTS checkin_prompt (
+  profile_id TEXT, theme TEXT, basis TEXT, payload TEXT, created REAL,
+  PRIMARY KEY (profile_id, theme, basis)
+);
 CREATE INDEX IF NOT EXISTS idx_chat_profile ON chat(profile_id, created);
 CREATE INDEX IF NOT EXISTS idx_checkin_profile ON checkin(profile_id, theme, created);
 CREATE INDEX IF NOT EXISTS idx_entry_profile ON entry(profile_id);
@@ -379,3 +383,17 @@ def all_runs(limit=200):
         d["trace"] = json.loads(d["trace"])
         out.append(d)
     return out
+
+
+# ------------------------------------------------- personalized check-ins
+def get_checkin_prompt(profile_id, theme, basis):
+    with db() as c:
+        r = c.execute("SELECT payload FROM checkin_prompt WHERE profile_id=? AND theme=? AND basis=?",
+                      (profile_id, theme, basis)).fetchone()
+    return json.loads(r["payload"]) if r else None
+
+
+def save_checkin_prompt(profile_id, theme, basis, payload):
+    with db() as c:
+        c.execute("INSERT OR REPLACE INTO checkin_prompt VALUES (?,?,?,?,?)",
+                  (profile_id, theme, basis, json.dumps(payload), time.time()))

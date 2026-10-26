@@ -187,3 +187,9 @@ details.card summary{cursor:pointer}
 .customdays{margin-top:10px;font-size:.95rem}
 .customdays input{width:80px;display:inline-block;margin:0 6px;padding:8px 10px}
 .forlabel{display:inline-block;font-size:.75rem;color:var(--accent);background:var(--accent-soft);padding:2px 9px;border-radius:999px;margin-left:6px;vertical-align:middle}
+
+/* ------------------------------------------- check-in conversation & voice */
+.cithread{display:flex;flex-direction:column;gap:10px;margin:12px 0}
+.cithread .bubble{max-width:92%}
+.cistart{margin-top:10px}
+.voicebtn.rec{background:var(--rose);color:#fff;border-color:var(--rose);animation:pulse 1.6s infinite}

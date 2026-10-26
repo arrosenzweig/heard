@@ -363,6 +363,38 @@ def checkins():
                     "outcome_stats": store.outcome_stats(p["id"])})
 
 
+@app.route("/api/checkin/start", methods=["POST"])
+def checkin_start():
+    """First message of a conversational check-in."""
+    p, err = require_profile()
+    if err:
+        return err
+    d = request.get_json(force=True) or {}
+    tr = llm.Trace(label="checkin-start")
+    out = accountability.opener(p, d.get("theme", ""), trace=tr)
+    s_ = tr.summary()
+    if s_["n_calls"]:
+        store.save_run(p["id"], None, "checkin", s_)
+    out["trace"] = s_
+    return jsonify(out)
+
+
+@app.route("/api/checkin/chat", methods=["POST"])
+def checkin_chat():
+    """One turn of a conversational check-in. Every reply is triaged."""
+    p, err = require_profile()
+    if err:
+        return err
+    d = request.get_json(force=True) or {}
+    msgs = [m for m in (d.get("messages") or []) if isinstance(m, dict) and m.get("role") in ("user", "assistant")]
+    tr = llm.Trace(label="checkin-chat")
+    out = accountability.chat_turn(p, d.get("theme", ""), msgs, trace=tr)
+    s_ = tr.summary()
+    store.save_run(p["id"], None, "checkin", s_)
+    out["trace"] = s_
+    return jsonify(out)
+
+
 @app.route("/api/checkin", methods=["POST"])
 def checkin():
     p, err = require_profile()
@@ -371,7 +403,9 @@ def checkin():
     d = request.get_json(force=True) or {}
     tr = llm.Trace(label="checkin")
     out = accountability.assess(p, d.get("theme"), d.get("pull", 3), d.get("acted"),
-                                d.get("direction"), d.get("note", ""), trace=tr)
+                                d.get("direction"), d.get("note", ""), trace=tr,
+                                given_reply=(d.get("closing") or None),
+                                screened=bool(d.get("conversation")))
     s = tr.summary()
     if s["n_calls"]:
         store.save_run(p["id"], None, "checkin", s)
