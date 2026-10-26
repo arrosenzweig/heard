@@ -36,6 +36,17 @@
         <input id="obCity" placeholder="City (used only at city level)">
       </div>
     </div>
+    <div class="ob-step" data-step="p_details">
+      <h2>A little more about you</h2>
+      <p class="sub">Used only to help people find fellowship that fits, such as people their age or in a similar season of life. Everything except age is optional.</p>
+      <div class="detailgrid">
+        <label>Age<input type="number" id="obAge" min="13" max="119" placeholder="Required"></label>
+        <label>Gender<select id="obGender"><option value="">Choose…</option><option value="woman">Woman</option><option value="man">Man</option><option value="prefer_not">Prefer not to say</option></select></label>
+        <label>Marital status<select id="obMarital"><option value="">Choose…</option><option value="single">Single</option><option value="dating">Dating</option><option value="engaged">Engaged</option><option value="married">Married</option><option value="separated">Separated</option><option value="divorced">Divorced</option><option value="widowed">Widowed</option><option value="prefer_not">Prefer not to say</option></select></label>
+        <label>Years as a Christian<select id="obYears"><option value="">Choose…</option><option value="exploring">Still exploring</option><option value="lt1">Under 1 year</option><option value="1_5">1–5 years</option><option value="5_10">5–10 years</option><option value="10_20">10–20 years</option><option value="20_plus">20+ years</option><option value="prefer_not">Prefer not to say</option></select></label>
+      </div>
+      <p class="sub tiny">Fellowship connects adults only. If you're under 18, Talk and Check-ins are still here for you.</p>
+    </div>
     <div class="ob-step" data-step="p_faith">
       <h2>Your faith</h2>
       <p class="sub">Choose as many as fit. Many people belong to more than one tradition. Not sure yet? Choose "exploring."</p>
@@ -167,23 +178,55 @@
 
 <!-- ============================================================ FELLOWSHIP -->
 <section id="fellowship" class="tab">
-  <div class="card">
-    <h2>Suggested for you</h2>
-    <p class="sub">People who came through what you're fighting, or are fighting it too, chosen from your profile. Contact details unlock only after you both agree.</p>
-    <div id="suggestList"><p class="sub">Loading…</p></div>
+  <div class="subtabs">
+    <button data-sub="suggested" class="on">Suggested fellowships</button>
+    <button data-sub="find">Find people</button>
+    <button data-sub="connections">Your connections</button>
   </div>
-  <div class="card">
-    <h2>Search by struggle</h2>
-    <div class="row">
-      <select id="peopleTheme"><option value="">Choose a struggle…</option></select>
-      <button class="primary" onclick="loadMatches()">Search</button>
-      <button class="ghost" onclick="loadBrowse()">Browse everyone</button>
+
+  <div id="fGate" class="card notice hidden"></div>
+
+  <div class="card filters" id="fFilters">
+    <div class="filtergrid">
+      <label>Gender<select id="fGender"><option value="">Any</option><option value="woman">Woman</option><option value="man">Man</option></select></label>
+      <label>Marital status<select id="fMarital"><option value="">Any</option><option value="single">Single</option><option value="dating">Dating</option><option value="engaged">Engaged</option><option value="married">Married</option><option value="separated">Separated</option><option value="divorced">Divorced</option><option value="widowed">Widowed</option></select></label>
+      <label>Denomination<select id="fTrad"><option value="">Any</option></select></label>
+      <label>Years as a Christian<select id="fYears"><option value="">Any</option><option value="lt1">Under 1 year+</option><option value="1_5">1+ years</option><option value="5_10">5+ years</option><option value="10_20">10+ years</option><option value="20_plus">20+ years</option></select></label>
+    </div>
+    <div class="agegauge">
+      <span>Age</span>
+      <div class="dual"><input type="range" id="fAgeMin" min="18" max="99" value="18"><input type="range" id="fAgeMax" min="18" max="99" value="99"></div>
+      <b id="fAgeLabel">18 – 99+</b>
+    </div>
+    <div class="row"><span class="sub tiny">Filters skip anyone who didn't share that detail.</span><span class="spacer"></span>
+      <button class="ghost small" onclick="resetFilters()">Reset</button><button class="primary small" onclick="applyFilters()">Apply filters</button></div>
+  </div>
+
+  <div class="subpanel on" id="sub-suggested">
+    <div class="card">
+      <h2>Suggested fellowships</h2>
+      <p class="sub">People who came through what you're fighting, or are fighting it too, chosen from your profile. Contact details unlock only after you both agree.</p>
+      <div id="suggestList"><p class="sub">Loading…</p></div>
     </div>
   </div>
-  <div id="peopleList"></div>
-  <div class="card">
-    <h2>Your connections</h2>
-    <div id="connList"><p class="sub">No connections yet.</p></div>
+
+  <div class="subpanel" id="sub-find">
+    <div class="card">
+      <h2>Find people</h2>
+      <div class="row">
+        <select id="peopleTheme"><option value="">Any struggle</option></select>
+        <button class="primary" onclick="loadMatches()">Search</button>
+        <button class="ghost" onclick="loadBrowse()">Browse everyone</button>
+      </div>
+    </div>
+    <div id="peopleList"></div>
+  </div>
+
+  <div class="subpanel" id="sub-connections">
+    <div class="card">
+      <h2>Your connections</h2>
+      <div id="connList"><p class="sub">No connections yet.</p></div>
+    </div>
   </div>
 </section>
 
@@ -220,6 +263,12 @@
       <div class="form">
         <input id="pfHandle" placeholder="Name or nickname">
         <input id="pfCity" placeholder="City">
+        <div class="detailgrid">
+        <label>Age<input type="number" id="pfAge" min="13" max="119" placeholder="Required"></label>
+        <label>Gender<select id="pfGender"><option value="">Choose…</option><option value="woman">Woman</option><option value="man">Man</option><option value="prefer_not">Prefer not to say</option></select></label>
+        <label>Marital status<select id="pfMarital"><option value="">Choose…</option><option value="single">Single</option><option value="dating">Dating</option><option value="engaged">Engaged</option><option value="married">Married</option><option value="separated">Separated</option><option value="divorced">Divorced</option><option value="widowed">Widowed</option><option value="prefer_not">Prefer not to say</option></select></label>
+        <label>Years as a Christian<select id="pfYears"><option value="">Choose…</option><option value="exploring">Still exploring</option><option value="lt1">Under 1 year</option><option value="1_5">1–5 years</option><option value="5_10">5–10 years</option><option value="10_20">10–20 years</option><option value="20_plus">20+ years</option><option value="prefer_not">Prefer not to say</option></select></label>
+      </div>
         <h3>Tradition</h3>
         <div id="pfTrads" class="chips"></div>
         <input id="pfTradOther" placeholder="In your own words (optional)">

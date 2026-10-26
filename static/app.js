@@ -90,7 +90,7 @@ function go(tab) {
   $$("nav button").forEach((b) => b.classList.toggle("on", b.dataset.tab === tab));
   $$(".tab").forEach((s) => s.classList.toggle("on", s.id === tab));
   if (tab === "checkins") loadCheckins();
-  if (tab === "fellowship") { loadSuggestions(); loadConnections(); }
+  if (tab === "fellowship") goSub(SUB);
   if (tab === "churches") loadChurches();
   if (tab === "listing") renderListing();
   if (tab === "settings") { if (isPerson()) renderSettings(); loadStats(); fillVoicePicker(); }
@@ -152,16 +152,33 @@ async function boot() {
     BOOT.themes.map((t) => `<option value="${t}">${pretty(t)}</option>`).join("");
   $("#churchTrad").innerHTML = '<option value="">Any tradition</option>' +
     TRAD_ITEMS.filter((t) => !t.seeker && t.id !== "other").map((t) => `<option value="${t.id}">${esc(t.label)}</option>`).join("");
+  $("#fTrad").innerHTML = '<option value="">Any</option>' +
+    TRAD_ITEMS.filter((t) => !t.seeker && t.id !== "other").map((t) => `<option value="${t.id}">${esc(t.label)}</option>`).join("");
+  $("#peopleTheme").innerHTML = '<option value="">Any struggle</option>' +
+    BOOT.themes.map((t) => `<option value="${t}">${pretty(t)}</option>`).join("");
   $("#vTrans").innerHTML = BOOT.translations.map((t) => `<option value="${t.code}">${t.code} - ${esc(t.label)}</option>`).join("");
   attachMics();
   if (!PROFILE || !PROFILE.onboarded) startOnboarding();
   else { applyMode(); if (isPerson()) { await loadChat(); refreshDue(); } }
 }
 
+const DETAIL_FIELDS = [["Age", "age"], ["Gender", "gender"], ["Marital", "marital"], ["Years", "faith_years"]];
+function fillDetails(prefix, p) {
+  DETAIL_FIELDS.forEach(([id, key]) => { const el = document.getElementById(prefix + id); if (el) el.value = p[key] ?? ""; });
+}
+function readDetails(prefix) {
+  const o = {};
+  DETAIL_FIELDS.forEach(([id, key]) => { o[key] = document.getElementById(prefix + id)?.value || null; });
+  return o;
+}
+const GENDER_L = { woman: "Woman", man: "Man" };
+const MARITAL_L = { single: "Single", dating: "Dating", engaged: "Engaged", married: "Married", separated: "Separated", divorced: "Divorced", widowed: "Widowed" };
+const FAITH_L = { exploring: "Still exploring faith", lt1: "Christian under 1 year", "1_5": "Christian 1–5 years", "5_10": "Christian 5–10 years", "10_20": "Christian 10–20 years", "20_plus": "Christian 20+ years" };
+
 // ================================================================ SETUP
 // The ONLY place Heard asks about faith. Branches by role on the first screen.
 const FLOWS = {
-  person: ["role", "p_about", "p_faith", "p_topics", "p_carry", "p_checkin"],
+  person: ["role", "p_about", "p_details", "p_faith", "p_topics", "p_carry", "p_checkin"],
   church: ["role", "c_about", "c_faith", "c_support", "c_topics", "c_bio"],
 };
 let flow = "person", obIdx = 0, topicIdx = 0, editing = false;
@@ -172,6 +189,7 @@ function startOnboarding() {
   const p = PROFILE || {};
   // person fields
   $("#obHandle").value = p.handle || ""; $("#obCity").value = p.city || "";
+  fillDetails("ob", p);
   chips($("#obTrads"), TRAD_ITEMS, p.tradition || []);
   chips($("#obFighting"), THEME_ITEMS, p.fighting || []);
   chips($("#obOvercame"), THEME_ITEMS, p.overcame || []);
@@ -241,6 +259,11 @@ $("#obSkip").onclick = () => { topicIdx = 0; obIdx++; showStep(); };
 $("#obNext").onclick = async () => {
   const name = stepName();
   if (name === "p_about" && !$("#obHandle").value.trim()) { $("#obHandle").focus(); return; }
+  if (name === "p_details") {
+    const age = parseInt($("#obAge").value, 10);
+    if (!age) { alert("Please add your age. Fellowship connects adults only, so Heard needs it to keep minors safe."); $("#obAge").focus(); return; }
+    if (age < (BOOT.options?.min_age || 13)) { alert("Heard is for people 13 and older."); return; }
+  }
   if (name === "p_faith" && !chosen($("#obTrads")).length && !$("#obTradOther").value.trim()) {
     alert('Pick at least one, or choose "I am exploring."'); return;
   }
@@ -258,6 +281,7 @@ $("#obNext").onclick = async () => {
 };
 async function finishPerson() {
   await saveProfile({
+    ...readDetails("ob"),
     handle: $("#obHandle").value, city: $("#obCity").value,
     tradition: chosen($("#obTrads")), tradition_other: $("#obTradOther").value,
     beliefs: cleanBeliefs(), overcame: chosen($("#obOvercame")), fighting: chosen($("#obFighting")),
@@ -410,6 +434,7 @@ async function saveProfile(body) {
 function renderSettings() {
   const p = PROFILE || {};
   $("#pfHandle").value = p.handle || ""; $("#pfCity").value = p.city || "";
+  fillDetails("pf", p);
   $("#pfTradOther").value = p.tradition_other || ""; $("#pfBio").value = p.bio || "";
   $("#pfOpen").checked = !!p.open_to_contact;
   $("#pfMethod").value = p.contact_method || ""; $("#pfContact").value = p.contact_value || "";
@@ -424,6 +449,7 @@ function renderSettings() {
 }
 async function saveSettings() {
   await saveProfile({
+    ...readDetails("pf"),
     handle: $("#pfHandle").value, city: $("#pfCity").value,
     tradition: chosen($("#pfTrads")), tradition_other: $("#pfTradOther").value,
     beliefs: cleanBeliefs(), bio: $("#pfBio").value,
@@ -609,11 +635,59 @@ async function outcome(id, result) {
 }
 
 // ============================================================ FELLOWSHIP
+let SUB = "suggested";
+$$(".subtabs button").forEach((b) => (b.onclick = () => goSub(b.dataset.sub)));
+function goSub(name) {
+  SUB = name;
+  $$(".subtabs button").forEach((b) => b.classList.toggle("on", b.dataset.sub === name));
+  $$("#fellowship .subpanel").forEach((p) => p.classList.toggle("on", p.id === "sub-" + name));
+  $("#fFilters").classList.toggle("hidden", name === "connections");
+  if (name === "suggested") loadSuggestions();
+  if (name === "find") loadBrowse();
+  if (name === "connections") loadConnections();
+}
+// Age gauge: two handles on one track.
+function syncAge(e) {
+  const lo = $("#fAgeMin"), hi = $("#fAgeMax");
+  if (+lo.value > +hi.value) { if (e?.target === lo) hi.value = lo.value; else lo.value = hi.value; }
+  $("#fAgeLabel").textContent = `${lo.value} – ${hi.value}${+hi.value === 99 ? "+" : ""}`;
+}
+["#fAgeMin", "#fAgeMax"].forEach((id) => $(id).addEventListener("input", syncAge));
+function filterQuery() {
+  const q = new URLSearchParams();
+  if ($("#fGender").value) q.set("gender", $("#fGender").value);
+  if ($("#fMarital").value) q.set("marital", $("#fMarital").value);
+  if ($("#fTrad").value) q.set("tradition", $("#fTrad").value);
+  if ($("#fYears").value) q.set("faith_years", $("#fYears").value);
+  if (+$("#fAgeMin").value > 18) q.set("age_min", $("#fAgeMin").value);
+  if (+$("#fAgeMax").value < 99) q.set("age_max", $("#fAgeMax").value);
+  return q;
+}
+function applyFilters() { goSub(SUB === "connections" ? "suggested" : SUB); }
+function resetFilters() {
+  ["#fGender", "#fMarital", "#fTrad", "#fYears"].forEach((id) => ($(id).value = ""));
+  $("#fAgeMin").value = 18; $("#fAgeMax").value = 99; syncAge(); applyFilters();
+}
+function showGate(r) {
+  const g = $("#fGate");
+  if (r.gate) {
+    g.innerHTML = `<p>${esc(r.message)}</p>${r.gate === "age_required" ? `<button class="primary small" onclick="go('settings')">Add my age</button>` : ""}`;
+    g.classList.remove("hidden"); $("#fFilters").classList.add("hidden");
+    return true;
+  }
+  g.classList.add("hidden");
+  return false;
+}
+function detailLine(p) {
+  const bits = [GENDER_L[p.gender], p.age ? String(p.age) : null, MARITAL_L[p.marital], FAITH_L[p.faith_years]].filter(Boolean);
+  return bits.length ? `<div class="detailline">${bits.map(esc).join(" · ")}</div>` : "";
+}
 function personCard(p, forLabel) {
   return `<div class="card person"><div class="avatar">${esc((p.handle || "?")[0].toUpperCase())}</div><div style="flex:1">
     <b>${esc(p.handle)}</b>${p.synthetic ? `<span class="demo" title="Demo profile, not a real person">demo</span>` : ""}
     ${forLabel ? `<span class="forlabel">for ${esc(forLabel)}</span>` : ""}
     <div class="meta">${esc(p.city || "")}${p.tradition ? " · " + parseList(p.tradition).map(pretty).join(" / ") : ""}</div>
+    ${detailLine(p)}
     ${p.bio ? `<p style="margin:6px 0">${esc(p.bio)}</p>` : ""}
     ${(p.overcame || []).map((t) => `<span class="tag">came through ${esc(pretty(t))}</span>`).join("")}
     ${(p.fighting || []).map((t) => `<span class="tag fight">fighting ${esc(pretty(t))}</span>`).join("")}
@@ -623,25 +697,31 @@ function personCard(p, forLabel) {
 }
 async function loadSuggestions() {
   if (!isPerson()) return;
-  const r = await api("/api/suggestions");
+  const r = await api("/api/suggestions?" + filterQuery().toString());
+  if (showGate(r)) { $("#suggestList").innerHTML = ""; return; }
+  $("#fFilters").classList.remove("hidden");
   $("#suggestList").innerHTML = r.suggestions.length
     ? r.suggestions.map((p) => personCard(p, p.for_label)).join("")
-    : `<p class="sub">${r.fighting.length ? "No one matches what you're fighting yet. As more people join, they'll show up here." : "Add the struggles you're fighting in Settings and Heard will suggest people here."}</p>`;
+    : `<p class="sub">${r.fighting.length ? "No one matches what you're fighting with these filters yet. Try widening them." : "Add the struggles you're fighting in Settings and Heard will suggest people here."}</p>`;
 }
 async function loadMatches() {
   const theme = $("#peopleTheme").value;
-  if (!theme) { alert("Choose a struggle first."); return; }
-  const r = await api("/api/matches?theme=" + encodeURIComponent(theme));
+  if (!theme) return loadBrowse();
+  const r = await api("/api/matches?" + new URLSearchParams([...filterQuery(), ["theme", theme]]).toString());
+  if (showGate(r)) { $("#peopleList").innerHTML = ""; return; }
   $("#peopleList").innerHTML = r.matches.length ? r.matches.map((p) => personCard(p)).join("")
-    : `<div class="card"><p class="sub">No one has listed this one yet. As more people join, they'll show up here.</p></div>`;
+    : `<div class="card"><p class="sub">No one matches that struggle with these filters yet.</p></div>`;
 }
 async function loadBrowse() {
-  const theme = $("#peopleTheme").value;
-  const r = await api("/api/browse" + (theme ? "?theme=" + encodeURIComponent(theme) : ""));
-  $("#peopleList").innerHTML = r.people.map((p) => personCard(p)).join("") || `<div class="card"><p class="sub">No profiles yet.</p></div>`;
+  const q = filterQuery();
+  if ($("#peopleTheme").value) q.set("theme", $("#peopleTheme").value);
+  const r = await api("/api/browse?" + q.toString());
+  if (showGate(r)) { $("#peopleList").innerHTML = ""; return; }
+  $("#peopleList").innerHTML = r.people.map((p) => personCard(p)).join("") || `<div class="card"><p class="sub">No one matches these filters yet.</p></div>`;
 }
 async function connectTo(id, btn, theme) {
-  await api("/api/connect", { to_id: id, theme: theme || $("#peopleTheme").value });
+  try { await api("/api/connect", { to_id: id, theme: theme || $("#peopleTheme").value }); }
+  catch { alert("That connection isn't available."); return; }
   btn.outerHTML = `<span class="ok">Request sent. You'll see their contact once they accept.</span>`;
   loadConnections();
 }

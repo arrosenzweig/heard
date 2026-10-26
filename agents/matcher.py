@@ -48,6 +48,46 @@ W_OPEN_TO_CONTACT = 1.5
 W_SEEKER_PAIR = 1.0
 
 
+FELLOWSHIP_AGE = 18
+FAITH_ORDER = ["exploring", "lt1", "1_5", "5_10", "10_20", "20_plus"]
+
+
+def fellowship_eligible(p):
+    """Only adults with a stated age appear in, or use, Fellowship. Connecting
+    strangers by phone must never put a minor in touch with an adult."""
+    try:
+        return int(p.get("age")) >= FELLOWSHIP_AGE
+    except (TypeError, ValueError):
+        return False
+
+
+def passes_filters(c, f):
+    """User-chosen filters. A filter that is set excludes anyone who didn't
+    state that detail, so "women only" never shows someone who didn't say."""
+    if not f:
+        return True
+    if f.get("gender") and c.get("gender") != f["gender"]:
+        return False
+    if f.get("marital") and c.get("marital") != f["marital"]:
+        return False
+    if f.get("tradition") and f["tradition"] not in _trads(c):
+        return False
+    try:
+        age = int(c.get("age"))
+    except (TypeError, ValueError):
+        age = None
+    if f.get("age_min") and (age is None or age < int(f["age_min"])):
+        return False
+    if f.get("age_max") and (age is None or age > int(f["age_max"])):
+        return False
+    if f.get("faith_years"):
+        if c.get("faith_years") not in FAITH_ORDER:
+            return False
+        if FAITH_ORDER.index(c["faith_years"]) < FAITH_ORDER.index(f["faith_years"]):
+            return False
+    return True
+
+
 def themes_of(p, kind):
     """Category list for 'fighting' or 'overcame', including the user's own
     described struggles, through the category they confirmed for each."""
@@ -138,19 +178,23 @@ def score(seeker_profile, candidate, theme):
         "score": round(s, 2),
         "reasons": reasons,
         "relation": "overcame" if t in overcame else "fighting",
+        "gender": candidate.get("gender"), "age": candidate.get("age"),
+        "marital": candidate.get("marital"), "faith_years": candidate.get("faith_years"),
     }
 
 
-def suggest(profile, theme, k=4, severity="ordinary"):
+def suggest(profile, theme, k=4, severity="ordinary", filters=None):
     """Ranked companions for this person and this struggle.
 
     Returns [] during a crisis: a person in acute danger is routed to real
     help, never handed a list of peers.
     """
-    if severity == "crisis":
+    if severity == "crisis" or not fellowship_eligible(profile):
         return []
     out = []
     for cand in store.all_profiles("person"):
+        if not fellowship_eligible(cand) or not passes_filters(cand, filters):
+            continue
         sc = score(profile, cand, theme)
         if sc:
             out.append(sc)
@@ -158,11 +202,13 @@ def suggest(profile, theme, k=4, severity="ordinary"):
     return out[:k]
 
 
-def browse(profile, theme=None, limit=50):
+def browse(profile, theme=None, limit=50, filters=None):
     """All people-profiles, optionally filtered by theme. Contact never included."""
     rows = []
+    if not fellowship_eligible(profile):
+        return rows
     for cand in store.all_profiles("person"):
-        if cand["id"] == profile["id"]:
+        if cand["id"] == profile["id"] or not fellowship_eligible(cand) or not passes_filters(cand, filters):
             continue
         overcame = [t.lower() for t in (cand.get("overcame") or [])]
         fighting = [t.lower() for t in (cand.get("fighting") or [])]
@@ -174,6 +220,8 @@ def browse(profile, theme=None, limit=50):
             "overcame": cand.get("overcame") or [], "fighting": cand.get("fighting") or [],
             "open_to_contact": bool(cand.get("open_to_contact")),
             "synthetic": bool(cand.get("synthetic")),
+            "gender": cand.get("gender"), "age": cand.get("age"),
+            "marital": cand.get("marital"), "faith_years": cand.get("faith_years"),
         })
     return rows[:limit]
 

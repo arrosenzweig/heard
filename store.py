@@ -108,6 +108,11 @@ def init():
         # welcomes people still exploring faith. Used by church matching.
         if "ministries" not in cols:
             c.execute("ALTER TABLE profile ADD COLUMN ministries TEXT")
+        # Fellowship filters. All optional except age, which gates Fellowship
+        # (under-18s are never shown to or connected with strangers).
+        for col, typ in (("gender", "TEXT"), ("age", "INTEGER"), ("marital", "TEXT"), ("faith_years", "TEXT")):
+            if col not in cols:
+                c.execute(f"ALTER TABLE profile ADD COLUMN {col} {typ}")
         if "custom_struggles" not in cols:
             # [{"text": user's own words, "theme": closest category, "kind": "fighting"|"overcame"}]
             c.execute("ALTER TABLE profile ADD COLUMN custom_struggles TEXT")

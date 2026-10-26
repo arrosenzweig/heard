@@ -193,3 +193,20 @@ details.card summary{cursor:pointer}
 .cithread .bubble{max-width:92%}
 .cistart{margin-top:10px}
 .voicebtn.rec{background:var(--rose);color:#fff;border-color:var(--rose);animation:pulse 1.6s infinite}
+
+/* ------------------------------------------------- fellowship sub-ribbon */
+.subtabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;border-bottom:1px solid var(--line);padding-bottom:10px}
+.subtabs button{border:1px solid var(--line);background:#fff;color:var(--muted);padding:8px 16px;border-radius:999px;font-size:.9rem}
+.subtabs button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+#fellowship .subpanel{display:none}#fellowship .subpanel.on{display:block}
+.filtergrid,.detailgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.filtergrid label,.detailgrid label{font:600 .8rem Inter;color:var(--muted);display:flex;flex-direction:column;gap:4px;margin:0}
+.filtergrid select,.detailgrid select,.detailgrid input{font:400 .95rem Inter;color:var(--ink)}
+.agegauge{display:flex;align-items:center;gap:12px;margin-top:12px;font:600 .8rem Inter;color:var(--muted)}
+.agegauge b{font:600 .95rem Inter;color:var(--ink);min-width:70px;text-align:right}
+.dual{position:relative;flex:1;height:28px}
+.dual input[type=range]{position:absolute;left:0;top:6px;width:100%;pointer-events:none;-webkit-appearance:none;appearance:none;background:none;border:0;padding:0;box-shadow:none}
+.dual input[type=range]::-webkit-slider-thumb{pointer-events:auto;-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--accent);border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.3);cursor:pointer}
+.dual input[type=range]::-moz-range-thumb{pointer-events:auto;width:18px;height:18px;border-radius:50%;background:var(--accent);border:2px solid #fff;cursor:pointer}
+.dual::before{content:"";position:absolute;left:0;right:0;top:13px;height:4px;border-radius:4px;background:var(--line)}
+.detailline{color:var(--muted);font-size:.84rem}

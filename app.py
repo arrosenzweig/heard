@@ -65,6 +65,8 @@ def session_reset():
 @app.route("/api/bootstrap")
 def bootstrap():
     return jsonify({
+        "options": {"gender": GENDERS, "marital": MARITAL, "faith_years": FAITH_YEARS,
+                    "min_age": MIN_AGE, "fellowship_age": FELLOWSHIP_AGE},
         "motto": MOTTO,
         "traditions": _traditions()["traditions"],
         "topics": _topics()["topics"],
@@ -110,6 +112,10 @@ def save_profile():
         synthetic=0,
         checkin_hours=_hours(d.get("checkin_hours"), (existing or {}).get("checkin_hours")),
         custom_struggles=_custom(d.get("custom_struggles")),
+        gender=d.get("gender") if d.get("gender") in GENDERS else None,
+        age=_age(d.get("age")),
+        marital=d.get("marital") if d.get("marital") in MARITAL else None,
+        faith_years=d.get("faith_years") if d.get("faith_years") in FAITH_YEARS else None,
         onboarded=1,
     )
     session["pid"] = pid
@@ -121,6 +127,21 @@ def tradition_parse():
     """Profiles store tradition as JSON; normalise on read for the client."""
     p = me()
     return jsonify({"tradition": _as_list(p.get("tradition")) if p else []})
+
+
+GENDERS = ("woman", "man", "prefer_not")
+MARITAL = ("single", "dating", "engaged", "married", "separated", "divorced", "widowed", "prefer_not")
+FAITH_YEARS = ("exploring", "lt1", "1_5", "5_10", "10_20", "20_plus", "prefer_not")
+MIN_AGE = 13          # minimum age to use Heard at all
+FELLOWSHIP_AGE = 18   # minimum age to appear in or use Fellowship
+
+
+def _age(v):
+    try:
+        a = int(v)
+    except (TypeError, ValueError):
+        return None
+    return a if 0 < a < 120 else None
 
 
 def _hours(v, fallback=None):
@@ -161,6 +182,21 @@ def struggle_classify():
                     "themes": retrieval.themes(), "trace": tr.summary()})
 
 
+def _filters():
+    a = request.args
+    f = {k: a.get(k) for k in ("gender", "marital", "tradition", "faith_years", "age_min", "age_max") if a.get(k)}
+    return f or None
+
+
+def _fellowship_gate(p):
+    if matcher.fellowship_eligible(p):
+        return None
+    reason = "under_18" if p.get("age") else "age_required"
+    msg = ("Fellowship is for adults, so it isn't available until you're 18. Talk and Check-ins are here for you."
+           if reason == "under_18" else "Add your age in Settings to use Fellowship. It keeps minors from being connected with adults.")
+    return jsonify({"suggestions": [], "matches": [], "people": [], "fighting": [], "gate": reason, "message": msg})
+
+
 @app.route("/api/suggestions")
 def suggestions():
     """Fellowship suggestions across everything the user is fighting, so the
@@ -168,6 +204,9 @@ def suggestions():
     p, err = require_profile()
     if err:
         return err
+    gate = _fellowship_gate(p)
+    if gate:
+        return gate
     prof = dict(p)
     prof["tradition"] = _as_list(p.get("tradition"))
     labels = {t: t.replace("_", " ") for t in retrieval.themes()}
@@ -176,7 +215,7 @@ def suggestions():
             labels.setdefault(cs["theme"], cs["text"])
     best = {}
     for theme in matcher.themes_of(prof, "fighting"):
-        for m in matcher.suggest(prof, theme, k=5):
+        for m in matcher.suggest(prof, theme, k=5, filters=_filters()):
             m["for_theme"] = theme
             m["for_label"] = labels.get(theme, theme.replace("_", " "))
             if m["id"] not in best or m["score"] > best[m["id"]]["score"]:
@@ -421,8 +460,11 @@ def matches():
         return err
     prof = dict(p)
     prof["tradition"] = _as_list(p.get("tradition"))
+    gate = _fellowship_gate(p)
+    if gate:
+        return gate
     theme = request.args.get("theme")
-    return jsonify({"matches": matcher.suggest(prof, theme, k=5)})
+    return jsonify({"matches": matcher.suggest(prof, theme, k=8, filters=_filters())})
 
 
 @app.route("/api/browse")
@@ -430,7 +472,10 @@ def browse():
     p, err = require_profile()
     if err:
         return err
-    return jsonify({"people": matcher.browse(p, request.args.get("theme"))})
+    gate = _fellowship_gate(p)
+    if gate:
+        return gate
+    return jsonify({"people": matcher.browse(p, request.args.get("theme"), filters=_filters())})
 
 
 @app.route("/api/connect", methods=["POST"])
@@ -439,6 +484,10 @@ def connect():
     if err:
         return err
     d = request.get_json(force=True) or {}
+    target = store.get_profile(d.get("to_id")) if d.get("to_id") else None
+    # Both people must be adults: the gate holds even for a direct request.
+    if not target or target.get("kind") != "person" or not matcher.fellowship_eligible(p)             or not matcher.fellowship_eligible(target):
+        return jsonify({"error": "not_allowed"}), 403
     cid = store.request_connection(p["id"], d.get("to_id"), d.get("theme"))
     return jsonify({"ok": True, "connection_id": cid})
 
