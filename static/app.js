@@ -3,15 +3,19 @@ const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) =>
   ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-const pretty = (t) => String(t || "").replace(/_/g, " ");
+const pretty = (t) => String(t || "").replace(/^custom:/, "").replace(/_/g, " ");
 const paras = (s) => String(s || "").split(/\n+/).filter(Boolean).map((p) => `<p>${esc(p)}</p>`).join("");
 const fmtTime = (t) => new Date(t * 1000).toLocaleString([], { weekday: "short", hour: "numeric", minute: "2-digit" });
+const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
 let BOOT = null, PROFILE = null, LAST = null;
-let BELIEFS = {};
+let BELIEFS = {};        // person: {topic: value | {position:'own_words', ...}}
+let CH_BELIEFS = {};     // church: {topic: position}
+let CUSTOM = [];         // person: [{text, theme, kind}]
 
 const CADENCE = [
-  { id: "24", label: "Every day" }, { id: "72", label: "Every few days" }, { id: "168", label: "Once a week" },
+  { id: "24", label: "Every day" }, { id: "72", label: "Every few days" },
+  { id: "168", label: "Once a week" }, { id: "custom", label: "Custom…" },
 ];
 
 async function api(path, body, method) {
@@ -73,12 +77,13 @@ new MutationObserver(() => attachMics()).observe(document.body, { childList: tru
 // Text-to-speech: read a reply aloud. On-device in every major browser.
 function speak(btn, text) {
   if (!("speechSynthesis" in window)) { alert("Your browser can't read aloud."); return; }
-  if (speechSynthesis.speaking) { speechSynthesis.cancel(); $$(".tts.on").forEach((b) => b.classList.remove("on")); if (btn.classList.contains("on")) return; }
+  if (speechSynthesis.speaking) {
+    speechSynthesis.cancel(); $$(".tts.on").forEach((b) => b.classList.remove("on"));
+    if (btn.classList.contains("on")) return;
+  }
   const u = new SpeechSynthesisUtterance(text);
-  u.rate = 0.97;
-  u.onend = () => btn.classList.remove("on");
-  btn.classList.add("on");
-  speechSynthesis.speak(u);
+  u.rate = 0.97; u.onend = () => btn.classList.remove("on");
+  btn.classList.add("on"); speechSynthesis.speak(u);
 }
 
 // =================================================================== TABS
@@ -86,15 +91,26 @@ function go(tab) {
   $$("nav button").forEach((b) => b.classList.toggle("on", b.dataset.tab === tab));
   $$(".tab").forEach((s) => s.classList.toggle("on", s.id === tab));
   if (tab === "checkins") loadCheckins();
-  if (tab === "fellowship") loadConnections();
+  if (tab === "fellowship") { loadSuggestions(); loadConnections(); }
   if (tab === "churches") loadChurches();
-  if (tab === "settings") { renderSettings(); loadStats(); }
+  if (tab === "listing") renderListing();
+  if (tab === "settings") { if (isPerson()) renderSettings(); loadStats(); }
   window.scrollTo({ top: 0 });
 }
 $$("nav button").forEach((b) => (b.onclick = () => go(b.dataset.tab)));
+const isPerson = () => !PROFILE || PROFILE.kind !== "church";
+
+// Church accounts manage a listing; people use the companion features.
+function applyMode() {
+  const church = !isPerson();
+  $$("nav button[data-for]").forEach((b) => b.classList.toggle("hidden", b.dataset.for !== (church ? "church" : "person")));
+  $("#personSettings").classList.toggle("hidden", church);
+  $$(".personOnly").forEach((x) => x.classList.toggle("hidden", church));
+  go(church ? "listing" : "talk");
+}
 
 // ================================================================== CHIPS
-function chips(el, items, selected, { multi = true } = {}) {
+function chips(el, items, selected, { multi = true, onChange } = {}) {
   el.innerHTML = "";
   items.forEach((it) => {
     const c = document.createElement("span");
@@ -103,11 +119,27 @@ function chips(el, items, selected, { multi = true } = {}) {
     c.onclick = () => {
       if (!multi) $$(".chip", el).forEach((x) => x !== c && x.classList.remove("on"));
       c.classList.toggle("on");
+      onChange && onChange();
     };
     el.appendChild(c);
   });
 }
 const chosen = (el) => $$(".chip.on", el).map((c) => c.dataset.id);
+
+// Check-in cadence: presets, or any number of days.
+function cadence(chipsEl, rowEl, daysEl, hours) {
+  const preset = ["24", "72", "168"].includes(String(hours)) ? String(hours) : "custom";
+  const sync = () => rowEl.classList.toggle("hidden", chosen(chipsEl)[0] !== "custom");
+  chips(chipsEl, CADENCE, [preset], { multi: false, onChange: sync });
+  if (preset === "custom") daysEl.value = Math.max(1, Math.round((hours || 48) / 24));
+  sync();
+}
+function cadenceHours(chipsEl, daysEl) {
+  const v = chosen(chipsEl)[0] || "24";
+  if (v !== "custom") return +v;
+  const d = Math.max(1, Math.min(60, parseInt(daysEl.value, 10) || 1));
+  return d * 24;
+}
 
 // ============================================================= BOOTSTRAP
 let TRAD_ITEMS = [], THEME_ITEMS = [];
@@ -119,61 +151,132 @@ async function boot() {
   THEME_ITEMS = BOOT.themes.map((t) => ({ id: t, label: pretty(t) }));
   $("#peopleTheme").innerHTML = '<option value="">Choose a struggle…</option>' +
     BOOT.themes.map((t) => `<option value="${t}">${pretty(t)}</option>`).join("");
+  $("#churchTrad").innerHTML = '<option value="">Any tradition</option>' +
+    TRAD_ITEMS.filter((t) => !t.seeker && t.id !== "other").map((t) => `<option value="${t.id}">${esc(t.label)}</option>`).join("");
   $("#vTrans").innerHTML = BOOT.translations.map((t) => `<option value="${t.code}">${t.code} - ${esc(t.label)}</option>`).join("");
-  chips($("#chTrads"), TRAD_ITEMS.filter((t) => !t.seeker), []);
   attachMics();
   if (!PROFILE || !PROFILE.onboarded) startOnboarding();
-  else { await loadChat(); refreshDue(); }
+  else { applyMode(); if (isPerson()) { await loadChat(); refreshDue(); } }
 }
 
-// ============================================================ ONBOARDING
-// The ONLY place Heard asks about faith. Everything is editable in Settings.
-let obStep = 0;
-const OB_STEPS = 5;
+// ================================================================ SETUP
+// The ONLY place Heard asks about faith. Branches by role on the first screen.
+const FLOWS = {
+  person: ["role", "p_about", "p_faith", "p_topics", "p_carry", "p_checkin"],
+  church: ["role", "c_about", "c_faith", "c_support", "c_topics", "c_bio"],
+};
+let flow = "person", obIdx = 0, topicIdx = 0, editing = false;
+const stepName = () => FLOWS[flow][obIdx];
+const topicSteps = { p_topics: "#obTopics", c_topics: "#ocTopics" };
+
 function startOnboarding() {
   const p = PROFILE || {};
+  // person fields
   $("#obHandle").value = p.handle || ""; $("#obCity").value = p.city || "";
   chips($("#obTrads"), TRAD_ITEMS, p.tradition || []);
   chips($("#obFighting"), THEME_ITEMS, p.fighting || []);
   chips($("#obOvercame"), THEME_ITEMS, p.overcame || []);
-  chips($("#obCadence"), CADENCE, [String(p.checkin_hours || 24)], { multi: false });
+  cadence($("#obCadence"), $("#obDaysRow"), $("#obDays"), p.checkin_hours || 24);
   BELIEFS = { ...(p.beliefs || {}) };
+  CUSTOM = [...(p.custom_struggles || [])];
   renderTopics($("#obTopics"));
+  renderCustom($("#obCustom"));
+  // church fields
+  chips($("#ocTrads"), TRAD_ITEMS.filter((t) => !t.seeker), []);
+  chips($("#ocMinistries"), THEME_ITEMS, []);
+  CH_BELIEFS = {};
+  renderChurchTopics();
   $("#onboard").classList.remove("hidden");
   document.body.classList.add("locked");
-  showStep(0);
+  flow = "person"; obIdx = 0; topicIdx = 0; editing = false;
+  showStep();
 }
-function showStep(i) {
-  obStep = i;
-  $$(".ob-step").forEach((s) => s.classList.toggle("on", +s.dataset.step === i));
-  $("#obBar").style.width = `${((i + 1) / OB_STEPS) * 100}%`;
-  $("#obBack").style.visibility = i === 0 ? "hidden" : "visible";
-  $("#obSkip").classList.toggle("hidden", i !== 2);
-  $("#obNext").textContent = i === OB_STEPS - 1 ? "Start using Heard" : "Continue";
+// Re-open the church flow, filled in, to edit an existing listing.
+function editChurch() {
+  const c = PROFILE;
+  $("#ocName").value = c.handle || ""; $("#ocCity").value = c.city || "";
+  $("#ocAddr").value = c.address || ""; $("#ocTimes").value = c.service_times || "";
+  $("#ocWeb").value = c.website || ""; $("#ocBio").value = c.bio || "";
+  $("#ocSeeker").checked = !!c.seeker_friendly;
+  chips($("#ocTrads"), TRAD_ITEMS.filter((t) => !t.seeker), parseList(c.tradition));
+  chips($("#ocMinistries"), THEME_ITEMS, parseList(c.ministries));
+  CH_BELIEFS = { ...(c.beliefs || {}) };
+  renderChurchTopics();
+  $("#onboard").classList.remove("hidden"); document.body.classList.add("locked");
+  flow = "church"; obIdx = 1; topicIdx = 0; editing = true;
+  showStep();
+}
+
+function showStep() {
+  const name = stepName();
+  $$(".ob-step").forEach((s) => s.classList.toggle("on", s.dataset.step === name));
+  // one contested question at a time
+  const sel = topicSteps[name];
+  if (sel) {
+    const items = $$(".topic", $(sel));
+    items.forEach((t, i) => t.classList.toggle("on", i === topicIdx));
+    $(name === "p_topics" ? "#obQCount" : "#ocQCount").textContent = `Question ${topicIdx + 1} of ${items.length}`;
+  }
+  const steps = FLOWS[flow].length;
+  const nTopics = BOOT.topics.length;
+  const frac = sel ? topicIdx / nTopics : 0;
+  $("#obBar").style.width = `${((obIdx + frac + 1) / steps) * 100}%`;
+  $("#obBack").style.visibility = obIdx === 0 || (editing && obIdx === 1) ? "hidden" : "visible";
+  $("#obNext").classList.toggle("hidden", name === "role");
+  $("#obSkip").classList.toggle("hidden", !sel);
+  const last = obIdx === steps - 1;
+  $("#obNext").textContent = last ? (flow === "church" ? (editing ? "Save listing" : "Publish our listing") : "Start using Heard")
+    : sel ? "Next question" : "Continue";
+  if (sel && topicIdx === nTopics - 1) $("#obNext").textContent = "Continue";
   $(".ob-card").scrollTop = 0;
 }
-$("#obBack").onclick = () => showStep(Math.max(0, obStep - 1));
-$("#obSkip").onclick = () => showStep(obStep + 1);
+
+$$(".role").forEach((b) => (b.onclick = () => { flow = b.dataset.role; obIdx = 1; topicIdx = 0; showStep(); }));
+$("#obBack").onclick = () => {
+  if (topicSteps[stepName()] && topicIdx > 0) { topicIdx--; showStep(); return; }
+  obIdx = Math.max(0, obIdx - 1);
+  if (topicSteps[stepName()]) topicIdx = BOOT.topics.length - 1;
+  showStep();
+};
+$("#obSkip").onclick = () => { topicIdx = 0; obIdx++; showStep(); };
 $("#obNext").onclick = async () => {
-  if (obStep === 0 && !$("#obHandle").value.trim()) { $("#obHandle").focus(); return; }
-  if (obStep === 1 && !chosen($("#obTrads")).length && !$("#obTradOther").value.trim()) {
-    alert("Pick at least one, or choose \"I am exploring.\""); return;
+  const name = stepName();
+  if (name === "p_about" && !$("#obHandle").value.trim()) { $("#obHandle").focus(); return; }
+  if (name === "p_faith" && !chosen($("#obTrads")).length && !$("#obTradOther").value.trim()) {
+    alert('Pick at least one, or choose "I am exploring."'); return;
   }
-  if (obStep < OB_STEPS - 1) { showStep(obStep + 1); return; }
+  if (name === "c_about" && !$("#ocName").value.trim()) { $("#ocName").focus(); return; }
+  if (topicSteps[name] && topicIdx < BOOT.topics.length - 1) { topicIdx++; showStep(); return; }
+  if (obIdx < FLOWS[flow].length - 1) { obIdx++; topicIdx = 0; showStep(); return; }
   $("#obNext").disabled = true;
+  try {
+    if (flow === "person") await finishPerson(); else await finishChurch();
+  } catch (e) { alert("Couldn't save: " + e.message); $("#obNext").disabled = false; return; }
+  $("#obNext").disabled = false;
+  $("#onboard").classList.add("hidden"); document.body.classList.remove("locked");
+  applyMode();
+  if (isPerson()) { await loadChat(); refreshDue(); }
+};
+async function finishPerson() {
   await saveProfile({
     handle: $("#obHandle").value, city: $("#obCity").value,
     tradition: chosen($("#obTrads")), tradition_other: $("#obTradOther").value,
     beliefs: cleanBeliefs(), overcame: chosen($("#obOvercame")), fighting: chosen($("#obFighting")),
-    checkin_hours: +(chosen($("#obCadence"))[0] || 24),
+    custom_struggles: CUSTOM, checkin_hours: cadenceHours($("#obCadence"), $("#obDays")),
     open_to_contact: $("#obOpen").checked, contact_method: $("#obMethod").value,
     contact_value: $("#obContact").value, bio: $("#obBio").value,
   });
-  $("#obNext").disabled = false;
-  $("#onboard").classList.add("hidden");
-  document.body.classList.remove("locked");
-  await loadChat(); refreshDue(); go("talk");
-};
+}
+async function finishChurch() {
+  const r = await api("/api/church", {
+    as_account: true,
+    handle: $("#ocName").value, city: $("#ocCity").value, address: $("#ocAddr").value,
+    service_times: $("#ocTimes").value, website: $("#ocWeb").value, bio: $("#ocBio").value,
+    tradition: chosen($("#ocTrads")), seeker_friendly: $("#ocSeeker").checked,
+    ministries: chosen($("#ocMinistries")), beliefs: CH_BELIEFS,
+  });
+  PROFILE = r.profile; PROFILE.tradition = parseList(PROFILE.tradition);
+}
 
 // ======================================================= BELIEF TOPICS
 function renderTopics(box) {
@@ -249,6 +352,56 @@ function cleanBeliefs() {
   }
   return clean;
 }
+// Church positions: one question at a time, same questions as people answer.
+function renderChurchTopics() {
+  const box = $("#ocTopics");
+  box.innerHTML = BOOT.topics.map((t) => {
+    const cur = CH_BELIEFS[t.id] || "";
+    const opts = [["position_a", t.position_a], ["position_b", t.position_b], ["somewhere_between", "Somewhere in between"], ["", "Not stated"]];
+    return `<div class="topic" data-topic="${t.id}"><div class="q">${esc(t.question)}</div><div class="opts">${opts.map(([v, l]) =>
+      `<label class="opt ${cur === v ? "on" : ""}"><input type="radio" name="oc_${t.id}" value="${v}" ${cur === v ? "checked" : ""}> ${esc(l)}</label>`).join("")}</div></div>`;
+  }).join("");
+  $$(".topic", box).forEach((div) => $$("input", div).forEach((inp) => (inp.onchange = () => {
+    $$(".opt", div).forEach((o) => o.classList.toggle("on", o.contains(inp) && inp.checked));
+    if (inp.value) CH_BELIEFS[div.dataset.topic] = inp.value; else delete CH_BELIEFS[div.dataset.topic];
+  })));
+}
+
+// =================================================== CUSTOM STRUGGLES
+// In the user's own words (typed or spoken). Heard suggests the closest
+// category so it can choose scripture and match people; the user confirms it.
+function renderCustom(box) {
+  const id = box.id + "_text";
+  box.innerHTML = `
+    <div class="customlist">${CUSTOM.map((cs, i) => `<div class="customitem">
+      <div class="said">"${esc(cs.text)}"</div>
+      <div class="row" style="margin-top:6px">
+        <select data-i="${i}" data-f="kind"><option value="fighting" ${cs.kind === "fighting" ? "selected" : ""}>Fighting now</option>
+          <option value="overcame" ${cs.kind === "overcame" ? "selected" : ""}>Came through it</option></select>
+        <span class="sub tiny">closest to</span>
+        <select data-i="${i}" data-f="theme">${BOOT.themes.map((t) => `<option value="${t}" ${cs.theme === t ? "selected" : ""}>${pretty(t)}</option>`).join("")}</select>
+        <button class="ghost small" data-rm="${i}">Remove</button></div></div>`).join("")}</div>
+    <div class="field"><textarea id="${id}" rows="2" placeholder="e.g. I keep comparing myself to my friends' lives online"></textarea></div>
+    <div class="row"><select class="kindNew"><option value="fighting">I'm fighting this</option><option value="overcame">I came through this</option></select>
+      <span class="spacer"></span><button class="primary small addCustom">Add</button></div>
+    <div class="customwarn"></div>`;
+  $$("select[data-i]", box).forEach((s) => (s.onchange = () => { CUSTOM[+s.dataset.i][s.dataset.f] = s.value; }));
+  $$("button[data-rm]", box).forEach((b) => (b.onclick = () => { CUSTOM.splice(+b.dataset.rm, 1); renderCustom(box); }));
+  $(".addCustom", box).onclick = async (e) => {
+    const text = document.getElementById(id).value.trim();
+    if (!text) return;
+    const btn = e.currentTarget; btn.disabled = true; btn.textContent = "Understanding…";
+    try {
+      const r = await api("/api/struggle/classify", { text });
+      CUSTOM.push({ text, theme: r.theme, kind: $(".kindNew", box).value });
+      renderCustom(box);
+      if (r.resources?.length) {
+        $(".customwarn", box).innerHTML = `<div class="safety">What you described sounds serious. Please reach out now: ${r.resources.map((x) => `<b>${esc(x.name)}</b> ${esc(x.contact)}`).join(" · ")}</div>`;
+      }
+    } catch (err) { alert("Couldn't reach Heard: " + err.message); btn.disabled = false; btn.textContent = "Add"; }
+  };
+}
+
 async function saveProfile(body) {
   const r = await api("/api/profile", body);
   PROFILE = r.profile; PROFILE.tradition = parseList(PROFILE.tradition);
@@ -264,17 +417,19 @@ function renderSettings() {
   chips($("#pfTrads"), TRAD_ITEMS, p.tradition || []);
   chips($("#pfFighting"), THEME_ITEMS, p.fighting || []);
   chips($("#pfOvercame"), THEME_ITEMS, p.overcame || []);
-  chips($("#pfCadence"), CADENCE, [String(p.checkin_hours || 24)], { multi: false });
+  cadence($("#pfCadence"), $("#pfDaysRow"), $("#pfDays"), p.checkin_hours || 24);
   BELIEFS = { ...(p.beliefs || {}) };
+  CUSTOM = [...(p.custom_struggles || [])];
   renderTopics($("#pfTopics"));
+  renderCustom($("#pfCustom"));
 }
 async function saveSettings() {
   await saveProfile({
     handle: $("#pfHandle").value, city: $("#pfCity").value,
     tradition: chosen($("#pfTrads")), tradition_other: $("#pfTradOther").value,
     beliefs: cleanBeliefs(), bio: $("#pfBio").value,
-    overcame: chosen($("#pfOvercame")), fighting: chosen($("#pfFighting")),
-    checkin_hours: +(chosen($("#pfCadence"))[0] || 24),
+    overcame: chosen($("#pfOvercame")), fighting: chosen($("#pfFighting")), custom_struggles: CUSTOM,
+    checkin_hours: cadenceHours($("#pfCadence"), $("#pfDays")),
     open_to_contact: $("#pfOpen").checked, contact_method: $("#pfMethod").value, contact_value: $("#pfContact").value,
   });
   $("#pfSaved").classList.remove("hidden"); setTimeout(() => $("#pfSaved").classList.add("hidden"), 2500);
@@ -332,7 +487,7 @@ function bubble(m) {
     ${x.prayer ? `<div class="prayer">${esc(x.prayer)}</div>` : ""}
     ${x.human_nudge ? `<p class="sub tiny">👤 ${esc(x.human_nudge)}</p>` : ""}
     ${x.matches?.length ? `<div class="mini-matches"><b>Someone who's been here:</b> ${x.matches.slice(0, 2).map((p) =>
-      `<a href="#" onclick="go('fellowship');$('#peopleTheme').value='${esc(x.theme)}';loadMatches();return false">${esc(p.handle)}</a> <span class="sub tiny">(${p.relation === "overcame" ? "came through it" : "fighting it too"})</span>`).join(", ")}</div>` : ""}
+      `<a href="#" onclick="go('fellowship');return false">${esc(p.handle)}</a> <span class="sub tiny">(${p.relation === "overcame" ? "came through it" : "fighting it too"})</span>`).join(", ")}</div>` : ""}
     ${v.n_claimed ? `<div class="audit">${v.n_kept} of ${v.n_claimed} citations verified${v.n_removed ? ` · ${v.n_removed} removed` : ""}</div>` : ""}
   </div>`;
 }
@@ -369,7 +524,7 @@ async function commit(btn) {
 
 // ============================================================ CHECK-INS
 async function refreshDue() {
-  if (!PROFILE?.onboarded) return;
+  if (!PROFILE?.onboarded || !isPerson()) return;
   try {
     const r = await api("/api/checkins");
     const n = r.struggles.filter((s) => s.due).length + r.due_commitments.length;
@@ -385,9 +540,12 @@ function spark(series) {
     ${series.map((s, i) => `<circle cx="${x(i)}" cy="${y(s.pull)}" r="5" fill="${color[s.trend] || "#999"}"><title>${fmtTime(s.t)} · pull ${s.pull} · ${s.trend}</title></circle>`).join("")}</svg>
     <div class="legend"><span class="d o"></span>overcoming <span class="d h"></span>holding <span class="d x"></span>deeper</div>`;
 }
+function everyLabel(h) {
+  return { 24: "every day", 72: "every few days", 168: "once a week" }[h] || `every ${Math.round(h / 24)} days`;
+}
 async function loadCheckins() {
   const r = await api("/api/checkins");
-  const every = { 24: "every day", 72: "every few days", 168: "once a week" }[r.hours] || `every ${r.hours} hours`;
+  const every = everyLabel(r.hours);
   $("#ciList").innerHTML = r.struggles.length ? r.struggles.map((s) => {
     const last = s.last ? `<span class="trend ${esc(s.last.trend)}">${esc(s.last.trend)}</span> last time` : "";
     const form = s.due ? `<div class="ciform" data-theme="${esc(s.theme)}">
@@ -403,7 +561,6 @@ async function loadCheckins() {
   $$(".ciform .chips").forEach((c) => $$(".chip", c).forEach((ch) => (ch.onclick = () => {
     $$(".chip", c).forEach((x) => x.classList.remove("on")); ch.classList.add("on");
   })));
-  // Commitments
   const dueIds = new Set(r.due_commitments.map((c) => c.id));
   const open = r.commitments.filter((c) => !dueIds.has(c.id));
   const os = r.outcome_stats, oc = os.counts || {};
@@ -432,10 +589,11 @@ async function submitCheckin(btn) {
         ${r.resources.map((x) => `<div class="resource"><b>${esc(x.name)}</b><span>${esc(x.contact)}</span></div>`).join("")}</div>`;
       return;
     }
+    const mt = r.match_theme || "";
     out.innerHTML = `<div class="ciresult"><span class="trend ${esc(r.trend)}">${esc(r.trend)}</span>
       <p>${esc(r.reply)}</p>
       ${r.escalate ? `<div class="escalate"><b>Two check-ins in a row, it's been pulling you deeper.</b> This is the moment to bring a person in.
-        <div class="row"><button class="primary small" onclick="go('fellowship');$('#peopleTheme').value='${esc(r.theme)}';loadMatches()">Find someone who came through it</button>
+        <div class="row"><button class="primary small" onclick="go('fellowship');$('#peopleTheme').value='${esc(mt)}';${mt ? "loadMatches()" : ""}">Find someone who came through it</button>
         <button class="ghost small" onclick="go('churches')">Find a church community</button></div></div>` : ""}
       <button class="ghost small" onclick="loadCheckins()">Done</button></div>`;
     $$(".chips, .q, .field, .row", f).forEach((el) => el.closest(".ciresult") || (el.style.display = "none"));
@@ -448,36 +606,44 @@ async function outcome(id, result) {
 }
 
 // ============================================================ FELLOWSHIP
-function personCard(p) {
+function personCard(p, forLabel) {
   return `<div class="card person"><div class="avatar">${esc((p.handle || "?")[0].toUpperCase())}</div><div style="flex:1">
     <b>${esc(p.handle)}</b>${p.synthetic ? `<span class="demo" title="Demo profile, not a real person">demo</span>` : ""}
+    ${forLabel ? `<span class="forlabel">for ${esc(forLabel)}</span>` : ""}
     <div class="meta">${esc(p.city || "")}${p.tradition ? " · " + parseList(p.tradition).map(pretty).join(" / ") : ""}</div>
     ${p.bio ? `<p style="margin:6px 0">${esc(p.bio)}</p>` : ""}
     ${(p.overcame || []).map((t) => `<span class="tag">came through ${esc(pretty(t))}</span>`).join("")}
     ${(p.fighting || []).map((t) => `<span class="tag fight">fighting ${esc(pretty(t))}</span>`).join("")}
     ${p.reasons ? `<div class="reasons">${p.reasons.map(esc).join(" · ")}</div>` : ""}
-    <div class="row">${p.open_to_contact ? `<button class="primary small" onclick="connectTo('${p.id}', this)">Ask to connect</button>` : `<span class="sub">Not taking contact requests right now</span>`}</div>
+    <div class="row">${p.open_to_contact ? `<button class="primary small" onclick="connectTo('${p.id}', this, '${esc(p.for_theme || "")}')">Ask to connect</button>` : `<span class="sub">Not taking contact requests right now</span>`}</div>
   </div></div>`;
+}
+async function loadSuggestions() {
+  if (!isPerson()) return;
+  const r = await api("/api/suggestions");
+  $("#suggestList").innerHTML = r.suggestions.length
+    ? r.suggestions.map((p) => personCard(p, p.for_label)).join("")
+    : `<p class="sub">${r.fighting.length ? "No one matches what you're fighting yet. As more people join, they'll show up here." : "Add the struggles you're fighting in Settings and Heard will suggest people here."}</p>`;
 }
 async function loadMatches() {
   const theme = $("#peopleTheme").value;
   if (!theme) { alert("Choose a struggle first."); return; }
   const r = await api("/api/matches?theme=" + encodeURIComponent(theme));
-  $("#peopleList").innerHTML = r.matches.length ? r.matches.map(personCard).join("")
+  $("#peopleList").innerHTML = r.matches.length ? r.matches.map((p) => personCard(p)).join("")
     : `<div class="card"><p class="sub">No one has listed this one yet. As more people join, they'll show up here.</p></div>`;
 }
 async function loadBrowse() {
   const theme = $("#peopleTheme").value;
   const r = await api("/api/browse" + (theme ? "?theme=" + encodeURIComponent(theme) : ""));
-  $("#peopleList").innerHTML = r.people.map(personCard).join("") || `<div class="card"><p class="sub">No profiles yet.</p></div>`;
+  $("#peopleList").innerHTML = r.people.map((p) => personCard(p)).join("") || `<div class="card"><p class="sub">No profiles yet.</p></div>`;
 }
-async function connectTo(id, btn) {
-  await api("/api/connect", { to_id: id, theme: $("#peopleTheme").value });
+async function connectTo(id, btn, theme) {
+  await api("/api/connect", { to_id: id, theme: theme || $("#peopleTheme").value });
   btn.outerHTML = `<span class="ok">Request sent. You'll see their contact once they accept.</span>`;
   loadConnections();
 }
 async function loadConnections() {
-  if (!PROFILE) return;
+  if (!PROFILE || !isPerson()) return;
   const r = await api("/api/connections");
   $("#connList").innerHTML = r.connections.length ? r.connections.map((c) => `
     <div class="row" style="justify-content:space-between"><span><b>${esc(c.other_handle)}</b> · ${esc(pretty(c.theme))} · ${c.direction} · <i>${esc(c.status)}</i></span>
@@ -493,23 +659,43 @@ async function reveal(id, btn) {
 }
 
 // ============================================================== CHURCHES
+function churchCard(c) {
+  const m = c.match;
+  const badge = m && m.pct != null ? `<div class="matchpct ${m.pct >= 75 ? "hi" : m.pct >= 45 ? "mid" : "lo"}"><b>${m.pct}%</b><span>match</span></div>` : "";
+  const ministries = parseList(c.ministries);
+  return `<div class="card church ${c.best ? "best" : ""}">
+    ${c.best ? `<div class="bestbadge">★ Best match for you</div>` : ""}
+    <div class="row" style="margin:0;align-items:flex-start"><div style="flex:1">
+      <b>${esc(c.handle)}</b>${c.synthetic ? `<span class="demo">demo</span>` : ""}
+      <div class="sub">${esc(c.city || "")} · ${parseList(c.tradition).map(pretty).join(" / ")}</div></div>${badge}</div>
+    ${m && m.reasons.length ? `<div class="reasons">${m.reasons.map(esc).join(" · ")}</div>` : ""}
+    ${m && m.notes.length ? `<div class="sub tiny">${m.notes.map(esc).join(" · ")}</div>` : ""}
+    ${c.bio ? `<p>${esc(c.bio)}</p>` : ""}
+    ${ministries.length || c.seeker_friendly ? `<div>${ministries.map((t) => `<span class="tag">support for ${esc(pretty(t))}</span>`).join("")}${c.seeker_friendly ? `<span class="tag">welcomes people exploring faith</span>` : ""}</div>` : ""}
+    ${c.service_times ? `<div style="margin-top:8px">🕊 ${esc(c.service_times)}</div>` : ""}
+    ${c.address ? `<div class="sub">${esc(c.address)}</div>` : ""}
+    ${c.website ? `<div><a href="${esc(c.website)}" target="_blank" rel="noopener">${esc(c.website)}</a></div>` : ""}</div>`;
+}
 async function loadChurches() {
   const city = $("#churchCity").value || PROFILE?.city || "";
   if (!$("#churchCity").value && city) $("#churchCity").value = city;
-  const r = await api("/api/churches" + (city ? "?city=" + encodeURIComponent(city) : ""));
-  $("#churchList").innerHTML = r.churches.length ? r.churches.map((c) => `<div class="card">
-    <b>${esc(c.handle)}</b>${c.synthetic ? `<span class="demo">demo</span>` : ""}
-    <div class="sub">${esc(c.city || "")} · ${parseList(c.tradition).map(pretty).join(" / ")}</div>
-    ${c.bio ? `<p>${esc(c.bio)}</p>` : ""}${c.service_times ? `<div>🕊 ${esc(c.service_times)}</div>` : ""}
-    ${c.address ? `<div class="sub">${esc(c.address)}</div>` : ""}
-    ${c.website ? `<div><a href="${esc(c.website)}" target="_blank" rel="noopener">${esc(c.website)}</a></div>` : ""}</div>`).join("")
-    : `<div class="card"><p class="sub">No churches have registered in ${esc(city || "this area")} yet.</p></div>`;
+  const q = new URLSearchParams();
+  if (city) q.set("city", city);
+  if ($("#churchTrad").value) q.set("tradition", $("#churchTrad").value);
+  const r = await api("/api/churches?" + q.toString());
+  $("#matchMethod").textContent = r.method || "";
+  $("#churchList").innerHTML = r.churches.length ? r.churches.map(churchCard).join("")
+    : `<div class="card"><p class="sub">No churches match that search${city ? " in " + esc(city) : ""} yet.</p></div>`;
 }
-async function registerChurch() {
-  const body = { handle: $("#chName").value, city: $("#chCity").value, tradition: chosen($("#chTrads")),
-    service_times: $("#chTimes").value, address: $("#chAddr").value, website: $("#chWeb").value, bio: $("#chBio").value };
-  try { await api("/api/church", body); alert("Church profile published."); $("#churchCity").value = body.city; loadChurches(); }
-  catch { alert("Please add the church name."); }
+function renderListing() {
+  if (isPerson()) return;
+  $("#listingPreview").innerHTML = churchCard({ ...PROFILE, match: null }) +
+    `<div class="card"><h3 style="margin-top:0">Where you stand</h3>${Object.keys(PROFILE.beliefs || {}).length
+      ? BOOT.topics.filter((t) => (PROFILE.beliefs || {})[t.id]).map((t) => {
+          const v = PROFILE.beliefs[t.id];
+          return `<p class="sub"><b>${esc(t.question)}</b> ${esc(v === "position_a" ? t.position_a : v === "position_b" ? t.position_b : "Somewhere in between")}</p>`;
+        }).join("")
+      : `<p class="sub">Not stated. Adding positions helps people with shared convictions find you.</p>`}</div>`;
 }
 
 // ======================================================== UNDER THE HOOD

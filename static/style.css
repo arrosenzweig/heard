@@ -159,3 +159,31 @@ nav button.on .badge{background:#fff;color:var(--ink)}
 .ciresult p{margin:.5em 0}
 .escalate{background:var(--rose-soft);border-radius:10px;padding:12px 14px;margin:10px 0}
 details.card summary{cursor:pointer}
+
+/* ------------------------------------------------------- church matching */
+.church.best{border:2px solid var(--gold)}
+.bestbadge{display:inline-block;font:600 .75rem Inter;color:#7a5a12;background:#f6ecd6;padding:3px 10px;border-radius:999px;margin-bottom:8px}
+.matchpct{flex:none;text-align:center;border-radius:12px;padding:6px 12px;min-width:70px}
+.matchpct b{display:block;font:600 1.4rem Fraunces,serif;line-height:1.1}.matchpct span{font-size:.72rem}
+.matchpct.hi{background:var(--sage-soft);color:var(--sage)}.matchpct.mid{background:#f6ecd6;color:#8a6a1f}.matchpct.lo{background:#f0ece6;color:var(--muted)}
+.howmatch{margin-top:10px}.howmatch summary{cursor:pointer;font-size:.88rem;color:var(--accent)}
+.chq{margin-bottom:10px}.chq .q{font:600 .92rem Fraunces,serif;margin-bottom:4px}
+
+/* ----------------------------------------------------- roles & paging */
+.roles{display:grid;gap:12px;margin-top:14px}
+.role{display:block;text-align:left;border:1.5px solid var(--line);background:#fff;border-radius:14px;padding:16px 18px}
+.role:hover{border-color:var(--accent);background:var(--accent-soft)}
+.role b{display:block;font:600 1.1rem Fraunces,serif;margin-bottom:4px}
+.role span{color:var(--muted);font-size:.92rem}
+.paged .topic{display:none;border-top:0;padding-top:4px}
+.paged .topic.on{display:block;animation:fade .2s}
+.qcount{font:600 .78rem Inter;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin:4px 0 8px}
+
+/* ---------------------------------------------------- custom struggles */
+.custombox{margin-top:6px}
+.customitem{background:#faf6ef;border-radius:12px;padding:10px 14px;margin-bottom:8px}
+.customitem .said{font:italic 1rem Fraunces,serif}
+.customitem select{width:auto;min-width:0;flex:none;padding:6px 10px;font-size:.88rem}
+.customdays{margin-top:10px;font-size:.95rem}
+.customdays input{width:80px;display:inline-block;margin:0 6px;padding:8px 10px}
+.forlabel{display:inline-block;font-size:.75rem;color:var(--accent);background:var(--accent-soft);padding:2px 9px;border-radius:999px;margin-left:6px;vertical-align:middle}

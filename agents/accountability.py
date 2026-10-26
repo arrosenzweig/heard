@@ -34,14 +34,36 @@ DIRECTION = ("stronger", "holding", "slipping")
 DEFAULT_HOURS = 24
 
 
+CUSTOM = "custom:"
+
+
 def _pretty(theme):
-    return (theme or "").replace("_", " ")
+    """Display label. Custom struggles are shown in the user's own words."""
+    t = theme or ""
+    if t.startswith(CUSTOM):
+        return t[len(CUSTOM):]
+    return t.replace("_", " ")
+
+
+def match_theme(profile, theme):
+    """The category used for fellowship and church matching. A custom struggle
+    uses the category the user confirmed for it."""
+    if theme and theme.startswith(CUSTOM):
+        text = theme[len(CUSTOM):]
+        for cs in profile.get("custom_struggles") or []:
+            if isinstance(cs, dict) and cs.get("text") == text:
+                return cs.get("theme")
+        return None
+    return theme
 
 
 def active_themes(profile, days=14):
     """Struggles worth checking on: the ones the user said they're fighting,
     plus anything they've brought to Talk in the last two weeks."""
     themes = list(profile.get("fighting") or [])
+    for cs in profile.get("custom_struggles") or []:
+        if isinstance(cs, dict) and cs.get("kind") == "fighting" and cs.get("text"):
+            themes.append(CUSTOM + cs["text"])
     cutoff = time.time() - days * 86400
     for e in store.entries_for(profile["id"], limit=40):
         if e["created"] >= cutoff and e["theme"] and e["theme"] not in themes \
@@ -59,6 +81,7 @@ def due(profile):
         last_t = last[0]["created"] if last else None
         is_due = last_t is None or (time.time() - last_t) >= hours * 3600
         out.append({"theme": theme, "label": _pretty(theme), "due": is_due,
+                    "match_theme": match_theme(profile, theme),
                     "last": last[0] if last else None,
                     "next_at": (last_t + hours * 3600) if last_t else None})
     return out
@@ -66,8 +89,12 @@ def due(profile):
 
 def questions(theme):
     t = _pretty(theme)
+    # A custom struggle is a whole sentence in the user's words (shown as the
+    # card title), so it can't be dropped into the middle of a question.
+    pull_q = ("Since we last talked, how strong has the pull been?" if (theme or "").startswith(CUSTOM)
+              else f"Since we last talked, how strong has the pull toward {t} been?")
     return [
-        {"id": "pull", "type": "scale", "q": f"Since we last talked, how strong has the pull toward {t} been?",
+        {"id": "pull", "type": "scale", "q": pull_q,
          "options": [{"v": k, "label": f"{k} · {v}"} for k, v in PULL_LABELS.items()]},
         {"id": "acted", "type": "choice", "q": "Did you act on it?",
          "options": [{"v": "none", "label": "Not at all"}, {"v": "once", "label": "Once"},
@@ -103,8 +130,9 @@ A person just answered a brief check-in about a struggle. Reply in 2-4 short
 sentences, warm and direct, like a trusted friend who shares their faith.
 
 - Respond to what they actually wrote. Do not repeat their scores back to them.
-- If they are slipping, do not shame them and do not minimise it. Name one
-  concrete next step for the next 24 hours.
+- If they are slipping, correct the way Jesus did: name it honestly, never
+  shame who they are, and say plainly that you believe they can do better.
+  Name one concrete next step for the next 24 hours.
 - If they are gaining ground, help them notice what helped.
 - No Bible citations here (this is a quick check-in, not counsel), no lists,
   no "I'm sorry to hear that".
@@ -162,7 +190,8 @@ def assess(profile, theme, pull, acted, direction, note="", trace=None):
         trace.step("checkin", {"theme": theme, "trend": trend, "used_model": used_model,
                                "escalate": escalate})
     return {
-        "mode": "checkin", "theme": theme, "trend": trend, "reply": reply,
+        "mode": "checkin", "theme": theme, "match_theme": match_theme(profile, theme),
+        "trend": trend, "reply": reply,
         "escalate": escalate, "used_model": used_model,
         "safety_note": bool(tri and tri.get("safety_note")),
         "resources": (tri or {}).get("resources", []) if tri and tri.get("safety_note") else [],

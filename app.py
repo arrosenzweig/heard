@@ -38,9 +38,13 @@ def me():
 
 
 def require_profile():
+    """Signed-in PERSON. Church accounts manage a listing; they do not use
+    chat, check-ins, or fellowship."""
     p = me()
     if not p:
         return None, (jsonify({"error": "no_profile"}), 401)
+    if p.get("kind") == "church":
+        return None, (jsonify({"error": "church_account"}), 403)
     return p, None
 
 
@@ -85,6 +89,8 @@ def save_profile():
     is_seeker = 1 if any(t in seeker_ids for t in trads) else 0
 
     existing = me()
+    if existing and existing.get("kind") != "person":
+        existing = None  # never turn a church account into a person
     pid = existing["id"] if existing else None
     pid = store.create_profile(
         id=pid,
@@ -102,7 +108,8 @@ def save_profile():
         contact_method=(d.get("contact_method") or "").strip()[:20],
         contact_value=(d.get("contact_value") or "").strip()[:120],
         synthetic=0,
-        checkin_hours=int(d.get("checkin_hours") or (existing or {}).get("checkin_hours") or 24),
+        checkin_hours=_hours(d.get("checkin_hours"), (existing or {}).get("checkin_hours")),
+        custom_struggles=_custom(d.get("custom_struggles")),
         onboarded=1,
     )
     session["pid"] = pid
@@ -114,6 +121,68 @@ def tradition_parse():
     """Profiles store tradition as JSON; normalise on read for the client."""
     p = me()
     return jsonify({"tradition": _as_list(p.get("tradition")) if p else []})
+
+
+def _hours(v, fallback=None):
+    """Check-in interval: any whole number of days from 1 to 60, stored in hours."""
+    try:
+        h = int(v)
+    except (TypeError, ValueError):
+        h = int(fallback or 24)
+    return max(24, min(24 * 60, (h // 24) * 24 or 24))
+
+
+def _custom(items):
+    out = []
+    for cs in items or []:
+        if not isinstance(cs, dict):
+            continue
+        text = " ".join(str(cs.get("text", "")).split())[:120]
+        theme = cs.get("theme")
+        if text and theme in retrieval.themes():
+            out.append({"text": text, "theme": theme,
+                        "kind": "overcame" if cs.get("kind") == "overcame" else "fighting"})
+    return out[:10]
+
+
+@app.route("/api/struggle/classify", methods=["POST"])
+def struggle_classify():
+    """Suggest the closest category for a struggle described in the user's own
+    words. The user confirms or changes it. Triage also screens the text, so a
+    crisis described here is caught like anywhere else."""
+    d = request.get_json(force=True) or {}
+    text = " ".join(str(d.get("text", "")).split())[:500]
+    if len(text) < 3:
+        return jsonify({"error": "empty"}), 400
+    tr = llm.Trace(label="struggle-classify")
+    t = triage.run(text, trace=tr)
+    return jsonify({"theme": t["theme"], "severity": t["severity"],
+                    "resources": t["resources"] if t["severity"] == "crisis" or t.get("safety_note") else [],
+                    "themes": retrieval.themes(), "trace": tr.summary()})
+
+
+@app.route("/api/suggestions")
+def suggestions():
+    """Fellowship suggestions across everything the user is fighting, so the
+    tab is useful the moment it opens."""
+    p, err = require_profile()
+    if err:
+        return err
+    prof = dict(p)
+    prof["tradition"] = _as_list(p.get("tradition"))
+    labels = {t: t.replace("_", " ") for t in retrieval.themes()}
+    for cs in p.get("custom_struggles") or []:
+        if cs.get("kind") == "fighting":
+            labels.setdefault(cs["theme"], cs["text"])
+    best = {}
+    for theme in matcher.themes_of(prof, "fighting"):
+        for m in matcher.suggest(prof, theme, k=5):
+            m["for_theme"] = theme
+            m["for_label"] = labels.get(theme, theme.replace("_", " "))
+            if m["id"] not in best or m["score"] > best[m["id"]]["score"]:
+                best[m["id"]] = m
+    ranked = sorted(best.values(), key=lambda r: (-r["score"], r["handle"]))
+    return jsonify({"suggestions": ranked[:8], "fighting": matcher.themes_of(prof, "fighting")})
 
 
 def _as_list(v):
@@ -398,30 +467,47 @@ def reveal_contact(cid):
 @app.route("/api/churches")
 def churches():
     return jsonify({"churches": matcher.churches(request.args.get("city"),
-                                                 request.args.get("tradition"))})
+                                                 request.args.get("tradition") or None,
+                                                 profile=(me() if (me() or {}).get("kind") == "person" else None)),
+                    "method": matcher.MATCH_METHOD})
 
 
 @app.route("/api/church", methods=["POST"])
-def register_church():
-    """Churches self-register. Heard never invents a congregation."""
+def save_church():
+    """Create or update a church profile. Heard never invents a congregation.
+
+    During setup a church chooses "I'm setting up a church"; that creates the
+    church and signs this browser in as it, so the church can edit its own
+    listing later. A signed-in church that saves again updates its listing.
+    """
     d = request.get_json(force=True) or {}
     if not (d.get("handle") or "").strip():
         return jsonify({"error": "name_required"}), 400
     trads = d.get("tradition") or []
     if isinstance(trads, str):
         trads = [trads]
+    current = me()
+    cid = current["id"] if current and current.get("kind") == "church" else None
     cid = store.create_profile(
+        id=cid,
         kind="church",
         handle=d["handle"].strip()[:120],
         city=(d.get("city") or "").strip()[:60],
         tradition=json.dumps(trads),
-        bio=(d.get("bio") or "").strip()[:600],
+        bio=(d.get("bio") or "").strip()[:800],
         service_times=(d.get("service_times") or "").strip()[:200],
         address=(d.get("address") or "").strip()[:200],
         website=(d.get("website") or "").strip()[:200],
+        beliefs={k: v for k, v in (d.get("beliefs") or {}).items()
+                 if v in ("position_a", "position_b", "somewhere_between")},
+        ministries=json.dumps([m for m in (d.get("ministries") or []) if m in retrieval.themes()]),
+        seeker_friendly=1 if d.get("seeker_friendly") else 0,
+        onboarded=1,
         synthetic=0,
     )
-    return jsonify({"ok": True, "id": cid})
+    if d.get("as_account") or cid == (current or {}).get("id"):
+        session["pid"] = cid
+    return jsonify({"ok": True, "id": cid, "profile": store.get_profile(cid)})
 
 
 # ------------------------------------------------- evidence / inspection

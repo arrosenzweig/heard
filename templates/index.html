@@ -10,36 +10,45 @@
 </head>
 <body>
 
-<!-- ============================================================ ONBOARDING -->
+<!-- ============================================================ SETUP -->
 <div id="onboard" class="onboard hidden">
   <div class="ob-card">
     <div class="ob-progress"><span id="obBar"></span></div>
 
-    <div class="ob-step" data-step="0">
+    <!-- shared first screen -->
+    <div class="ob-step" data-step="role">
       <span class="mark big">H</span>
       <h1>Welcome to Heard</h1>
       <p class="motto">"{{ motto }}"</p>
-      <p>Heard walks with you in the moments you're tempted to let go of what you believe. First, a few questions so it can meet you where you are. This is the only time it will ask; you can change anything later in Settings.</p>
+      <p>First, how will you use Heard?</p>
+      <div class="roles">
+        <button class="role" data-role="person"><b>I'm here for myself</b><span>Talk through what you're facing, get check-ins, and connect with people who've been there.</span></button>
+        <button class="role" data-role="church"><b>I'm setting up a church</b><span>Create your church's listing so people looking for community can find you.</span></button>
+      </div>
+    </div>
+
+    <!-- ===== person ===== -->
+    <div class="ob-step" data-step="p_about">
+      <h2>About you</h2>
+      <p class="sub">This is the only time Heard asks about your faith. You can change anything later in Settings.</p>
       <div class="form">
         <input id="obHandle" placeholder="A first name or nickname">
         <input id="obCity" placeholder="City (used only at city level)">
       </div>
     </div>
-
-    <div class="ob-step" data-step="1">
+    <div class="ob-step" data-step="p_faith">
       <h2>Your faith</h2>
-      <p class="sub">Choose as many as fit. Many people belong to more than one tradition, and that's fine. Not sure yet? Choose "exploring."</p>
+      <p class="sub">Choose as many as fit. Many people belong to more than one tradition. Not sure yet? Choose "exploring."</p>
       <div id="obTrads" class="chips"></div>
       <input id="obTradOther" placeholder="Or describe it in your own words (optional)" style="margin-top:12px">
     </div>
-
-    <div class="ob-step" data-step="2">
+    <div class="ob-step" data-step="p_topics">
       <h2>Where you stand</h2>
-      <p class="sub">All optional, so skip any you like. If neither side fits, say it in your own words. Heard will restate it simply and ask you to confirm before using it.</p>
-      <div id="obTopics" class="topics-scroll"></div>
+      <p class="sub">Questions Christians disagree about. All optional. If neither side fits, say it in your own words; Heard will restate it simply and ask you to confirm.</p>
+      <div class="qcount" id="obQCount"></div>
+      <div id="obTopics" class="paged"></div>
     </div>
-
-    <div class="ob-step" data-step="3">
+    <div class="ob-step" data-step="p_carry">
       <h2>What you're carrying</h2>
       <h3>Struggles you're fighting now</h3>
       <p class="sub">Heard will check in on these.</p>
@@ -47,12 +56,15 @@
       <h3>Struggles you've come through</h3>
       <p class="sub">Someone fighting one of these right now might be helped by your story.</p>
       <div id="obOvercame" class="chips"></div>
+      <h3>Something else?</h3>
+      <p class="sub">Describe it in your own words. Type it, or tap 🎙 and say it.</p>
+      <div id="obCustom" class="custombox"></div>
     </div>
-
-    <div class="ob-step" data-step="4">
+    <div class="ob-step" data-step="p_checkin">
       <h2>Check-ins and fellowship</h2>
       <h3>How often should Heard check in?</h3>
       <div id="obCadence" class="chips"></div>
+      <div class="customdays hidden" id="obDaysRow">Every <input type="number" id="obDays" min="1" max="60" value="2"> days</div>
       <h3>Fellowship</h3>
       <label class="check"><input type="checkbox" id="obOpen"> I'm willing to be contacted by someone going through something I've been through</label>
       <div class="row">
@@ -62,10 +74,44 @@
       <div class="field"><textarea id="obBio" rows="3" placeholder="A few lines others will see if you're matched (optional)"></textarea></div>
     </div>
 
+    <!-- ===== church ===== -->
+    <div class="ob-step" data-step="c_about">
+      <h2>Your church</h2>
+      <p class="sub">This is how people will find you. Everything is editable later.</p>
+      <div class="form">
+        <input id="ocName" placeholder="Church name">
+        <input id="ocCity" placeholder="City">
+        <input id="ocAddr" placeholder="Address">
+        <input id="ocTimes" placeholder="Service times (e.g. Sundays 9:30 & 11am)">
+        <input id="ocWeb" placeholder="Website">
+      </div>
+    </div>
+    <div class="ob-step" data-step="c_faith">
+      <h2>Tradition and welcome</h2>
+      <h3>Tradition</h3>
+      <div id="ocTrads" class="chips"></div>
+      <label class="check" style="margin-top:14px"><input type="checkbox" id="ocSeeker"> We welcome people who are still exploring faith</label>
+    </div>
+    <div class="ob-step" data-step="c_support">
+      <h2>Support you offer</h2>
+      <p class="sub">Which struggles does your church have a group, ministry, or people ready to help with? People fighting these will see you as a stronger match.</p>
+      <div id="ocMinistries" class="chips"></div>
+    </div>
+    <div class="ob-step" data-step="c_topics">
+      <h2>Where your church stands</h2>
+      <p class="sub">Optional. Used to match people with shared convictions. Leave any as "Not stated."</p>
+      <div class="qcount" id="ocQCount"></div>
+      <div id="ocTopics" class="paged"></div>
+    </div>
+    <div class="ob-step" data-step="c_bio">
+      <h2>Describe your community</h2>
+      <div class="field"><textarea id="ocBio" rows="5" placeholder="What is your community like? Who would feel at home?"></textarea></div>
+    </div>
+
     <div class="ob-nav">
       <button class="ghost" id="obBack">Back</button>
       <span class="spacer"></span>
-      <button class="ghost" id="obSkip">Skip</button>
+      <button class="ghost hidden" id="obSkip">Skip the rest</button>
       <button class="primary" id="obNext">Continue</button>
     </div>
   </div>
@@ -78,10 +124,11 @@
     <div><h1>Heard</h1><p class="motto">"{{ motto }}"</p></div>
   </div>
   <nav id="tabs">
-    <button data-tab="talk" class="on">Talk</button>
-    <button data-tab="checkins">Check-ins <span id="dueBadge" class="badge hidden"></span></button>
-    <button data-tab="fellowship">Fellowship</button>
-    <button data-tab="churches">Churches</button>
+    <button data-tab="talk" data-for="person" class="on">Talk</button>
+    <button data-tab="checkins" data-for="person">Check-ins <span id="dueBadge" class="badge hidden"></span></button>
+    <button data-tab="fellowship" data-for="person">Fellowship</button>
+    <button data-tab="churches" data-for="person">Churches</button>
+    <button data-tab="listing" data-for="church">Our listing</button>
     <button data-tab="settings">Settings</button>
   </nav>
 </header>
@@ -96,7 +143,7 @@
       <textarea id="chatText" rows="2" placeholder="What's on your heart? Type, or tap the mic and speak."></textarea>
     </div>
     <div class="row">
-      <span class="sub tiny" id="talkHint">Enter to send · Shift+Enter for a new line</span>
+      <span class="sub tiny">Enter to send · Shift+Enter for a new line</span>
       <span class="spacer"></span>
       <button class="primary" id="sendBtn" onclick="sendChat()">Send</button>
     </div>
@@ -107,7 +154,7 @@
 <section id="checkins" class="tab">
   <div class="card">
     <h2>Check-ins</h2>
-    <p class="sub">A few quick questions about each struggle you're fighting. Over time Heard shows you whether you're overcoming it or being pulled deeper, because what actually happens matters more than how good the advice sounded.</p>
+    <p class="sub">A few quick questions about each struggle you're fighting. Over time Heard shows you whether you're overcoming it or being pulled deeper.</p>
   </div>
   <div id="ciList"></div>
   <div class="card">
@@ -120,11 +167,15 @@
 <!-- ============================================================ FELLOWSHIP -->
 <section id="fellowship" class="tab">
   <div class="card">
-    <h2>People who've been where you are</h2>
-    <p class="sub">Heard leads with people who have <b>come through</b> the same struggle, the way a sponsor walks with someone in recovery. Contact details unlock only after you both agree.</p>
+    <h2>Suggested for you</h2>
+    <p class="sub">People who came through what you're fighting, or are fighting it too, chosen from your profile. Contact details unlock only after you both agree.</p>
+    <div id="suggestList"><p class="sub">Loading…</p></div>
+  </div>
+  <div class="card">
+    <h2>Search by struggle</h2>
     <div class="row">
       <select id="peopleTheme"><option value="">Choose a struggle…</option></select>
-      <button class="primary" onclick="loadMatches()">Suggest people</button>
+      <button class="primary" onclick="loadMatches()">Search</button>
       <button class="ghost" onclick="loadBrowse()">Browse everyone</button>
     </div>
   </div>
@@ -139,59 +190,62 @@
 <section id="churches" class="tab">
   <div class="card">
     <h2>Find a church community</h2>
-    <p class="sub">Every church here created its own profile. Heard never invents a congregation.</p>
+    <p class="sub">Ranked by how well each church matches your tradition, your convictions, and what you're fighting. Every church here created its own profile; Heard never invents a congregation.</p>
     <div class="row">
       <input id="churchCity" placeholder="City">
+      <select id="churchTrad"><option value="">Any tradition</option></select>
       <button class="primary" onclick="loadChurches()">Search</button>
     </div>
+    <details class="howmatch"><summary>How matching works</summary><p id="matchMethod" class="sub tiny"></p></details>
   </div>
   <div id="churchList"></div>
-  <details class="card">
-    <summary><b>Are you a church? Create a profile</b></summary>
-    <div class="form" style="margin-top:12px">
-      <input id="chName" placeholder="Church name">
-      <input id="chCity" placeholder="City">
-      <div id="chTrads" class="chips"></div>
-      <input id="chTimes" placeholder="Service times (e.g. Sundays 9:30 & 11am)">
-      <input id="chAddr" placeholder="Address">
-      <input id="chWeb" placeholder="Website">
-      <div class="field"><textarea id="chBio" rows="3" placeholder="What is your community like? Who would feel at home?"></textarea></div>
-      <button class="primary" onclick="registerChurch()">Publish church profile</button>
-    </div>
-  </details>
+</section>
+
+<!-- ============================================================ OUR LISTING -->
+<section id="listing" class="tab">
+  <div class="card">
+    <h2>Your listing</h2>
+    <p class="sub">This is how your church appears to people searching in your city. Each person sees a match % based on their tradition, their convictions, and what they're fighting.</p>
+  </div>
+  <div id="listingPreview"></div>
+  <div class="card"><button class="primary" onclick="editChurch()">Edit listing</button></div>
 </section>
 
 <!-- ============================================================= SETTINGS -->
 <section id="settings" class="tab">
-  <div class="card">
-    <h2>Your profile</h2>
-    <div class="form">
-      <input id="pfHandle" placeholder="Name or nickname">
-      <input id="pfCity" placeholder="City">
-      <h3>Tradition</h3>
-      <div id="pfTrads" class="chips"></div>
-      <input id="pfTradOther" placeholder="In your own words (optional)">
-      <h3>Fighting now</h3><div id="pfFighting" class="chips"></div>
-      <h3>Come through</h3><div id="pfOvercame" class="chips"></div>
-      <h3>Check-in frequency</h3><div id="pfCadence" class="chips"></div>
-      <div class="field"><textarea id="pfBio" rows="3" placeholder="Bio others see if matched"></textarea></div>
-      <label class="check"><input type="checkbox" id="pfOpen"> Open to being contacted</label>
-      <div class="row">
-        <select id="pfMethod"><option value="">Contact method</option><option>text</option><option>call</option></select>
-        <input id="pfContact" placeholder="Phone (shared only after you both agree)">
+  <div id="personSettings">
+    <div class="card">
+      <h2>Your profile</h2>
+      <div class="form">
+        <input id="pfHandle" placeholder="Name or nickname">
+        <input id="pfCity" placeholder="City">
+        <h3>Tradition</h3>
+        <div id="pfTrads" class="chips"></div>
+        <input id="pfTradOther" placeholder="In your own words (optional)">
+        <h3>Fighting now</h3><div id="pfFighting" class="chips"></div>
+        <h3>Come through</h3><div id="pfOvercame" class="chips"></div>
+        <h3>Something else you're carrying</h3><div id="pfCustom" class="custombox"></div>
+        <h3>Check-in frequency</h3><div id="pfCadence" class="chips"></div>
+        <div class="customdays hidden" id="pfDaysRow">Every <input type="number" id="pfDays" min="1" max="60" value="2"> days</div>
+        <div class="field"><textarea id="pfBio" rows="3" placeholder="Bio others see if matched"></textarea></div>
+        <label class="check"><input type="checkbox" id="pfOpen"> I'm willing to be contacted by someone going through something I've been through</label>
+        <div class="row">
+          <select id="pfMethod"><option value="">Contact method</option><option>text</option><option>call</option></select>
+          <input id="pfContact" placeholder="Phone (shared only after you both agree)">
+        </div>
       </div>
     </div>
+    <details class="card">
+      <summary><b>Where you stand</b> <span class="sub">(the contested questions)</span></summary>
+      <div id="pfTopics" style="margin-top:10px"></div>
+    </details>
+    <div class="card"><button class="primary" onclick="saveSettings()">Save changes</button> <span id="pfSaved" class="ok hidden">Saved.</span></div>
   </div>
-  <details class="card">
-    <summary><b>Where you stand</b> <span class="sub">(beliefs on contested questions)</span></summary>
-    <div id="pfTopics" style="margin-top:10px"></div>
-  </details>
-  <div class="card"><button class="primary" onclick="saveSettings()">Save changes</button> <span id="pfSaved" class="ok hidden">Saved.</span></div>
 
   <div class="card">
     <h2>Voice</h2>
     <p class="sub">The 🎙 button uses your browser's built-in speech recognition (Chrome or Edge). In Chrome, your audio is sent to Google to be transcribed. If you'd rather not, just type. The 🔊 button reads replies aloud on your device.</p>
-    <button class="ghost small" onclick="clearChat()">Clear my Talk history</button>
+    <button class="ghost small personOnly" onclick="clearChat()">Clear my Talk history</button>
     <button class="ghost small" onclick="startOver()">Start over as a new user</button>
   </div>
 

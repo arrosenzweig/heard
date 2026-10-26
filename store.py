@@ -100,6 +100,15 @@ def init():
             c.execute("ALTER TABLE profile ADD COLUMN checkin_hours INTEGER DEFAULT 24")
         if "onboarded" not in cols:
             c.execute("ALTER TABLE profile ADD COLUMN onboarded INTEGER DEFAULT 0")
+        # Church-only: struggles the church has support for, and whether it
+        # welcomes people still exploring faith. Used by church matching.
+        if "ministries" not in cols:
+            c.execute("ALTER TABLE profile ADD COLUMN ministries TEXT")
+        if "custom_struggles" not in cols:
+            # [{"text": user's own words, "theme": closest category, "kind": "fighting"|"overcame"}]
+            c.execute("ALTER TABLE profile ADD COLUMN custom_struggles TEXT")
+        if "seeker_friendly" not in cols:
+            c.execute("ALTER TABLE profile ADD COLUMN seeker_friendly INTEGER DEFAULT 0")
 
 
 # ------------------------------------------------------------------- chat
@@ -179,7 +188,7 @@ def _loads(row, *fields):
 # ---------------------------------------------------------------- profiles
 def create_profile(**kw):
     pid = kw.pop("id", None) or nid()
-    for f in ("beliefs", "overcame", "fighting"):
+    for f in ("beliefs", "overcame", "fighting", "custom_struggles"):
         if f in kw and not isinstance(kw[f], str):
             kw[f] = json.dumps(kw[f])
     cols = ["id", "created"] + list(kw)
@@ -196,13 +205,13 @@ def create_profile(**kw):
 def get_profile(pid):
     with db() as c:
         r = c.execute("SELECT * FROM profile WHERE id=?", (pid,)).fetchone()
-    return _loads(r, "beliefs", "overcame", "fighting") if r else None
+    return _loads(r, "beliefs", "overcame", "fighting", "custom_struggles") if r else None
 
 
 def all_profiles(kind="person"):
     with db() as c:
         rs = c.execute("SELECT * FROM profile WHERE kind=?", (kind,)).fetchall()
-    return [_loads(r, "beliefs", "overcame", "fighting") for r in rs]
+    return [_loads(r, "beliefs", "overcame", "fighting", "custom_struggles") for r in rs]
 
 
 # ---------------------------------------------------------------- entries

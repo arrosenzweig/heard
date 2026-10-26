@@ -1,5 +1,8 @@
 """Seed clearly-labelled SYNTHETIC demo data for Raleigh, NC.
 
+Demo churches carry fictional values (ministries, positions, seeker-friendliness)
+so church matching has something to rank. They describe no real congregation.
+
 Every profile and church created here has synthetic=1 and is shown with a
 "demo" badge in the interface. None of them is a real person or a real
 congregation. Phone numbers use the 555-01xx range, which is reserved for
@@ -46,15 +49,15 @@ PEOPLE = [
 ]
 
 CHURCHES = [
-    dict(id="demo_ch_1", handle="Example Community Church (demo)", tradition=["nondenom"],
+    dict(id="demo_ch_1", seeker_friendly=1, ministries=['addiction', 'anger', 'loneliness'], beliefs={'scripture': 'position_a', 'gifts': 'position_a', 'alcohol': 'position_b', 'women_leadership': 'position_b'}, handle="Example Community Church (demo)", tradition=["nondenom"],
          service_times="Sundays 9:30 & 11:15am · Wednesday recovery group 7pm",
          address="(demo listing - not a real address)", website="",
          bio="Demo church profile. Shows how a congregation describes itself and the support groups it runs."),
-    dict(id="demo_ch_2", handle="Example Baptist Church (demo)", tradition=["baptist"],
+    dict(id="demo_ch_2", seeker_friendly=0, ministries=['anger', 'lust_purity', 'greed_money'], beliefs={'scripture': 'position_a', 'baptism': 'position_b', 'alcohol': 'position_a', 'women_leadership': 'position_a', 'salvation': 'position_a', 'assurance': 'position_a'}, handle="Example Baptist Church (demo)", tradition=["baptist"],
          service_times="Sundays 10:30am · Men's accountability Tuesday 6:30am",
          address="(demo listing - not a real address)", website="",
          bio="Demo church profile. Small-group accountability and a monthly newcomers lunch."),
-    dict(id="demo_ch_3", handle="Example Catholic Parish (demo)", tradition=["catholic"],
+    dict(id="demo_ch_3", seeker_friendly=1, ministries=['forgiveness', 'bitterness', 'despair'], beliefs={'baptism': 'position_a', 'communion': 'position_a', 'salvation': 'position_b', 'contraception': 'position_a'}, handle="Example Catholic Parish (demo)", tradition=["catholic"],
          service_times="Mass Sat 5pm, Sun 8 & 10:30am · Confession Sat 3:30pm",
          address="(demo listing - not a real address)", website="",
          bio="Demo church profile. Shows Catholic listing fields such as confession times."),
@@ -71,7 +74,8 @@ def main():
     for c in CHURCHES:
         c = dict(c)
         store.create_profile(kind="church", city=CITY, synthetic=1,
-                             tradition=json.dumps(c.pop("tradition")), **c)
+                             tradition=json.dumps(c.pop("tradition")),
+                             ministries=json.dumps(c.pop("ministries", [])), **c)
     print(f"seeded {len(PEOPLE)} demo people and {len(CHURCHES)} demo churches in {CITY}")
 
 
