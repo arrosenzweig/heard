@@ -210,3 +210,12 @@ details.card summary{cursor:pointer}
 .dual input[type=range]::-moz-range-thumb{pointer-events:auto;width:18px;height:18px;border-radius:50%;background:var(--accent);border:2px solid #fff;cursor:pointer}
 .dual::before{content:"";position:absolute;left:0;right:0;top:13px;height:4px;border-radius:4px;background:var(--line)}
 .detailline{color:var(--muted);font-size:.84rem}
+
+/* ------------------------------------------------------- voice settings */
+.voicelist{display:flex;flex-direction:column;gap:6px;margin:8px 0}
+.voicerow{display:flex;align-items:center;gap:10px;padding:8px 12px;border:1px solid var(--line);border-radius:12px;background:#fff}
+.voicerow.sel{border-color:var(--sage);background:var(--sage-soft)}
+.voicerow .vname{flex:1;font-size:.92rem}
+.ratebox{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ratebox input[type=range]{flex:1;min-width:160px;padding:0;border:0;box-shadow:none}
+.ratebox b{min-width:150px;font-size:.9rem}

@@ -841,19 +841,22 @@ function chunks(text) {
   });
   return out;
 }
-function sayAloud(text) {
+const RATE_KEY = "heardRate";
+const savedRate = () => Math.min(1.3, Math.max(0.7, parseFloat(localStorage.getItem(RATE_KEY)) || 0.95));
+function sayAloud(text, opts = {}) {
   return new Promise(async (resolve) => {
     if (!("speechSynthesis" in window) || !text) return resolve();
     stopSpeaking();
     const token = SPEAK_TOKEN;
-    const v = bestVoice();
+    const v = opts.voice || bestVoice();
+    const rate = opts.rate || savedRate();
     for (const c of chunks(text)) {
       if (token !== SPEAK_TOKEN) return resolve();
       await new Promise((r) => setTimeout(r, c.pause));
       await new Promise((r) => {
         const u = new SpeechSynthesisUtterance(c.text);
         if (v) { u.voice = v; u.lang = v.lang; }
-        u.rate = 0.96; u.pitch = 1.0;
+        u.rate = rate; u.pitch = 1.0;
         u.onend = r; u.onerror = r;
         speechSynthesis.speak(u);
       });
@@ -883,21 +886,47 @@ function speechFor(content, verses) {
   return parts.filter(Boolean).join("\n\n");
 }
 
-// Settings: choose a voice and hear it.
-function fillVoicePicker() {
-  const sel = document.getElementById("voicePick");
-  if (!sel) return;
-  const vs = englishVoices().sort((a, b) => voiceRank(a) - voiceRank(b));
+// Settings: listen to each voice, choose one, and set the speaking speed.
+const SAMPLE = "Hi, I'm Heard. Whatever you're carrying today, you don't have to carry it alone. Tell me what's on your heart.";
+let SHOW_ALL_VOICES = false;
+function voiceLabel(v) {
+  // "Microsoft Ava Online (Natural) - English (United States)" -> "Ava · Natural · United States"
+  const name = v.name.replace(/^Microsoft\s+/i, "").replace(/^Google\s+/i, "Google ");
+  const m = name.match(/^(.*?)\s*(Online)?\s*(\(Natural\))?\s*-\s*(.*)$/i);
+  if (!m) return name;
+  const region = (m[4].match(/\((.*)\)/) || [, m[4]])[1];
+  return `${m[1].trim().replace(/Multilingual$/, " (Multilingual)")}${m[3] ? " · Natural" : ""} · ${region}`;
+}
+function renderVoiceList() {
+  const box = document.getElementById("voiceList");
+  if (!box) return;
+  const all = englishVoices().sort((a, b) => voiceRank(a) - voiceRank(b));
+  const natural = all.filter((v) => voiceRank(v) <= 3);
+  const shown = SHOW_ALL_VOICES || natural.length === 0 ? all : natural;
   const cur = bestVoice()?.name;
-  sel.innerHTML = vs.map((v) => `<option value="${esc(v.name)}" ${v.name === cur ? "selected" : ""}>${esc(v.name)}${voiceRank(v) <= 3 ? " ★ natural" : ""}</option>`).join("")
-    || `<option>No voices available in this browser</option>`;
+  $("#voiceMore").textContent = SHOW_ALL_VOICES ? "Show natural voices only" : `Show all voices (${all.length})`;
+  $("#voiceMore").classList.toggle("hidden", natural.length === 0 || natural.length === all.length);
+  box.innerHTML = shown.length ? shown.map((v, i) => `<div class="voicerow ${v.name === cur ? "sel" : ""}">
+      <div class="vname">${voiceRank(v) <= 3 ? "★ " : ""}${esc(voiceLabel(v))}</div>
+      <button class="ghost small" data-listen="${i}">▶ Listen</button>
+      ${v.name === cur ? `<span class="ok">✓ Selected</span>` : `<button class="primary small" data-pick="${i}">Select</button>`}
+    </div>`).join("") : `<p class="sub">This browser has no English voices available.</p>`;
+  $$("button[data-listen]", box).forEach((b) => (b.onclick = () => sayAloud(SAMPLE, { voice: shown[+b.dataset.listen] })));
+  $$("button[data-pick]", box).forEach((b) => (b.onclick = () => { pickVoice(shown[+b.dataset.pick].name); renderVoiceList(); }));
 }
+function toggleAllVoices() { SHOW_ALL_VOICES = !SHOW_ALL_VOICES; renderVoiceList(); }
 function pickVoice(name) { localStorage.setItem(VOICE_KEY, name); }
-function previewVoice() {
-  const sel = document.getElementById("voicePick");
-  if (sel?.value) pickVoice(sel.value);
-  sayAloud("Hi, I'm Heard. Whatever you're carrying today, you don't have to carry it alone.\n\nTell me what's on your heart.");
+function rateWord(r) { return r < 0.85 ? "Slower" : r < 0.93 ? "A little slower" : r <= 1.04 ? "Natural" : r <= 1.15 ? "A little faster" : "Faster"; }
+function renderRate() {
+  const el = document.getElementById("voiceRate");
+  if (!el) return;
+  el.value = savedRate();
+  const show = () => ($("#rateLabel").textContent = `${rateWord(+el.value)} (${(+el.value).toFixed(2)}×)`);
+  el.oninput = () => { localStorage.setItem(RATE_KEY, el.value); show(); };
+  show();
 }
+function previewRate() { sayAloud(SAMPLE, { rate: +$("#voiceRate").value }); }
+function fillVoicePicker() { renderVoiceList(); renderRate(); }
 function listenOnce() {
   // Resolves with what was said, ending automatically at a natural pause.
   return new Promise((resolve, reject) => {

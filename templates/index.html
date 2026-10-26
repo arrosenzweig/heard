@@ -296,10 +296,16 @@
     <h2>Voice</h2>
     <p class="sub">The 🎙 button uses your browser's built-in speech recognition (Chrome or Edge). In Chrome, your audio is sent to Google to be transcribed. If you'd rather not, just type. The 🔊 button reads replies aloud on your device.</p>
     <h3>Heard's voice</h3>
-    <p class="sub">Voices marked ★ natural sound the most human. Edge has the best ones (try Ava, Andrew, Emma, or Brian).</p>
-    <div class="row">
-      <select id="voicePick" onchange="pickVoice(this.value)"></select>
-      <button class="ghost" onclick="previewVoice()">▶ Preview</button>
+    <p class="sub">Listen to each voice and choose the one that feels right. ★ marks the most natural-sounding voices; Edge has the most.</p>
+    <div id="voiceList" class="voicelist"></div>
+    <button class="ghost small" id="voiceMore" onclick="toggleAllVoices()">Show all voices</button>
+    <h3>Speaking speed</h3>
+    <div class="ratebox">
+      <span class="sub tiny">Slower</span>
+      <input type="range" id="voiceRate" min="0.7" max="1.3" step="0.05" value="0.95">
+      <span class="sub tiny">Faster</span>
+      <b id="rateLabel"></b>
+      <button class="ghost small" onclick="previewRate()">▶ Listen at this speed</button>
     </div>
     <button class="ghost small personOnly" onclick="clearChat()">Clear my Talk history</button>
     <button class="ghost small" onclick="startOver()">Start over as a new user</button>
